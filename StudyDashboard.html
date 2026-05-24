@@ -62,7 +62,7 @@ a:hover{color:var(--accent-strong);text-decoration:underline}
 @keyframes shimmer{0%{background-position:-200% 0}100%{background-position:200% 0}}
 
 /* ── APP SHELL ── */
-#app{height:100vh;display:flex;flex-direction:column}
+#app, #app > div{height:100vh;display:flex;flex-direction:column;overflow:hidden}
 
 /* HEADER */
 .hdr{min-height:56px;flex-shrink:0;display:flex;align-items:center;justify-content:space-between;padding:8px var(--s4);background:var(--surf1);border-bottom:1px solid var(--b1);position:relative;z-index:50;gap:var(--s2);flex-wrap:wrap}
@@ -404,6 +404,115 @@ textarea.ta::placeholder{color:var(--t4)}
 .right{margin-left:auto}
 .copy-mini{padding:4px 7px;background:transparent;border:1px solid var(--b1);border-radius:4px;color:var(--t3);font-size:.66rem;cursor:pointer;transition:all var(--tr)}
 .copy-mini:hover{color:var(--accent);border-color:var(--accent)}
+.tab-ico-svg{width:15px;height:15px;stroke-width:2.2;flex-shrink:0;transition:stroke var(--tr);margin-right:2px}
+.tab.on .tab-ico-svg{stroke:var(--accent)}
+.hdr-logo-txt{font-family:var(--mono);font-size:11px;font-weight:800;letter-spacing:-.02em}
+.bcover-txt{font-family:var(--mono);font-size:12px;font-weight:800;color:rgba(255,255,255,.9);letter-spacing:-.04em}
+/* Capsule Node Pills & Graph Elements */
+.gnode-rect {
+  fill: rgba(15, 20, 27, 0.92);
+  stroke: var(--b1);
+  stroke-width: 1.2px;
+  rx: 8px;
+  ry: 8px;
+  transition: fill var(--tr), stroke var(--tr), filter var(--tr);
+}
+.gnode:hover .gnode-rect {
+  fill: rgba(22, 27, 34, 0.96);
+  stroke: var(--accent);
+}
+.gnode.sel .gnode-rect {
+  stroke: var(--accent);
+  stroke-width: 1.8px;
+}
+.gnode-dot {
+  stroke-width: 1px;
+  stroke: rgba(0, 0, 0, 0.2);
+}
+.gnode-text {
+  font-family: var(--font);
+  font-size: 10px;
+  font-weight: 600;
+  fill: var(--t1);
+  letter-spacing: 0.02em;
+  text-anchor: middle;
+}
+.glink {
+  stroke: var(--b2);
+  stroke-width: 1.5;
+  stroke-opacity: 0.45;
+  transition: stroke var(--tr), stroke-opacity var(--tr), stroke-width var(--tr);
+}
+.glink.lit {
+  stroke: var(--accent);
+  stroke-width: 2.2;
+  stroke-opacity: 0.95;
+}
+.glink.prereq {
+  stroke: var(--amber);
+  stroke-width: 2.2;
+  stroke-opacity: 0.95;
+}
+/* Learning Path Planner */
+.learning-path-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-top: 10px;
+}
+.path-step {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 6px 12px;
+  background: var(--surf2);
+  border: 1px solid var(--b1);
+  border-radius: var(--rm);
+  cursor: pointer;
+  transition: all var(--tr);
+}
+.path-step:hover {
+  border-color: var(--accent);
+  background: var(--surf3);
+}
+.path-step.active {
+  border-color: var(--accent);
+  background: var(--accent-soft);
+  box-shadow: 0 0 8px var(--accent-soft);
+}
+.path-step-num {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: var(--b2);
+  color: var(--t2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.72rem;
+  font-weight: 700;
+  font-family: var(--mono);
+}
+.path-step.active .path-step-num {
+  background: var(--accent);
+  color: var(--bg);
+}
+.path-step-body {
+  flex: 1;
+  min-width: 0;
+}
+.path-step-title {
+  font-size: 0.82rem;
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.path-step-meta {
+  font-size: 0.68rem;
+  color: var(--t3);
+  margin-top: 1px;
+}
 </style>
 </head>
 <body>
@@ -427,7 +536,7 @@ const T = {
     'tab.today':'Hôm nay','tab.graph':'Sơ đồ kiến thức','tab.roadmap':'Lộ trình','tab.progress':'Tiến độ','tab.library':'Thư viện',
     'hdr.streak':'{n} ngày liên tiếp','hdr.day':'Ngày {n}/84','hdr.done':'{n}% xong','hdr.toEN':'EN','hdr.toVI':'VI',
     'hdr.settings':'Cài đặt','hdr.dbReady':'CSDL sẵn sàng',
-    'today.hi':'Chào, Đức 👋','today.date':'{wd}, {d}','today.day':'Ngày {n}/84 · {phase}',
+    'today.hi':'Chào, Đức','today.date':'{wd}, {d}','today.day':'Ngày {n}/84 · {phase}',
     'today.notStarted':'Lộ trình bắt đầu sau {n} ngày','today.startDate':'Bắt đầu: T2 25/5/2026',
     'today.finished':'🎉 Bạn đã hoàn tất 12 tuần! Sẵn sàng nghiên cứu.',
     'today.focusTtl':'Nhiệm vụ hôm nay','today.weekN':'Tuần {n}',
@@ -439,7 +548,7 @@ const T = {
     'today.noteSave':'Lưu ghi chú','today.noteSaved':'✓ Đã lưu',
     'today.weekTtl':'Tuần hiện tại','today.weekBtn':'Đi tới Lộ trình →',
     'today.weekTasks':'{d}/{t} nhiệm vụ',
-    'today.streakNone':'Bắt đầu chuỗi học của bạn','today.streakOne':'Bạn vừa bắt đầu — duy trì nhé!','today.streakMany':'🔥 {n} ngày liên tiếp',
+    'today.streakNone':'Bắt đầu chuỗi học của bạn','today.streakOne':'Bạn vừa bắt đầu — duy trì nhé!','today.streakMany':'{n} ngày liên tiếp',
     'graph.searchPh':'Tìm khái niệm…','graph.all':'Tất cả','graph.found':'Nền tảng','graph.p1':'Phase 1 — Toán','graph.p2':'Phase 2 — Code','graph.p3':'Phase 3 — ML','graph.goal':'Mục tiêu',
     'graph.zoomIn':'Phóng to','graph.zoomOut':'Thu nhỏ','graph.zoomReset':'Vừa khung','graph.legend':'Chú thích',
     'graph.connected':'Khái niệm liên quan','graph.showPrereq':'Hiện chuỗi tiên quyết','graph.hidePrereq':'Ẩn chuỗi tiên quyết',
@@ -469,7 +578,7 @@ const T = {
     'set.resetConfirm':'Gõ "XOA" để xác nhận','set.resetWord':'XOA','set.resetGo':'Đặt lại tất cả',
     'set.about':'Về ứng dụng','set.aboutTxt':'Bảng điều khiển học tập cá nhân · Phiên bản 2.0 · Chỉ chạy trong trình duyệt, không cần máy chủ.',
     'common.save':'Lưu','common.cancel':'Hủy','common.close':'Đóng','common.yes':'Có','common.no':'Không','common.ok':'Đồng ý',
-    'phase.1':'Phase 1 — Tái dựng nền Toán','phase.2':'Phase 2 — Toán thành Code','phase.3':'Phase 3 — Nền móng nghiên cứu ML',
+    'phase.1':'Phase I — Tái dựng nền Toán','phase.2':'Phase II — Toán thành Code','phase.3':'Phase III — Nền móng nghiên cứu ML',
     'phase.1.short':'Toán','phase.2.short':'Code','phase.3.short':'ML',
     'lang.label':'🌐','toast.imported':'Đã nhập CSDL','toast.reset':'Đã đặt lại tiến độ','toast.copied':'Đã sao chép',
     'today.welcome':'Bạn còn {n} ngày để chuẩn bị. Hãy xem trước Lộ trình →',
@@ -480,7 +589,7 @@ const T = {
     'tab.today':'Today','tab.graph':'Knowledge Graph','tab.roadmap':'Roadmap','tab.progress':'Progress','tab.library':'Library',
     'hdr.streak':'{n}-day streak','hdr.day':'Day {n}/84','hdr.done':'{n}% done','hdr.toEN':'EN','hdr.toVI':'VI',
     'hdr.settings':'Settings','hdr.dbReady':'Database ready',
-    'today.hi':'Hello, Đức 👋','today.date':'{wd}, {d}','today.day':'Day {n}/84 · {phase}',
+    'today.hi':'Hello, Đức','today.date':'{wd}, {d}','today.day':'Day {n}/84 · {phase}',
     'today.notStarted':'Roadmap starts in {n} days','today.startDate':'Start: Mon May 25, 2026',
     'today.finished':'🎉 You finished all 12 weeks! Research ready.',
     'today.focusTtl':"Today's focus",'today.weekN':'Week {n}',
@@ -492,7 +601,7 @@ const T = {
     'today.noteSave':'Save note','today.noteSaved':'✓ Saved',
     'today.weekTtl':'This week','today.weekBtn':'Go to Roadmap →',
     'today.weekTasks':'{d}/{t} tasks',
-    'today.streakNone':'Start your streak today','today.streakOne':'Just started — keep going!','today.streakMany':'🔥 {n}-day streak',
+    'today.streakNone':'Start your streak today','today.streakOne':'Just started — keep going!','today.streakMany':'{n}-day streak',
     'graph.searchPh':'Search concept…','graph.all':'All','graph.found':'Foundation','graph.p1':'Phase 1 — Math','graph.p2':'Phase 2 — Code','graph.p3':'Phase 3 — ML','graph.goal':'Goal',
     'graph.zoomIn':'Zoom in','graph.zoomOut':'Zoom out','graph.zoomReset':'Fit to view','graph.legend':'Legend',
     'graph.connected':'Connected concepts','graph.showPrereq':'Show prerequisites','graph.hidePrereq':'Hide prerequisites',
@@ -522,7 +631,7 @@ const T = {
     'set.resetConfirm':'Type "DELETE" to confirm','set.resetWord':'DELETE','set.resetGo':'Reset everything',
     'set.about':'About','set.aboutTxt':'Personal study dashboard · v2.0 · Runs entirely in your browser, no server.',
     'common.save':'Save','common.cancel':'Cancel','common.close':'Close','common.yes':'Yes','common.no':'No','common.ok':'OK',
-    'phase.1':'Phase 1 — Math Reconstruction','phase.2':'Phase 2 — Math to Code','phase.3':'Phase 3 — ML Research Foundation',
+    'phase.1':'Phase I — Math Reconstruction','phase.2':'Phase II — Math to Code','phase.3':'Phase III — ML Research Foundation',
     'phase.1.short':'Math','phase.2.short':'Code','phase.3.short':'ML',
     'lang.label':'🌐','toast.imported':'Database imported','toast.reset':'Progress reset','toast.copied':'Copied',
     'today.welcome':'{n} days until you start. Preview the Roadmap →',
@@ -1360,30 +1469,47 @@ const app = createApp({
   <!-- HEADER -->
   <header class="hdr">
     <div class="hdr-l">
-      <div class="hdr-logo">📐</div>
+      <div class="hdr-logo hdr-logo-txt">MAI</div>
       <div>
         <div class="hdr-ttl">{{ t('app.title') }}</div>
         <div class="hdr-sub">{{ t('app.subtitle') }}</div>
       </div>
     </div>
     <div class="hdr-r">
-      <span v-if="streak>0" class="bdg bdg-streak">🔥 {{ streak }}</span>
+      <span v-if="streak>0" class="bdg bdg-streak">{{ t('hdr.streak',{n:streak}) }}</span>
       <span class="bdg bdg-day" v-if="day>0">{{ t('hdr.day',{n:day}) }}</span>
       <span class="bdg bdg-pct">{{ t('hdr.done',{n:pct}) }}</span>
       <button class="h-btn lang" @click="setLang(lang==='vi'?'en':'vi')" :title="t('hdr.settings')">
         {{ lang.toUpperCase() }}
       </button>
-      <button class="h-btn icon" @click="settingsOpen=true" :title="t('hdr.settings')">⚙</button>
+      <button class="h-btn icon" @click="settingsOpen=true" :title="t('hdr.settings')">
+        <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+      </button>
     </div>
   </header>
 
   <!-- TABS -->
   <nav class="tabs">
-    <button class="tab" :class="{on:tab==='today'}"    @click="tab='today'"><span class="tab-ico">🏠</span> {{ t('tab.today') }}</button>
-    <button class="tab" :class="{on:tab==='graph'}"    @click="tab='graph'"><span class="tab-ico">🔗</span> {{ t('tab.graph') }}</button>
-    <button class="tab" :class="{on:tab==='roadmap'}"  @click="tab='roadmap'"><span class="tab-ico">📅</span> {{ t('tab.roadmap') }}</button>
-    <button class="tab" :class="{on:tab==='progress'}" @click="tab='progress'"><span class="tab-ico">📊</span> {{ t('tab.progress') }}</button>
-    <button class="tab" :class="{on:tab==='library'}"  @click="tab='library'"><span class="tab-ico">📚</span> {{ t('tab.library') }}</button>
+    <button class="tab" :class="{on:tab==='today'}" @click="tab='today'">
+      <svg class="tab-ico-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+      {{ t('tab.today') }}
+    </button>
+    <button class="tab" :class="{on:tab==='graph'}" @click="tab='graph'">
+      <svg class="tab-ico-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+      {{ t('tab.graph') }}
+    </button>
+    <button class="tab" :class="{on:tab==='roadmap'}" @click="tab='roadmap'">
+      <svg class="tab-ico-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+      {{ t('tab.roadmap') }}
+    </button>
+    <button class="tab" :class="{on:tab==='progress'}" @click="tab='progress'">
+      <svg class="tab-ico-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+      {{ t('tab.progress') }}
+    </button>
+    <button class="tab" :class="{on:tab==='library'}" @click="tab='library'">
+      <svg class="tab-ico-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M4 4.5A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1-2.5-2.5v-15z"/></svg>
+      {{ t('tab.library') }}
+    </button>
   </nav>
 
   <!-- PANES -->
@@ -1549,7 +1675,7 @@ app.component('today-pane', {
     });
 
     return { ctx, today, wn, di, isInRange, focusWeek, focusDay, todayDone, toggleTodayFocus,
-             noteText, noteSaved, saveNote, ringDash, pomDash, pomMMSS, wkProg, focusBook, streakText, todayKey };
+             noteText, noteSaved, saveNote, ringDash, pomDash, pomMMSS, wkProg, focusBook, streakText, todayKey, fmtDate };
   },
   template: `
 <div class="pane today-wrap">
@@ -1599,7 +1725,7 @@ app.component('today-pane', {
             {{ todayDone ? ctx.t('today.markedDone') : ctx.t('today.markDone') }}
           </button>
           <a v-if="focusBook && focusBook.file" :href="focusBook.file" target="_blank" class="book-chip">
-            📖 {{ focusBook.slide ? ctx.t('today.openSlide') : ctx.t('today.openBook') }}
+            {{ focusBook.slide ? ctx.t('today.openSlide') : ctx.t('today.openBook') }}
             <span v-if="focusBook.ch" style="opacity:.7">· Ch{{ focusBook.ch }}</span>
           </a>
         </div>
@@ -1608,7 +1734,6 @@ app.component('today-pane', {
 
     <!-- NOT STARTED PROMPT -->
     <div v-else-if="ctx.day.value===0" class="card card-lg" style="text-align:center">
-      <div style="font-size:2.2rem;margin-bottom:6px">🌱</div>
       <div style="font-size:1.05rem;font-weight:600;margin-bottom:6px">{{ ctx.t('today.notStarted',{n:ctx.dStart.value}) }}</div>
       <div class="muted" style="font-size:.85rem;line-height:1.6">{{ ctx.t('today.welcome',{n:ctx.dStart.value}) }}</div>
       <button class="btn btn-prim" style="margin-top:14px" @click="ctx.goTab('roadmap')">{{ ctx.t('today.weekBtn') }}</button>
@@ -1618,7 +1743,10 @@ app.component('today-pane', {
     <div class="row2">
       <!-- POMODORO -->
       <div class="card card-lg">
-        <div class="card-ttl"><span class="ttl-ico">⏱</span> {{ ctx.t('today.pomTtl') }}</div>
+        <div class="card-ttl">
+          <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="margin-right:5px;display:inline-block;vertical-align:-2.2px"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+          {{ ctx.t('today.pomTtl') }}
+        </div>
         <div class="pom">
           <div class="pom-clock">
             <svg width="120" height="120" viewBox="0 0 120 120">
@@ -1634,9 +1762,9 @@ app.component('today-pane', {
               <div v-for="m in [15,25,45,60]" :key="m" class="pom-pre" :class="{on:ctx.pomMin.value===m}" @click="ctx.setPomMin(m)">{{ m }}m</div>
             </div>
             <div class="pom-btns">
-              <button v-if="!ctx.pomRunning.value" class="btn btn-prim btn-sm" @click="ctx.pomStart">▶ {{ ctx.t('today.pomStart') }}</button>
-              <button v-else class="btn btn-sm" @click="ctx.pomPause">⏸ {{ ctx.t('today.pomPause') }}</button>
-              <button class="btn btn-sm" @click="ctx.pomReset">⟲ {{ ctx.t('today.pomReset') }}</button>
+              <button v-if="!ctx.pomRunning.value" class="btn btn-prim btn-sm" @click="ctx.pomStart">{{ ctx.t('today.pomStart') }}</button>
+              <button v-else class="btn btn-sm" @click="ctx.pomPause">{{ ctx.t('today.pomPause') }}</button>
+              <button class="btn btn-sm" @click="ctx.pomReset">{{ ctx.t('today.pomReset') }}</button>
             </div>
             <div class="pom-stat">{{ ctx.t('today.pomSessions',{n:ctx.pomSessionsToday.value}) }}</div>
           </div>
@@ -1645,11 +1773,14 @@ app.component('today-pane', {
 
       <!-- QUICK NOTE -->
       <div class="card card-lg">
-        <div class="card-ttl"><span class="ttl-ico">📝</span> {{ ctx.t('today.noteTtl') }}</div>
+        <div class="card-ttl">
+          <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="margin-right:5px;display:inline-block;vertical-align:-2.2px"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>
+          {{ ctx.t('today.noteTtl') }}
+        </div>
         <div class="qnote">
           <textarea class="ta" v-model="noteText" :placeholder="ctx.t('today.notePh')" @blur="saveNote"></textarea>
           <div class="ta-bar">
-            <button class="btn btn-sm" @click="saveNote">💾 {{ ctx.t('today.noteSave') }}</button>
+            <button class="btn btn-sm" @click="saveNote">{{ ctx.t('today.noteSave') }}</button>
             <span class="saved-tag" :class="{on:noteSaved}">{{ ctx.t('today.noteSaved') }}</span>
           </div>
         </div>
@@ -1658,7 +1789,10 @@ app.component('today-pane', {
 
     <!-- THIS WEEK -->
     <div v-if="focusWeek" class="card card-lg">
-      <div class="card-ttl"><span class="ttl-ico">📅</span> {{ ctx.t('today.weekTtl') }}</div>
+      <div class="card-ttl">
+        <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="margin-right:5px;display:inline-block;vertical-align:-2.2px"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+        {{ ctx.t('today.weekTtl') }}
+      </div>
       <div class="wkmini">
         <div class="wkmini-left">
           <div class="wkmini-ttl">{{ ctx.t('today.weekN',{n:focusWeek.n}) }} — {{ focusWeek.title[ctx.lang.value] }}</div>
@@ -1720,7 +1854,7 @@ app.component('graph-pane', {
 
     const initGraph = ()=>{
       const wrap = canvasRef.value; if(!wrap) return;
-      wrap.innerHTML='';
+      d3.select(wrap).selectAll('svg').remove();
       const svg = d3.select(wrap).append('svg');
       const g = svg.append('g');
       gGroup = g; gSvg = svg;
@@ -1728,13 +1862,13 @@ app.component('graph-pane', {
 
       const defs = svg.append('defs');
       defs.append('marker').attr('id','arr').attr('markerWidth',9).attr('markerHeight',9)
-          .attr('refX',32).attr('refY',3.5).attr('orient','auto')
+          .attr('refX',8).attr('refY',3.5).attr('orient','auto')
         .append('path').attr('d','M0,0 L0,7 L8,3.5 z').attr('fill','#444c56');
       defs.append('marker').attr('id','arr-lit').attr('markerWidth',9).attr('markerHeight',9)
-          .attr('refX',32).attr('refY',3.5).attr('orient','auto')
+          .attr('refX',8).attr('refY',3.5).attr('orient','auto')
         .append('path').attr('d','M0,0 L0,7 L8,3.5 z').attr('fill','#58a6ff');
       defs.append('marker').attr('id','arr-pre').attr('markerWidth',9).attr('markerHeight',9)
-          .attr('refX',32).attr('refY',3.5).attr('orient','auto')
+          .attr('refX',8).attr('refY',3.5).attr('orient','auto')
         .append('path').attr('d','M0,0 L0,7 L8,3.5 z').attr('fill','#d29922');
       const filt = defs.append('filter').attr('id','glow').attr('x','-50%').attr('y','-50%').attr('width','200%').attr('height','200%');
       filt.append('feGaussianBlur').attr('stdDeviation','5').attr('result','blur');
@@ -1747,11 +1881,21 @@ app.component('graph-pane', {
       const nodeData = NODES.map(d=>({...d}));
       const linkData = EDGES.map(([s,t])=>({source:s, target:t}));
 
+      // Calculate capsule tag pill dimensions dynamically
+      const charWidth = 6.2;
+      const pillHeight = 24;
+      nodeData.forEach(d => {
+        const lines = d.lbl.split('\n');
+        const maxLen = Math.max(...lines.map(ln => ln.length));
+        d.w = maxLen * charWidth + 34; // left padding for dot + right padding
+        d.h = Math.max(pillHeight, lines.length * 12 + 10);
+      });
+
       gSim = d3.forceSimulation(nodeData)
-        .force('link', d3.forceLink(linkData).id(d=>d.id).distance(135).strength(.55))
-        .force('charge', d3.forceManyBody().strength(-620))
+        .force('link', d3.forceLink(linkData).id(d=>d.id).distance(180).strength(.55))
+        .force('charge', d3.forceManyBody().strength(-650))
         .force('center', d3.forceCenter(gW/2, gH/2))
-        .force('collide', d3.forceCollide(62).strength(.9))
+        .force('collide', d3.forceCollide(d => Math.max(d.w, d.h) / 2 + 15).strength(.9))
         .force('x', d3.forceX(gW/2).strength(.04))
         .force('y', d3.forceY(gH/2).strength(.04));
 
@@ -1760,6 +1904,7 @@ app.component('graph-pane', {
 
       gNodeSel = g.append('g').selectAll('g').data(nodeData).join('g')
         .attr('class','gnode')
+        .attr('color', d => GCH[d.g]) // dynamic color for CSS currentColor drop-shadow and stroke bindings!
         .call(d3.drag()
           .on('start',(e,d)=>{if(!e.active)gSim.alphaTarget(.3).restart();d.fx=d.x;d.fy=d.y;})
           .on('drag', (e,d)=>{d.fx=e.x;d.fy=e.y;})
@@ -1771,28 +1916,66 @@ app.component('graph-pane', {
 
       svg.on('click',()=> closeNode());
 
-      const rRing = d => d.g==='goal'?40:d.g==='found'?34:28;
-      const rCore = d => d.g==='goal'?24:d.g==='found'?18:14;
+      // Append rounded-rectangle capsule pill rect
+      gNodeSel.append('rect')
+        .attr('class', 'gnode-rect')
+        .attr('x', d => -d.w / 2)
+        .attr('y', d => -d.h / 2)
+        .attr('width', d => d.w)
+        .attr('height', d => d.h);
 
-      gNodeSel.append('circle').attr('class','ring')
-        .attr('r', rRing).attr('fill', d=>GCH[d.g]+'1f')
-        .attr('stroke', d=>GCH[d.g]).attr('stroke-width', 1.9);
-
-      gNodeSel.append('circle').attr('class','core')
-        .attr('r', rCore).attr('fill', d=>GCH[d.g]+'4a').attr('stroke','none');
+      // Append left glowing category phase dot
+      gNodeSel.append('circle')
+        .attr('class', 'gnode-dot')
+        .attr('cx', d => -d.w / 2 + 13)
+        .attr('cy', 0)
+        .attr('r', 4)
+        .attr('fill', d => GCH[d.g]);
 
       gNodeSel.each(function(d){
         const el = d3.select(this);
         const lines = d.lbl.split('\n'); const lh=12;
         const baseY = lines.length>1 ? -(lh*(lines.length-1)/2) : 0;
-        lines.forEach((ln,i)=> el.append('text').attr('dy', baseY+i*lh+4).attr('x',0).text(ln));
+        lines.forEach((ln,i)=>{
+          el.append('text')
+            .attr('class', 'gnode-text')
+            .attr('dx', 7) // Optical alignment balancing the left-aligned phase dot
+            .attr('dy', baseY+i*lh+3.5)
+            .text(ln);
+        });
       });
+
+      // Capsule rounded-rectangle ray intersection boundary helper
+      const getCapsuleOffset = (node, dx, dy, len) => {
+        if (len === 0) return 0;
+        const w = node.w / 2;
+        const h = node.h / 2;
+        const absCos = Math.abs(dx / len);
+        const absSin = Math.abs(dy / len);
+        if (h * absCos <= w * absSin) {
+          return h / (absSin || 1);
+        } else {
+          return w / (absCos || 1);
+        }
+      };
 
       gSim.on('tick',()=>{
         gLinkSel.attr('d', d=>{
           const dx=d.target.x-d.source.x, dy=d.target.y-d.source.y;
-          const qx=(d.source.x+d.target.x)/2+dy*.2, qy=(d.source.y+d.target.y)/2-dx*.2;
-          return `M${d.source.x},${d.source.y}Q${qx},${qy} ${d.target.x},${d.target.y}`;
+          const len=Math.sqrt(dx*dx+dy*dy);
+          if (len === 0) return '';
+          
+          const srcOffset = getCapsuleOffset(d.source, dx, dy, len) + 2;
+          const tgOffset = getCapsuleOffset(d.target, -dx, -dy, len) + 8; // terminate exactly at arrowhead tip
+          
+          if (len <= srcOffset + tgOffset) return ''; // prevent overlapping edge cross
+          
+          const x1 = d.source.x + dx * (srcOffset / len);
+          const y1 = d.source.y + dy * (srcOffset / len);
+          const x2 = d.target.x - dx * (tgOffset / len);
+          const y2 = d.target.y - dy * (tgOffset / len);
+          
+          return `M${x1},${y1}L${x2},${y2}`;
         });
         gNodeSel.attr('transform', d=>`translate(${d.x},${d.y})`);
       });
@@ -1805,7 +1988,7 @@ app.component('graph-pane', {
       const bbox = gGroup.node().getBBox();
       if(!bbox.width || !bbox.height) return;
       const pad = 60;
-      const scale = Math.min(.95, (gW-pad*2)/bbox.width, (gH-pad*2)/bbox.height);
+      const scale = Math.min(1.35, (gW-pad*2)/bbox.width, (gH-pad*2)/bbox.height);
       const tx = gW/2 - (bbox.x+bbox.width/2)*scale;
       const ty = gH/2 - (bbox.y+bbox.height/2)*scale;
       gSvg.transition().duration(700).ease(d3.easeCubicInOut)
@@ -1871,6 +2054,38 @@ app.component('graph-pane', {
       return prefix!==undefined ? BOOKS[map[prefix]] : null;
     });
 
+    // Topological sort to plan strategic learning route
+    const getLearningPath = (targetId) => {
+      const prereqs = upstreamOf(targetId);
+      prereqs.add(targetId); // include the target node itself
+      
+      const visited = new Set();
+      const temp = new Set();
+      const order = [];
+      
+      const visit = (nodeId) => {
+        if (temp.has(nodeId)) return; // cycle check
+        if (visited.has(nodeId)) return;
+        temp.add(nodeId);
+        EDGES.forEach(([s, t]) => {
+          if (t === nodeId && prereqs.has(s)) {
+            visit(s);
+          }
+        });
+        temp.delete(nodeId);
+        visited.add(nodeId);
+        order.push(nodeId);
+      };
+      
+      visit(targetId);
+      return order.map(id => NODES.find(n => n.id === id)).filter(Boolean);
+    };
+
+    const learningPath = computed(() => {
+      if (!ipNode.value) return [];
+      return getLearningPath(ipNode.value.id);
+    });
+
     onMounted(()=>{ nextTick(initGraph); });
     onBeforeUnmount(()=>{ if(gSim) gSim.stop(); });
 
@@ -1884,7 +2099,7 @@ app.component('graph-pane', {
     ];
 
     return { ctx, canvasRef, ipanelOpen, ipNode, search, filter, showPrereq, filters,
-             conns, ipBook, closeNode, refocus, autoFit,
+             conns, ipBook, closeNode, refocus, autoFit, learningPath,
              zI:()=>gSvg && gSvg.transition().duration(250).call(gZoom.scaleBy,1.4),
              zO:()=>gSvg && gSvg.transition().duration(250).call(gZoom.scaleBy,.72),
              zR:autoFit, GCH };
@@ -1939,7 +2154,22 @@ app.component('graph-pane', {
           {{ showPrereq ? ctx.t('graph.hidePrereq') : ctx.t('graph.showPrereq') }}
         </button>
       </div>
-      <div class="gipanel-lbl">{{ ctx.t('graph.connected') }}</div>
+
+      <!-- Strategic Learning Path Planner -->
+      <div class="gipanel-lbl" style="margin-top:var(--s4)">{{ ctx.lang.value==='vi'?'Lộ trình học tối ưu':'Strategic Learning Path' }}</div>
+      <div class="learning-path-list">
+        <div v-for="(n, idx) in learningPath" :key="n.id" class="path-step" :class="{active: n.id===ipNode.id}" @click="refocus(n.id)">
+          <div class="path-step-num">{{ idx + 1 }}</div>
+          <div class="path-step-body">
+            <div class="path-step-title" :style="{color: GCH[n.g]}">{{ n.lbl.replace('\\n',' ') }}</div>
+            <div class="path-step-meta">
+              {{ n.wk > 0 ? (ctx.lang.value==='vi'?'Tuần '+n.wk:'Week '+n.wk) : (ctx.lang.value==='vi'?'Nền tảng':'Foundation') }}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="gipanel-lbl" style="margin-top:var(--s4)">{{ ctx.t('graph.connected') }}</div>
       <div class="relchips">
         <span v-for="n in conns" :key="n.id" class="relchip"
               :style="{borderColor:GCH[n.g]+'55',color:GCH[n.g]}"
@@ -2031,14 +2261,13 @@ app.component('roadmap-pane', {
   <div class="rm-body">
     <template v-for="ph in phaseList" :key="ph.ph">
       <div class="ph-bar" :style="{background:ph.color+'18',color:ph.color,border:'1px solid '+ph.color+'33'}">
-        <span class="ph-ico">{{ ph.icon }}</span>
         {{ ctx.t('phase.'+ph.ph) }}
         <span class="ph-pct">{{ pProgress(ph.ph).done }}/{{ pProgress(ph.ph).tot }}</span>
       </div>
 
       <div v-for="w in ctx.WEEKS.filter(x=>x.ph===ph.ph)" :key="w.n"
            class="wkc" :class="{open:openWeek===w.n, now:w.n===cwn, done:w.n<cwn}">
-        <div class="wkc-hd" @click="toggle(w.n)">
+         <div class="wkc-hd" @click="toggle(w.n)">
           <div class="wkn" :style="{
             background: w.n<cwn ? '#3fb95022' : w.n===cwn ? PC[w.ph]+'22' : '#8b949e15',
             color:      w.n<cwn ? '#3fb950'   : w.n===cwn ? PC[w.ph]      : '#8b949e',
@@ -2059,7 +2288,10 @@ app.component('roadmap-pane', {
           <!-- Daily plan -->
           <div class="seclb">
             <span>{{ ctx.t('rm.dailyPlan') }}</span>
-            <a v-for="b in [BOOKS.find(bk=>bk.key===w.book)]" :key="b?.key" v-if="b" :href="b.file" target="_blank" class="dchap">📖 {{ ctx.t('rm.openBook') }}</a>
+            <a v-for="b in [BOOKS.find(bk=>bk.key===w.book)]" :key="b?.key" v-if="b" :href="b.file" target="_blank" class="dchap">
+              <svg viewBox="0 0 24 24" width="10" height="10" fill="none" stroke="currentColor" stroke-width="2.5" style="margin-right:3px;display:inline-block;vertical-align:-1px"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M4 4.5A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1-2.5-2.5v-15z"/></svg>
+              {{ ctx.t('rm.openBook') }}
+            </a>
           </div>
           <table class="dtbl">
             <tbody>
@@ -2070,9 +2302,10 @@ app.component('roadmap-pane', {
                 <td>
                   <span class="dtask">{{ d.task[ctx.lang.value] }}</span>
                   <a v-if="refLink(d.ref)" :href="refLink(d.ref).file" target="_blank" class="dchap">
-                    {{ refLink(d.ref).slide ? '🎓' : '📖' }}
-                    <span v-if="refLink(d.ref).ch">Ch{{ refLink(d.ref).ch }}</span>
-                    <span v-else>{{ ctx.t('rm.openBook') }}</span>
+                    <svg v-if="refLink(d.ref).slide" viewBox="0 0 24 24" width="10" height="10" fill="none" stroke="currentColor" stroke-width="2.5" style="margin-right:3px;display:inline-block;vertical-align:-1px"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+                    <svg v-else viewBox="0 0 24 24" width="10" height="10" fill="none" stroke="currentColor" stroke-width="2.5" style="margin-right:3px;display:inline-block;vertical-align:-1px"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M4 4.5A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1-2.5-2.5v-15z"/></svg>
+                    <span v-if="refLink(d.ref).ch">{{ refLink(d.ref).slide ? 'Slide' : 'Book' }} Ch{{ refLink(d.ref).ch }}</span>
+                    <span v-else>{{ refLink(d.ref).slide ? ctx.t('today.openSlide') : ctx.t('rm.openBook') }}</span>
                   </a>
                 </td>
               </tr>
@@ -2282,9 +2515,8 @@ app.component('library-pane', {
     const ctx = inject('ctx');
     const copiedKey = ref(null);
     const copyPath = async (path, key)=>{
-      // resolve to absolute-ish path the user can paste in file manager
-      const absPath = path.replace(/^\.\//, '/run/media/ngmint/4f84d369-b671-4539-af6f-f34e432fa951/Document/Document/Math/MAI/');
-      await copyToClipboard(absPath);
+      // keep relative path as requested by the user
+      await copyToClipboard(path);
       copiedKey.value = key;
       ctx.showToast(ctx.t('toast.copied'));
       setTimeout(()=>copiedKey.value=null, 1500);
@@ -2295,17 +2527,22 @@ app.component('library-pane', {
 <div class="pane lib-wrap">
   <div class="lib-body">
     <div class="lib-banner">
-      <span>💡</span>
+      <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" style="margin-right:8px;flex-shrink:0;vertical-align:-2px"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
       <span>{{ ctx.t('lib.banner') }}</span>
     </div>
 
     <!-- BOOKS -->
     <div>
-      <div class="lib-sec-ttl"><span class="ico">📚</span> {{ ctx.t('lib.books') }}</div>
+      <div class="lib-sec-ttl">
+        <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="margin-right:6px;display:inline-block;vertical-align:-2px"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M4 4.5A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1-2.5-2.5v-15z"/></svg>
+        {{ ctx.t('lib.books') }}
+      </div>
       <div class="book-grid">
         <div v-for="b in BOOKS" :key="b.key" class="bcard">
           <div class="bcard-top">
-            <div class="bcover" :style="{background:b.color}">{{ b.emoji }}</div>
+            <div class="bcover" :style="{background:b.color}">
+              <span class="bcover-txt">{{ b.key }}</span>
+            </div>
             <div class="bcard-info">
               <div class="bttl">{{ b.title[ctx.lang.value] }}</div>
               <div class="bauthor">{{ b.author }}</div>
@@ -2316,9 +2553,9 @@ app.component('library-pane', {
             </div>
           </div>
           <div class="bbtns">
-            <a :href="b.file" target="_blank" class="btn btn-prim btn-sm">📖 {{ ctx.t('lib.open') }}</a>
+            <a :href="b.file" target="_blank" class="btn btn-prim btn-sm">{{ ctx.t('lib.open') }}</a>
             <button class="btn btn-sm" @click="copyPath(b.file, b.key)">
-              {{ copiedKey===b.key ? ctx.t('lib.pathCopied') : '📋 '+ctx.t('lib.copyPath') }}
+              {{ copiedKey===b.key ? ctx.t('lib.pathCopied') : ctx.t('lib.copyPath') }}
             </button>
           </div>
         </div>
@@ -2327,13 +2564,16 @@ app.component('library-pane', {
 
     <!-- SLIDES -->
     <div>
-      <div class="lib-sec-ttl"><span class="ico">🎓</span> {{ ctx.t('lib.slides') }}</div>
+      <div class="lib-sec-ttl">
+        <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="margin-right:6px;display:inline-block;vertical-align:-2px"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+        {{ ctx.t('lib.slides') }}
+      </div>
       <div class="slide-list">
         <div v-for="s in SLIDES" :key="s.ch" class="slide-row">
           <div class="slide-ch">Ch{{ s.ch }}</div>
           <div class="slide-ttl">{{ s.title[ctx.lang.value] }}</div>
           <button class="btn btn-sm" @click="copyPath(s.file, 'slide-'+s.ch)">
-            {{ copiedKey==='slide-'+s.ch ? '✓' : '📋' }}
+            {{ copiedKey==='slide-'+s.ch ? '✓' : 'Copy' }}
           </button>
           <a :href="s.file" target="_blank" class="btn btn-prim btn-sm">{{ ctx.t('lib.open') }} →</a>
         </div>
@@ -2342,10 +2582,17 @@ app.component('library-pane', {
 
     <!-- EXAMS -->
     <div>
-      <div class="lib-sec-ttl"><span class="ico">📝</span> {{ ctx.t('lib.exams') }}</div>
+      <div class="lib-sec-ttl">
+        <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="margin-right:6px;display:inline-block;vertical-align:-2px"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+        {{ ctx.t('lib.exams') }}
+      </div>
       <div class="exams-grid">
         <a v-for="e in EXAMS" :key="e.key" :href="e.file" target="_blank" class="ex-card">
-          <div class="ex-ico">{{ e.icon }}</div>
+          <div class="ex-ico">
+            <svg v-if="e.key==='papers'" viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color:var(--accent)"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+            <svg v-else-if="e.key==='qs'" viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color:var(--amber)"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+            <svg v-else viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color:var(--green)"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>
+          </div>
           <div class="ex-lbl">{{ ctx.t(e.lblKey) }}</div>
           <div class="ex-sub">{{ ctx.t(e.subKey) }}</div>
         </a>
