@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ML Research Dashboard — Vo Duc</title>
+<title>ML Research Dashboard — Nguyễn Minh</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Be+Vietnam+Pro:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -532,11 +532,11 @@ textarea.ta::placeholder{color:var(--t4)}
 const T = {
   vi: {
     'app.title':'Bảng điều khiển ML',
-    'app.subtitle':'Vo Duc · FPT University · AI Major',
+    'app.subtitle':'{name} · FPT University · AI Major',
     'tab.today':'Hôm nay','tab.graph':'Sơ đồ kiến thức','tab.roadmap':'Lộ trình','tab.progress':'Tiến độ','tab.library':'Thư viện',
     'hdr.streak':'{n} ngày liên tiếp','hdr.day':'Ngày {n}/84','hdr.done':'{n}% xong','hdr.toEN':'EN','hdr.toVI':'VI',
     'hdr.settings':'Cài đặt','hdr.dbReady':'CSDL sẵn sàng',
-    'today.hi':'Chào, Đức','today.date':'{wd}, {d}','today.day':'Ngày {n}/84 · {phase}',
+    'today.hi':'Chào, {name}!','today.date':'{wd}, {d}','today.day':'Ngày {n}/84 · {phase}',
     'today.notStarted':'Lộ trình bắt đầu sau {n} ngày','today.startDate':'Bắt đầu: T2 25/5/2026',
     'today.finished':'🎉 Bạn đã hoàn tất 12 tuần! Sẵn sàng nghiên cứu.',
     'today.focusTtl':'Nhiệm vụ hôm nay','today.weekN':'Tuần {n}',
@@ -571,7 +571,7 @@ const T = {
     'lib.open':'Mở','lib.copyPath':'Sao chép đường dẫn','lib.pathCopied':'✓ Đã sao chép',
     'lib.pages':'{n} trang','lib.langEN':'EN','lib.langVI':'VI','lib.phase':'Phase {p}','lib.phaseAll':'Tất cả phase',
     'lib.examPapers':'Đề thi cũ','lib.examPapersSub':'Tham khảo cấu trúc đề','lib.examQ':'Câu hỏi mẫu','lib.examQSub':'Q1–Q26','lib.hw':'Bài tập về nhà','lib.hwSub':'Bài đã nộp',
-    'set.ttl':'Cài đặt','set.lang':'Ngôn ngữ','set.langDesc':'Chuyển đổi tiếng Việt và tiếng Anh. Mọi tab và nhãn sẽ cập nhật ngay.',
+    'set.ttl':'Cài đặt','set.name':'Tên học viên','set.namePh':'Nhập tên của bạn…','set.nameDesc':'Tên này được dùng để cá nhân hóa tiêu đề và lời chào trên bảng điều khiển.','set.lang':'Ngôn ngữ','set.langDesc':'Chuyển đổi tiếng Việt và tiếng Anh. Mọi tab và nhãn sẽ cập nhật ngay.',
     'set.pom':'Thời lượng Pomodoro','set.pomDesc':'Mặc định 25 phút theo phương pháp Pomodoro cổ điển.',
     'set.data':'Dữ liệu','set.export':'Xuất CSDL (.db)','set.exportDesc':'Tải xuống tệp SQLite chứa toàn bộ tiến độ và ghi chú.',
     'set.import':'Nhập CSDL (.db)','set.importDesc':'Khôi phục từ tệp đã xuất. Sẽ ghi đè dữ liệu hiện tại.',
@@ -586,11 +586,11 @@ const T = {
   },
   en: {
     'app.title':'ML Research Dashboard',
-    'app.subtitle':'Vo Duc · FPT University · AI Major',
+    'app.subtitle':'{name} · FPT University · AI Major',
     'tab.today':'Today','tab.graph':'Knowledge Graph','tab.roadmap':'Roadmap','tab.progress':'Progress','tab.library':'Library',
     'hdr.streak':'{n}-day streak','hdr.day':'Day {n}/84','hdr.done':'{n}% done','hdr.toEN':'EN','hdr.toVI':'VI',
     'hdr.settings':'Settings','hdr.dbReady':'Database ready',
-    'today.hi':'Hello, Đức','today.date':'{wd}, {d}','today.day':'Day {n}/84 · {phase}',
+    'today.hi':'Hello, {name}!','today.date':'{wd}, {d}','today.day':'Day {n}/84 · {phase}',
     'today.notStarted':'Roadmap starts in {n} days','today.startDate':'Start: Mon May 25, 2026',
     'today.finished':'🎉 You finished all 12 weeks! Research ready.',
     'today.focusTtl':"Today's focus",'today.weekN':'Week {n}',
@@ -625,7 +625,7 @@ const T = {
     'lib.open':'Open','lib.copyPath':'Copy path','lib.pathCopied':'✓ Copied',
     'lib.pages':'{n} pages','lib.langEN':'EN','lib.langVI':'VI','lib.phase':'Phase {p}','lib.phaseAll':'All phases',
     'lib.examPapers':'Past exam papers','lib.examPapersSub':'Reference for exam format','lib.examQ':'Sample questions','lib.examQSub':'Q1–Q26','lib.hw':'Homework','lib.hwSub':'Submitted work',
-    'set.ttl':'Settings','set.lang':'Language','set.langDesc':'Switch between Vietnamese and English. All tabs and labels update immediately.',
+    'set.ttl':'Settings','set.name':'Student Name','set.namePh':'Enter your name…','set.nameDesc':'This name is used to personalize the title and greetings on your dashboard.','set.lang':'Language','set.langDesc':'Switch between Vietnamese and English. All tabs and labels update immediately.',
     'set.pom':'Pomodoro duration','set.pomDesc':'Default is 25 minutes following the classic Pomodoro technique.',
     'set.data':'Data','set.export':'Export database (.db)','set.exportDesc':'Download a SQLite file with all progress and notes.',
     'set.import':'Import database (.db)','set.importDesc':'Restore from an exported file. Current data will be overwritten.',
@@ -1332,6 +1332,16 @@ const app = createApp({
     const toastMsg = ref(''); const toastOn = ref(false);
     const refreshKey = ref(0); // bump to recompute derived progress reactively
 
+    const studentName = ref('Nguyễn Minh');
+    const setStudentName = (val)=>{
+      studentName.value = val;
+      if(dbReady.value) setSetting('student_name', val);
+      bump();
+    };
+    watch(studentName, (val)=>{
+      document.title = `ML Research Dashboard — ${val}`;
+    }, {immediate: true});
+
     const t = (key, params={}) => {
       let s = (T[lang.value] || T.en)[key] || key;
       Object.entries(params).forEach(([k,v])=> s = s.replace(`{${k}}`, v));
@@ -1408,6 +1418,8 @@ const app = createApp({
         document.documentElement.setAttribute('lang', lang.value);
         const savedPom = parseInt(getSetting('pomodoro_min', '25'));
         if([15,25,45,60].includes(savedPom)) { pomMin.value = savedPom; pomLeft.value = savedPom*60; }
+        const savedName = getSetting('student_name', 'Nguyễn Minh');
+        studentName.value = savedName;
         bump();
         // request notification permission silently
         if('Notification' in window && Notification.permission==='default'){ Notification.requestPermission().catch(()=>{}); }
@@ -1426,6 +1438,7 @@ const app = createApp({
       toggleWeekTask, toggleDayTask,
       goTab, bump, showToast,
       dbReady,
+      studentName, setStudentName,
       // data + helpers exposed for templates
       WEEKS, NODES, EDGES, BOOKS, SLIDES, EXAMS,
       weekProgress, phaseProgress, totalProgress,
@@ -1446,7 +1459,7 @@ const app = createApp({
 
     return {
       // state
-      lang, tab, dbReady, settingsOpen, toastMsg, toastOn,
+      lang, tab, dbReady, settingsOpen, toastMsg, toastOn, studentName, setStudentName,
       // i18n
       t, setLang,
       // computed
@@ -1474,7 +1487,7 @@ const app = createApp({
       <div class="hdr-logo hdr-logo-txt">MAI</div>
       <div>
         <div class="hdr-ttl">{{ t('app.title') }}</div>
-        <div class="hdr-sub">{{ t('app.subtitle') }}</div>
+        <div class="hdr-sub">{{ t('app.subtitle', {name: studentName}) }}</div>
       </div>
     </div>
     <div class="hdr-r">
@@ -1529,6 +1542,11 @@ const app = createApp({
       <button class="h-btn icon" @click="settingsOpen=false">✕</button>
     </div>
     <div class="drawer-body">
+      <div class="set-grp">
+        <div class="set-lbl">{{ t('set.name') }}</div>
+        <input class="confirm-input" style="width:100%;margin-bottom:6px" :value="studentName" @input="e => setStudentName(e.target.value)" :placeholder="t('set.namePh')">
+        <div class="set-desc">{{ t('set.nameDesc') }}</div>
+      </div>
       <div class="set-grp">
         <div class="set-lbl">{{ t('set.lang') }}</div>
         <div class="lang-toggle">
@@ -1702,7 +1720,7 @@ app.component('today-pane', {
         <div class="greet-pct">{{ ctx.pct.value }}<small>%</small></div>
       </div>
       <div class="greet-info">
-        <div class="greet-hi">{{ ctx.t('today.hi') }}</div>
+        <div class="greet-hi">{{ ctx.t('today.hi', {name: ctx.studentName.value}) }}</div>
         <div class="greet-date">{{ fmtDate(today, ctx.lang.value) }}</div>
         <div class="greet-meta">
           <span v-if="ctx.day.value>0 && ctx.day.value<=84" class="bdg bdg-day">{{ ctx.t('hdr.day',{n:ctx.day.value}) }}</span>
