@@ -551,6 +551,7 @@ const T = {
     'today.streakNone':'Bắt đầu chuỗi học của bạn','today.streakOne':'Bạn vừa bắt đầu — duy trì nhé!','today.streakMany':'{n} ngày liên tiếp',
     'graph.searchPh':'Tìm khái niệm…','graph.all':'Tất cả','graph.found':'Nền tảng','graph.p1':'Phase 1 — Toán','graph.p2':'Phase 2 — Code','graph.p3':'Phase 3 — ML','graph.goal':'Mục tiêu',
     'graph.zoomIn':'Phóng to','graph.zoomOut':'Thu nhỏ','graph.zoomReset':'Vừa khung','graph.legend':'Chú thích',
+    'graph.layoutSeq':'Sắp xếp Lộ trình','graph.layoutOrg':'Phân bổ Tự nhiên',
     'graph.connected':'Khái niệm liên quan','graph.showPrereq':'Hiện chuỗi tiên quyết','graph.hidePrereq':'Ẩn chuỗi tiên quyết',
     'graph.openBook':'Mở sách tham khảo','graph.week':'Tuần','graph.prereq':'Tiên quyết',
     'rm.dailyPlan':'Kế hoạch hàng ngày','rm.checklist':'Danh sách kiểm tra','rm.notes':'Ghi chú','rm.notesEdit':'Sửa','rm.notesPreview':'Xem trước',
@@ -604,6 +605,7 @@ const T = {
     'today.streakNone':'Start your streak today','today.streakOne':'Just started — keep going!','today.streakMany':'{n}-day streak',
     'graph.searchPh':'Search concept…','graph.all':'All','graph.found':'Foundation','graph.p1':'Phase 1 — Math','graph.p2':'Phase 2 — Code','graph.p3':'Phase 3 — ML','graph.goal':'Goal',
     'graph.zoomIn':'Zoom in','graph.zoomOut':'Zoom out','graph.zoomReset':'Fit to view','graph.legend':'Legend',
+    'graph.layoutSeq':'Sequential Roadmap','graph.layoutOrg':'Organic Network',
     'graph.connected':'Connected concepts','graph.showPrereq':'Show prerequisites','graph.hidePrereq':'Hide prerequisites',
     'graph.openBook':'Open reference','graph.week':'Week','graph.prereq':'Prerequisite',
     'rm.dailyPlan':'Daily plan','rm.checklist':'Checklist','rm.notes':'Notes','rm.notesEdit':'Edit','rm.notesPreview':'Preview',
@@ -1852,6 +1854,97 @@ app.component('graph-pane', {
 
     watch([search, filter, showPrereq], applyFilters);
 
+    const getCapsuleOffset = (node, dx, dy, len) => {
+      if (len === 0) return 0;
+      const w = node.w / 2;
+      const h = node.h / 2;
+      const absCos = Math.abs(dx / len);
+      const absSin = Math.abs(dy / len);
+      if (h * absCos <= w * absSin) {
+        return h / (absSin || 1);
+      } else {
+        return w / (absCos || 1);
+      }
+    };
+
+    const layoutType = ref('organic'); // organic|sequential
+
+    const toggleLayout = ()=>{
+      layoutType.value = layoutType.value === 'organic' ? 'sequential' : 'organic';
+      applyLayout();
+    };
+
+    const applyLayout = ()=>{
+      if(!gSim || !gNodeSel) return;
+      if(layoutType.value === 'sequential'){
+        gSim.stop();
+        
+        // Map groups to horizontal columns
+        const groupCols = { 'found': 0, 'w14': 1, 'p2': 2, 'p3': 3, 'goal': 4 };
+        const cols = [[], [], [], [], []];
+        
+        gNodeSel.each(d => {
+          const colIdx = groupCols[d.g] !== undefined ? groupCols[d.g] : 1;
+          cols[colIdx].push(d);
+        });
+        
+        // Sort each column by week, then by ID
+        cols.forEach(col => {
+          col.sort((a, b) => (a.wk - b.wk) || a.id.localeCompare(b.id));
+        });
+        
+        const colSpacing = (gW - 160) / 4;
+        const startX = 80;
+        
+        cols.forEach((col, colIdx) => {
+          const x = startX + colIdx * colSpacing;
+          const nNodes = col.length;
+          const ySpacing = Math.min(85, (gH - 120) / (nNodes + 1));
+          const startY = gH / 2 - ((nNodes - 1) * ySpacing) / 2;
+          
+          col.forEach((node, rowIdx) => {
+            node.fx = x;
+            node.fy = startY + rowIdx * ySpacing;
+          });
+        });
+        
+        gNodeSel.transition().duration(800).ease(d3.easeCubicInOut)
+          .attr('transform', d => `translate(${d.fx},${d.fy})`);
+          
+        gLinkSel.transition().duration(800).ease(d3.easeCubicInOut)
+          .attr('d', d => {
+            const dx = d.target.fx - d.source.fx;
+            const dy = d.target.fy - d.source.fy;
+            const len = Math.sqrt(dx * dx + dy * dy);
+            if (len === 0) return '';
+            
+            const srcOffset = getCapsuleOffset(d.source, dx, dy, len) + 2;
+            const tgOffset = getCapsuleOffset(d.target, -dx, -dy, len) + 8;
+            
+            if (len <= srcOffset + tgOffset) return '';
+            
+            const x1 = d.source.fx + dx * (srcOffset / len);
+            const y1 = d.source.fy + dy * (srcOffset / len);
+            const x2 = d.target.fx - dx * (tgOffset / len);
+            const y2 = d.target.fy - dy * (tgOffset / len);
+            
+            return `M${x1},${y1}L${x2},${y2}`;
+          });
+          
+        setTimeout(autoFit, 850);
+        
+      } else {
+        gNodeSel.each(d => {
+          d.x = d.fx || d.x;
+          d.y = d.fy || d.y;
+          d.fx = null;
+          d.fy = null;
+        });
+        
+        gSim.alpha(0.65).restart();
+      }
+    };
+
     const initGraph = ()=>{
       const wrap = canvasRef.value; if(!wrap) return;
       d3.select(wrap).selectAll('svg').remove();
@@ -1906,9 +1999,9 @@ app.component('graph-pane', {
         .attr('class','gnode')
         .attr('color', d => GCH[d.g]) // dynamic color for CSS currentColor drop-shadow and stroke bindings!
         .call(d3.drag()
-          .on('start',(e,d)=>{if(!e.active)gSim.alphaTarget(.3).restart();d.fx=d.x;d.fy=d.y;})
-          .on('drag', (e,d)=>{d.fx=e.x;d.fy=e.y;})
-          .on('end',  (e,d)=>{if(!e.active)gSim.alphaTarget(0);d.fx=null;d.fy=null;}))
+          .on('start',(e,d)=>{if(layoutType.value==='sequential')return; if(!e.active)gSim.alphaTarget(.3).restart();d.fx=d.x;d.fy=d.y;})
+          .on('drag', (e,d)=>{if(layoutType.value==='sequential')return; d.fx=e.x;d.fy=e.y;})
+          .on('end',  (e,d)=>{if(layoutType.value==='sequential')return; if(!e.active)gSim.alphaTarget(0);d.fx=null;d.fy=null;}))
         .on('mouseenter',(e,d)=>showTip(e,d))
         .on('mousemove', e=>moveTip(e))
         .on('mouseleave',()=>hideTip())
@@ -1945,19 +2038,6 @@ app.component('graph-pane', {
         });
       });
 
-      // Capsule rounded-rectangle ray intersection boundary helper
-      const getCapsuleOffset = (node, dx, dy, len) => {
-        if (len === 0) return 0;
-        const w = node.w / 2;
-        const h = node.h / 2;
-        const absCos = Math.abs(dx / len);
-        const absSin = Math.abs(dy / len);
-        if (h * absCos <= w * absSin) {
-          return h / (absSin || 1);
-        } else {
-          return w / (absCos || 1);
-        }
-      };
 
       gSim.on('tick',()=>{
         gLinkSel.attr('d', d=>{
@@ -1980,7 +2060,10 @@ app.component('graph-pane', {
         gNodeSel.attr('transform', d=>`translate(${d.x},${d.y})`);
       });
       gSim.on('end', autoFit);
-      setTimeout(autoFit, 2400);
+      setTimeout(()=>{
+        if(layoutType.value === 'sequential') applyLayout();
+        else autoFit();
+      }, 2400);
     };
 
     const autoFit = ()=>{
@@ -2099,7 +2182,7 @@ app.component('graph-pane', {
     ];
 
     return { ctx, canvasRef, ipanelOpen, ipNode, search, filter, showPrereq, filters,
-             conns, ipBook, closeNode, refocus, autoFit, learningPath,
+             conns, ipBook, closeNode, refocus, autoFit, learningPath, layoutType, toggleLayout,
              zI:()=>gSvg && gSvg.transition().duration(250).call(gZoom.scaleBy,1.4),
              zO:()=>gSvg && gSvg.transition().duration(250).call(gZoom.scaleBy,.72),
              zR:autoFit, GCH };
@@ -2128,6 +2211,9 @@ app.component('graph-pane', {
       <div class="leg"><div class="leg-dot" :style="{background:GCH.goal}"></div>{{ ctx.t('graph.goal') }}</div>
     </div>
     <div class="gctrl">
+      <button class="gbtn" @click="toggleLayout" :title="layoutType === 'organic' ? ctx.t('graph.layoutSeq') : ctx.t('graph.layoutOrg')">
+        {{ layoutType === 'organic' ? '▤' : '❂' }}
+      </button>
       <button class="gbtn" @click="zI" :title="ctx.t('graph.zoomIn')">+</button>
       <button class="gbtn" @click="zO" :title="ctx.t('graph.zoomOut')">−</button>
       <button class="gbtn" @click="zR" :title="ctx.t('graph.zoomReset')">⊙</button>
