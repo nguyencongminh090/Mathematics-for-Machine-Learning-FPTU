@@ -1,0 +1,16 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(mkdir -p /run/media/ngmint/4f84d369-b671-4539-af6f-f34e432fa951/Document/Document/Math/MAI/01_Lecture_Slides)",
+      "Bash(mkdir -p /run/media/ngmint/4f84d369-b671-4539-af6f-f34e432fa951/Document/Document/Math/MAI/02_Books)",
+      "Bash(mkdir -p /run/media/ngmint/4f84d369-b671-4539-af6f-f34e432fa951/Document/Document/Math/MAI/03_Exercises/Exam_Papers)",
+      "Bash(mkdir -p /run/media/ngmint/4f84d369-b671-4539-af6f-f34e432fa951/Document/Document/Math/MAI/03_Exercises/Homework)",
+      "Bash(mkdir -p /run/media/ngmint/4f84d369-b671-4539-af6f-f34e432fa951/Document/Document/Math/MAI/03_Exercises/Exam_Questions)",
+      "WebSearch",
+      "Bash(wget -O /run/media/ngmint/4f84d369-b671-4539-af6f-f34e432fa951/Document/Document/Math/MAI/02_Books/Deep_Learning_Co_Ban_VI_nttuan8.pdf https://linhkienrobotics.com/wp-content/uploads/2023/11/Sach-Deep-Learning-co-ban-v2.pdf)",
+      "Bash(mkdir -p \"/run/media/ngmint/4f84d369-b671-4539-af6f-f34e432fa951/Document/Document/Math/MAI/04_Schedule/Phase1_Math_Reconstruction\")",
+      "Bash(mkdir -p \"/run/media/ngmint/4f84d369-b671-4539-af6f-f34e432fa951/Document/Document/Math/MAI/04_Schedule/Phase2_Math_to_Code\")",
+      "Bash(mkdir -p \"/run/media/ngmint/4f84d369-b671-4539-af6f-f34e432fa951/Document/Document/Math/MAI/04_Schedule/Phase3_ML_Research_Foundation\")"
+    ]
+  }
+}

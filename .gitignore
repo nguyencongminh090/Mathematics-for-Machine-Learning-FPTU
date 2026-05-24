@@ -1,0 +1,6 @@
+# Obsidian transient state
+.obsidian/workspace.json
+
+# Operating System Files
+.DS_Store
+Thumbs.db

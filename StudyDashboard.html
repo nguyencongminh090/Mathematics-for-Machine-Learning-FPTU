@@ -1,0 +1,2370 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ML Research Dashboard — Vo Duc</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Be+Vietnam+Pro:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
+<script src="https://d3js.org/d3.v7.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sql.js@1.10.2/dist/sql-wasm.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/marked@4.3.0/marked.min.js"></script>
+<style>
+:root{
+  /* spacing 8px grid */
+  --s0:4px;--s1:8px;--s2:12px;--s3:16px;--s4:24px;--s5:32px;--s6:48px;
+  /* radius */
+  --rs:4px;--rm:8px;--rl:12px;--rx:20px;
+  /* colors — GitHub dark refined */
+  --bg:#0a0d12;--surf1:#0f141b;--surf2:#161b22;--surf3:#1c2128;--surf4:#21262d;
+  --b1:#262d36;--b2:#30363d;--b3:#444c56;
+  --t1:#e6edf3;--t2:#9ba3ad;--t3:#6e7681;--t4:#4d535c;
+  --accent:#58a6ff;--accent-soft:#58a6ff22;--accent-strong:#79c0ff;
+  --green:#3fb950;--green-soft:#3fb95022;
+  --amber:#d29922;--amber-soft:#d2992222;
+  --red:#f85149;--red-soft:#f8514922;
+  --purple:#bc8cff;--purple-soft:#bc8cff22;
+  --pink:#ff7eb6;
+  /* phase tokens */
+  --c-found:#58a6ff;--c-w14:#bc8cff;--c-p2:#d29922;--c-p3:#f85149;--c-goal:#3fb950;
+  /* type */
+  --font:'Inter','Be Vietnam Pro',-apple-system,sans-serif;
+  --mono:'JetBrains Mono',ui-monospace,Menlo,monospace;
+  /* fx */
+  --sh1:0 2px 8px rgba(0,0,0,.4);--sh2:0 8px 24px rgba(0,0,0,.55);
+  --tr:.18s ease;--trL:.26s cubic-bezier(.4,0,.2,1);
+}
+html[lang="vi"]{--font:'Be Vietnam Pro','Inter',-apple-system,sans-serif}
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{height:100%;overflow:hidden;font-family:var(--font);background:var(--bg);color:var(--t1);font-size:14px;-webkit-font-smoothing:antialiased}
+::selection{background:var(--accent-soft);color:var(--t1)}
+::-webkit-scrollbar{width:8px;height:8px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--b2);border-radius:4px}
+::-webkit-scrollbar-thumb:hover{background:var(--b3)}
+button{font-family:inherit;color:inherit}
+input,textarea{font-family:inherit}
+a{color:var(--accent);text-decoration:none}
+a:hover{color:var(--accent-strong);text-decoration:underline}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:var(--rs)}
+.mono{font-family:var(--mono)}
+
+/* ── LOADING ── */
+#loading{position:fixed;inset:0;background:var(--bg);z-index:9999;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;transition:opacity .4s}
+#loading.hide{opacity:0;pointer-events:none}
+.spin{width:32px;height:32px;border:2.5px solid var(--b2);border-top-color:var(--accent);border-radius:50%;animation:spin .7s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes fadein{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+@keyframes fadeinR{from{opacity:0;transform:translateX(6px)}to{opacity:1;transform:none}}
+@keyframes pulse{0%,100%{stroke-width:2;stroke-opacity:.95}50%{stroke-width:5;stroke-opacity:.3}}
+@keyframes shimmer{0%{background-position:-200% 0}100%{background-position:200% 0}}
+
+/* ── APP SHELL ── */
+#app{height:100vh;display:flex;flex-direction:column}
+
+/* HEADER */
+.hdr{min-height:56px;flex-shrink:0;display:flex;align-items:center;justify-content:space-between;padding:8px var(--s4);background:var(--surf1);border-bottom:1px solid var(--b1);position:relative;z-index:50;gap:var(--s2);flex-wrap:wrap}
+.hdr-l{display:flex;align-items:center;gap:var(--s2);min-width:0}
+.hdr-logo{width:30px;height:30px;border-radius:8px;background:linear-gradient(135deg,#4a90d9,#bc8cff);display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;color:#fff;box-shadow:0 2px 8px rgba(88,166,255,.3);flex-shrink:0}
+.hdr-ttl{font-size:.92rem;font-weight:600;letter-spacing:-.01em;line-height:1.2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.hdr-sub{font-size:.68rem;color:var(--t3);margin-top:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.hdr-r{display:flex;gap:var(--s1);align-items:center;flex-wrap:wrap}
+@media(max-width:640px){.hdr-sub{display:none}}
+
+/* BADGES */
+.bdg{display:inline-flex;align-items:center;gap:4px;padding:3px 10px;border-radius:var(--rx);font-size:.7rem;font-weight:600;border:1px solid;transition:all var(--tr);white-space:nowrap}
+.bdg-streak{background:#ff7eb622;color:var(--pink);border-color:#ff7eb644}
+.bdg-day{background:var(--accent-soft);color:var(--accent);border-color:#58a6ff44}
+.bdg-pct{background:var(--amber-soft);color:var(--amber);border-color:#d2992244}
+.bdg-dim{background:#8b949e15;color:var(--t2);border-color:#8b949e22}
+.bdg-green{background:var(--green-soft);color:var(--green);border-color:#3fb95044}
+.db-dot{width:6px;height:6px;border-radius:50%;background:var(--t3);transition:all .4s}
+.db-dot.on{background:var(--green);box-shadow:0 0 6px var(--green)}
+
+/* HEADER BUTTONS */
+.h-btn{background:var(--surf2);border:1px solid var(--b1);color:var(--t2);border-radius:var(--rm);padding:6px 12px;font-size:.72rem;font-weight:600;cursor:pointer;transition:all var(--tr);display:inline-flex;align-items:center;gap:5px}
+.h-btn:hover{background:var(--surf3);color:var(--t1);border-color:var(--b3)}
+.h-btn.icon{width:32px;height:32px;padding:0;justify-content:center}
+.h-btn.lang{font-family:var(--mono);font-size:.7rem;letter-spacing:.04em}
+
+/* TABS */
+.tabs{flex-shrink:0;display:flex;background:var(--surf1);border-bottom:1px solid var(--b1);padding:0 var(--s4);gap:2px;overflow-x:auto;overflow-y:hidden;scrollbar-width:none}
+.tabs::-webkit-scrollbar{display:none}
+.tab{padding:11px 16px;background:none;border:none;border-bottom:2px solid transparent;color:var(--t2);font-size:.82rem;font-weight:500;cursor:pointer;transition:all var(--tr);display:inline-flex;align-items:center;gap:6px;line-height:1;white-space:nowrap;flex-shrink:0}
+.tab:hover{color:var(--t1)}
+.tab.on{color:var(--accent);border-bottom-color:var(--accent);font-weight:600}
+.tab .tab-ico{font-size:.95rem}
+
+/* PANES — flex:1 lets them take remaining vertical space; each wrapper handles its own scroll */
+.pane{flex:1 1 0;min-height:0;animation:fadein .22s ease}
+
+/* ──────── TODAY PANE ──────── */
+.today-wrap{overflow-y:auto;overflow-x:hidden;padding:var(--s4) var(--s4) var(--s5)}
+.today-body{max-width:880px;margin:0 auto;display:flex;flex-direction:column;gap:var(--s3)}
+.card{background:var(--surf1);border:1px solid var(--b1);border-radius:var(--rl);padding:var(--s3) var(--s4);transition:border-color var(--tr)}
+.card:hover{border-color:var(--b2)}
+.card-lg{padding:var(--s4) var(--s4)}
+.card-ttl{font-size:.68rem;font-weight:600;color:var(--t3);text-transform:uppercase;letter-spacing:.08em;margin-bottom:var(--s2);display:flex;align-items:center;gap:6px}
+.card-ttl .ttl-ico{font-size:.95rem}
+
+/* greeting card */
+.greet{display:flex;align-items:center;gap:var(--s4);background:linear-gradient(135deg,#0f141b,#1a1c2e);border:1px solid var(--b1);border-radius:var(--rl);padding:var(--s4);position:relative;overflow:hidden}
+.greet::before{content:'';position:absolute;top:-30%;right:-10%;width:240px;height:240px;background:radial-gradient(circle,#58a6ff1c,transparent 70%);pointer-events:none}
+.greet::after{content:'';position:absolute;bottom:-40%;left:30%;width:200px;height:200px;background:radial-gradient(circle,#bc8cff1a,transparent 70%);pointer-events:none}
+.greet-ring{flex-shrink:0;position:relative}
+.greet-ring svg{display:block;transform:rotate(-90deg)}
+.greet-pct{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:1.1rem;font-weight:700;color:var(--t1);letter-spacing:-.02em}
+.greet-pct small{font-size:.65rem;font-weight:500;color:var(--t3);margin-left:1px}
+.greet-info{flex:1;min-width:0;position:relative;z-index:1}
+.greet-hi{font-size:1.3rem;font-weight:700;letter-spacing:-.02em;margin-bottom:2px}
+.greet-date{font-size:.85rem;color:var(--t2);margin-bottom:var(--s2)}
+.greet-meta{display:flex;gap:var(--s2);flex-wrap:wrap}
+
+/* focus card */
+.focus{background:var(--surf1);border:1px solid var(--b1);border-radius:var(--rl);overflow:hidden}
+.focus-hd{padding:var(--s3) var(--s4);border-bottom:1px solid var(--b1);display:flex;align-items:center;justify-content:space-between;gap:var(--s2)}
+.focus-week{font-size:.7rem;color:var(--t3);text-transform:uppercase;letter-spacing:.06em;font-weight:600}
+.focus-week b{color:var(--t1);font-weight:700;margin-left:6px}
+.focus-body{padding:var(--s4)}
+.focus-task{font-size:1rem;line-height:1.55;font-weight:500;color:var(--t1);margin-bottom:var(--s3)}
+.focus-actions{display:flex;align-items:center;gap:var(--s2);flex-wrap:wrap}
+.bigchk{display:inline-flex;align-items:center;gap:10px;padding:10px 16px;background:var(--surf2);border:1px solid var(--b1);border-radius:var(--rm);cursor:pointer;font-size:.85rem;font-weight:500;transition:all var(--tr)}
+.bigchk:hover{background:var(--surf3);border-color:var(--accent)}
+.bigchk.done{background:var(--green-soft);border-color:#3fb95066;color:var(--green)}
+.bigchk-box{width:18px;height:18px;border-radius:5px;border:2px solid var(--b3);display:inline-flex;align-items:center;justify-content:center;transition:all var(--tr)}
+.bigchk.done .bigchk-box{background:var(--green);border-color:var(--green);color:#0a0d12}
+.book-chip{display:inline-flex;align-items:center;gap:5px;padding:8px 13px;background:var(--surf2);border:1px solid var(--b1);border-radius:var(--rm);font-size:.78rem;color:var(--t2);text-decoration:none;transition:all var(--tr);font-weight:500}
+.book-chip:hover{background:var(--surf3);color:var(--accent);border-color:var(--accent);text-decoration:none}
+
+/* two-column row */
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:var(--s3)}
+@media(max-width:780px){.row2{grid-template-columns:1fr}}
+
+/* pomodoro */
+.pom{display:flex;align-items:center;gap:var(--s4)}
+.pom-clock{flex-shrink:0;position:relative;width:120px;height:120px}
+.pom-clock svg{transform:rotate(-90deg)}
+.pom-time{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;font-family:var(--mono);font-size:1.55rem;font-weight:600;letter-spacing:-.02em}
+.pom-time small{font-size:.6rem;color:var(--t3);font-family:var(--font);margin-top:2px;text-transform:uppercase;letter-spacing:.1em;font-weight:500}
+.pom-right{flex:1;min-width:0;display:flex;flex-direction:column;gap:var(--s2)}
+.pom-btns{display:flex;gap:6px}
+.btn{padding:8px 14px;border-radius:var(--rm);border:1px solid var(--b1);background:var(--surf2);color:var(--t1);font-size:.78rem;font-weight:500;cursor:pointer;transition:all var(--tr);display:inline-flex;align-items:center;gap:5px}
+.btn:hover{background:var(--surf3);border-color:var(--b3)}
+.btn-prim{background:var(--accent);border-color:var(--accent);color:#0a0d12;font-weight:600}
+.btn-prim:hover{background:var(--accent-strong);border-color:var(--accent-strong);color:#0a0d12}
+.btn-danger{background:var(--red-soft);border-color:#f8514944;color:var(--red)}
+.btn-danger:hover{background:var(--red);color:#0a0d12;border-color:var(--red)}
+.btn-sm{padding:5px 10px;font-size:.72rem}
+.pom-presets{display:flex;gap:4px}
+.pom-pre{padding:4px 9px;background:var(--surf2);border:1px solid var(--b1);border-radius:var(--rs);font-size:.7rem;color:var(--t2);cursor:pointer;transition:all var(--tr)}
+.pom-pre:hover{color:var(--t1)}
+.pom-pre.on{background:var(--accent-soft);color:var(--accent);border-color:var(--accent)}
+.pom-stat{font-size:.72rem;color:var(--t3)}
+
+/* note */
+.qnote{display:flex;flex-direction:column;gap:var(--s1)}
+textarea.ta{width:100%;min-height:88px;background:var(--surf2);border:1px solid var(--b1);border-radius:var(--rm);padding:10px 12px;color:var(--t1);font-size:.85rem;line-height:1.55;resize:vertical;transition:border-color var(--tr);font-family:inherit}
+textarea.ta:focus{outline:none;border-color:var(--accent)}
+textarea.ta::placeholder{color:var(--t4)}
+.ta-bar{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.saved-tag{font-size:.68rem;color:var(--green);opacity:0;transition:opacity .3s}
+.saved-tag.on{opacity:1}
+
+/* this week mini */
+.wkmini{display:flex;align-items:center;gap:var(--s3)}
+.wkmini-left{flex:1;min-width:0}
+.wkmini-ttl{font-size:.88rem;font-weight:600;margin-bottom:4px}
+.wkmini-meta{font-size:.72rem;color:var(--t3);margin-bottom:var(--s2)}
+.wkmini-bar{height:6px;background:var(--surf3);border-radius:3px;overflow:hidden}
+.wkmini-fill{height:100%;background:linear-gradient(90deg,var(--accent),var(--purple));border-radius:3px;transition:width .6s cubic-bezier(.4,0,.2,1)}
+
+/* ──────── GRAPH PANE ──────── */
+.graph-wrap{display:flex;flex-direction:row;position:relative;overflow:hidden}
+.graph-toolbar{position:absolute;top:var(--s3);left:var(--s3);right:var(--s3);display:flex;gap:var(--s2);align-items:center;z-index:20;flex-wrap:wrap}
+.gsearch{position:relative;flex:1;max-width:280px}
+.gsearch input{width:100%;background:var(--surf1);border:1px solid var(--b1);border-radius:var(--rm);padding:8px 12px 8px 32px;color:var(--t1);font-size:.82rem;transition:border-color var(--tr)}
+.gsearch input:focus{outline:none;border-color:var(--accent);background:var(--surf2)}
+.gsearch input::placeholder{color:var(--t4)}
+.gsearch-ico{position:absolute;left:11px;top:50%;transform:translateY(-50%);color:var(--t3);font-size:.85rem;pointer-events:none}
+.gfilters{display:flex;gap:4px;flex-wrap:wrap}
+.gfilter{padding:6px 11px;background:var(--surf1);border:1px solid var(--b1);border-radius:var(--rx);color:var(--t2);font-size:.72rem;font-weight:500;cursor:pointer;transition:all var(--tr);display:inline-flex;align-items:center;gap:5px}
+.gfilter:hover{color:var(--t1);background:var(--surf2)}
+.gfilter.on{background:var(--accent-soft);color:var(--accent);border-color:var(--accent)}
+.gfilter-dot{width:7px;height:7px;border-radius:50%}
+
+.gcanvas{flex:1;position:relative;overflow:hidden;background:var(--bg)}
+.gcanvas::before{content:'';position:absolute;inset:0;background-image:radial-gradient(circle,#30363d 1px,transparent 1px);background-size:32px 32px;opacity:.25;pointer-events:none}
+.gcanvas svg{width:100%;height:100%;cursor:grab;display:block}
+.gcanvas svg:active{cursor:grabbing}
+
+.glegend{position:absolute;bottom:var(--s3);left:var(--s3);z-index:10;background:var(--surf1);border:1px solid var(--b1);border-radius:var(--rm);padding:10px 12px;font-size:.72rem;backdrop-filter:blur(6px)}
+.leg{display:flex;align-items:center;gap:7px;margin:3px 0;color:var(--t2);font-weight:500}
+.leg-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
+.gctrl{position:absolute;bottom:var(--s3);right:var(--s3);z-index:10;display:flex;flex-direction:column;gap:4px}
+.gbtn{width:32px;height:32px;background:var(--surf1);border:1px solid var(--b1);color:var(--t2);border-radius:var(--rm);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:.95rem;transition:all var(--tr)}
+.gbtn:hover{background:var(--surf2);color:var(--t1);border-color:var(--accent)}
+
+.glink{fill:none;stroke:#3d444d;stroke-opacity:.55;stroke-width:1.6;transition:stroke .2s,stroke-opacity .2s,stroke-width .2s}
+.glink.lit{stroke:var(--accent);stroke-opacity:1;stroke-width:2.3}
+.glink.prereq{stroke:var(--amber);stroke-opacity:.9;stroke-width:2.1}
+.gnode{cursor:pointer}
+.gnode .ring{transition:r .18s,opacity .18s,filter .18s,stroke-width .18s}
+.gnode .core{transition:r .18s,opacity .18s}
+.gnode text{font-family:var(--font);font-size:10.5px;fill:#e6edf3;pointer-events:none;text-anchor:middle;font-weight:700;letter-spacing:.01em;paint-order:stroke fill;stroke:#0a0d12;stroke-width:3px;stroke-linejoin:round}
+.gnode:hover .ring{filter:url(#glow);stroke-width:2.4}
+.gnode.dim .ring,.gnode.dim .core,.gnode.dim text{opacity:.08}
+.gnode.sel .ring{animation:pulse 2s ease infinite}
+
+/* graph info panel */
+.gipanel{width:0;flex-shrink:0;background:var(--surf1);border-left:1px solid var(--b1);overflow:hidden;transition:width var(--trL);position:relative}
+.gipanel.on{width:320px}
+.gipanel-in{width:320px;padding:var(--s4);height:100%;overflow-y:auto}
+.gipanel-x{position:absolute;top:12px;right:12px;width:26px;height:26px;background:none;border:1px solid var(--b1);border-radius:var(--rs);color:var(--t3);cursor:pointer;font-size:.85rem;display:flex;align-items:center;justify-content:center;transition:all var(--tr)}
+.gipanel-x:hover{background:var(--surf2);color:var(--t1);border-color:var(--accent)}
+.gipanel-ttl{font-size:1.05rem;font-weight:700;letter-spacing:-.01em;margin-bottom:var(--s1);padding-right:30px}
+.gipanel-meta{display:flex;gap:4px;flex-wrap:wrap;margin-bottom:var(--s3)}
+.gipanel-desc{font-size:.85rem;color:var(--t2);line-height:1.65;margin-bottom:var(--s3)}
+.gipanel-book{padding:10px 12px;background:var(--surf2);border-radius:var(--rm);border-left:3px solid var(--accent);font-size:.78rem;margin-bottom:var(--s3);display:flex;align-items:center;justify-content:space-between;gap:10px}
+.gipanel-book b{color:var(--t1)}
+.gipanel-tool{display:flex;gap:6px;margin-bottom:var(--s3);flex-wrap:wrap}
+.gipanel-lbl{font-size:.68rem;color:var(--t3);text-transform:uppercase;letter-spacing:.07em;font-weight:600;margin-bottom:var(--s1)}
+.relchips{display:flex;flex-wrap:wrap;gap:4px}
+.relchip{padding:4px 10px;background:var(--surf2);border:1px solid var(--b1);border-radius:var(--rx);font-size:.72rem;cursor:pointer;transition:all var(--tr);color:var(--t2);font-weight:500}
+.relchip:hover{background:var(--surf3);transform:translateY(-1px)}
+
+/* ──────── ROADMAP PANE ──────── */
+.rm-wrap{overflow-y:auto;overflow-x:hidden;padding:var(--s4)}
+.rm-body{max-width:880px;margin:0 auto;display:flex;flex-direction:column;gap:var(--s1)}
+.ph-bar{display:flex;align-items:center;gap:var(--s2);padding:10px 14px;border-radius:var(--rm);margin:var(--s3) 0 var(--s1);font-weight:700;font-size:.85rem}
+.ph-bar .ph-pct{margin-left:auto;font-weight:500;font-size:.72rem;opacity:.9}
+.ph-bar .ph-ico{font-size:1.05rem}
+.wkc{background:var(--surf1);border:1px solid var(--b1);border-radius:var(--rl);overflow:hidden;transition:border-color var(--tr),box-shadow var(--tr)}
+.wkc:hover{border-color:var(--b2)}
+.wkc.now{border-color:#58a6ff66;box-shadow:0 0 0 1px #58a6ff22}
+.wkc.done{opacity:.72}
+.wkc-hd{padding:12px 16px;cursor:pointer;display:flex;align-items:center;gap:12px;user-select:none;transition:background var(--tr)}
+.wkc-hd:hover{background:var(--surf2)}
+.wkn{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.78rem;font-weight:700;flex-shrink:0;border:1.8px solid;font-family:var(--mono)}
+.wki{flex:1;min-width:0}
+.wkttl{font-size:.92rem;font-weight:600;line-height:1.3}
+.wkdt{font-size:.72rem;color:var(--t3);margin-top:2px}
+.wkr{display:flex;align-items:center;gap:10px;flex-shrink:0}
+.wkmb{width:60px;height:4px;background:var(--surf3);border-radius:2px;overflow:hidden}
+.wkmf{height:100%;border-radius:2px;transition:width .5s ease}
+.wkp{font-size:.72rem;color:var(--t3);min-width:28px;text-align:right;font-family:var(--mono);font-weight:500}
+.wkarr{color:var(--t3);font-size:.95rem;transition:transform var(--tr)}
+.wkc.open .wkarr{transform:rotate(90deg)}
+.wkb{display:none;padding:0 16px 14px;border-top:1px solid var(--b1)}
+.wkc.open .wkb{display:block;animation:fadein .25s ease}
+.seclb{font-size:.68rem;color:var(--t3);text-transform:uppercase;letter-spacing:.07em;font-weight:600;margin:14px 0 7px;display:flex;align-items:center;justify-content:space-between;gap:8px}
+
+.dtbl{width:100%;border-collapse:collapse;font-size:.8rem}
+.dtbl tr{transition:background .12s}
+.dtbl tr:hover{background:var(--surf2)}
+.dtbl td{padding:7px 8px;border-bottom:1px solid var(--b1);color:var(--t2);vertical-align:top;line-height:1.5}
+.dtbl tr.today td{background:var(--accent-soft)}
+.dtbl tr.tdone td{color:var(--t3)}
+.dtbl tr.tdone .dtask{text-decoration:line-through}
+.dtbl td:nth-child(1){width:30px;padding-right:0}
+.dtbl td:nth-child(2){width:96px;color:var(--t3);font-family:var(--mono);font-size:.74rem;white-space:nowrap}
+.dtbl tr:last-child td{border-bottom:none}
+.dchk{width:16px;height:16px;border-radius:4px;border:1.6px solid var(--b3);background:var(--surf2);cursor:pointer;display:inline-flex;align-items:center;justify-content:center;color:#0a0d12;transition:all var(--tr);flex-shrink:0;margin-top:2px}
+.dchk:hover{border-color:var(--accent)}
+.dchk.on{background:var(--green);border-color:var(--green)}
+
+.tasks{display:flex;flex-direction:column;gap:2px}
+.tk{display:flex;align-items:flex-start;gap:9px;padding:6px 8px;border-radius:var(--rs);cursor:pointer;transition:background .12s}
+.tk:hover{background:var(--surf2)}
+.tk input{width:15px;height:15px;accent-color:var(--green);cursor:pointer;flex-shrink:0;margin-top:2px}
+.tk label{cursor:pointer;font-size:.85rem;color:var(--t2);line-height:1.5;transition:color .2s}
+.tk.done label{text-decoration:line-through;color:var(--t3)}
+.note-prev{padding:10px 12px;background:var(--surf2);border-radius:var(--rm);border:1px solid var(--b1);font-size:.85rem;line-height:1.6;color:var(--t2);margin-top:8px;min-height:40px}
+.note-prev p{margin:.4em 0}
+.note-prev p:first-child{margin-top:0}
+.note-prev p:last-child{margin-bottom:0}
+.note-prev code{background:var(--surf3);padding:1px 5px;border-radius:3px;font-family:var(--mono);font-size:.85em}
+.note-prev pre{background:var(--surf3);padding:8px 10px;border-radius:var(--rs);overflow-x:auto;margin:.5em 0}
+.note-prev ul,.note-prev ol{margin:.5em 0 .5em 1.2em}
+.note-prev h1,.note-prev h2,.note-prev h3{font-size:1em;font-weight:700;margin:.6em 0 .3em;color:var(--t1)}
+.dchap{display:inline-flex;align-items:center;gap:4px;padding:1px 6px;background:var(--surf3);border:1px solid var(--b1);border-radius:4px;color:var(--accent);font-size:.74rem;font-weight:500;text-decoration:none;margin-left:4px;transition:all var(--tr)}
+.dchap:hover{background:var(--accent-soft);text-decoration:none}
+
+/* ──────── PROGRESS PANE ──────── */
+.pg-wrap{overflow-y:auto;overflow-x:hidden;padding:var(--s4)}
+.pg-body{max-width:780px;margin:0 auto;display:flex;flex-direction:column;gap:var(--s3)}
+.overall{background:linear-gradient(135deg,var(--surf1),#1a1c2e);border:1px solid var(--b1);border-radius:var(--rl);padding:var(--s4);position:relative;overflow:hidden}
+.overall::before{content:'';position:absolute;top:-50px;right:-50px;width:200px;height:200px;background:radial-gradient(circle,#58a6ff11,transparent 70%);pointer-events:none}
+.ov-top{display:flex;align-items:flex-end;gap:var(--s3);margin-bottom:var(--s3);position:relative}
+.ov-num{font-size:3.2rem;font-weight:800;letter-spacing:-.04em;line-height:1;background:linear-gradient(135deg,var(--accent),var(--purple));-webkit-background-clip:text;background-clip:text;color:transparent}
+.ov-r{padding-bottom:6px;flex:1}
+.ov-lbl{font-size:.85rem;color:var(--t3);margin-bottom:2px}
+.ov-tasks{font-size:.9rem;color:var(--t1);font-weight:500}
+.ov-bar{height:8px;background:var(--surf3);border-radius:4px;overflow:hidden}
+.ov-fill{height:100%;border-radius:4px;background:linear-gradient(90deg,#58a6ff,#bc8cff,#d29922,#f85149,#3fb950);transition:width .8s cubic-bezier(.4,0,.2,1)}
+.ov-foot{display:flex;gap:var(--s3);margin-top:var(--s3);padding-top:var(--s3);border-top:1px solid var(--b1)}
+.ov-stat{flex:1}
+.ov-stat-v{font-size:1.3rem;font-weight:700;color:var(--t1);letter-spacing:-.02em}
+.ov-stat-l{font-size:.7rem;color:var(--t3);text-transform:uppercase;letter-spacing:.05em;margin-top:1px}
+
+/* heatmap */
+.heatcard{background:var(--surf1);border:1px solid var(--b1);border-radius:var(--rl);padding:var(--s3) var(--s4)}
+.heat-grid{display:flex;gap:3px;margin-top:var(--s2);overflow-x:auto;padding-bottom:6px}
+.heat-col{display:flex;flex-direction:column;gap:3px;flex-shrink:0}
+.heat-cell{width:14px;height:14px;border-radius:3px;background:#21262d;transition:transform .12s,box-shadow .12s;cursor:default}
+.heat-cell.future{background:#161b22;border:1px dashed #2d333b}
+.heat-cell.l1{background:#0e4429}
+.heat-cell.l2{background:#006d32}
+.heat-cell.l3{background:#26a641}
+.heat-cell.l4{background:#39d353;box-shadow:0 0 6px #39d35355}
+.heat-cell:hover{transform:scale(1.4);z-index:5;box-shadow:0 0 8px rgba(0,0,0,.6)}
+.heat-foot{display:flex;align-items:center;justify-content:space-between;margin-top:var(--s2);font-size:.7rem;color:var(--t3)}
+.heat-scale{display:flex;align-items:center;gap:5px}
+.heat-scale-cells{display:inline-flex;gap:2px;margin:0 4px}
+
+.prog-card{background:var(--surf1);border:1px solid var(--b1);border-radius:var(--rl);padding:14px 16px;transition:border-color var(--tr)}
+.prog-card:hover{border-color:var(--b2)}
+.prog-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;gap:8px}
+.prog-name{font-size:.85rem;font-weight:500}
+.prog-cnt{font-size:.72rem;color:var(--t2);font-family:var(--mono)}
+.pbar{height:6px;background:var(--surf3);border-radius:3px;overflow:hidden}
+.pbfill{height:100%;border-radius:3px;transition:width .6s cubic-bezier(.4,0,.2,1)}
+.motiv{padding:14px 16px;background:var(--surf1);border:1px solid #3fb95044;border-radius:var(--rl);border-left:3px solid var(--green);font-size:.85rem;color:var(--t2);line-height:1.65}
+
+/* ──────── LIBRARY PANE ──────── */
+.lib-wrap{overflow-y:auto;overflow-x:hidden;padding:var(--s4)}
+.lib-body{max-width:1000px;margin:0 auto;display:flex;flex-direction:column;gap:var(--s4)}
+.lib-banner{padding:10px 14px;background:var(--amber-soft);border:1px solid #d2992244;border-radius:var(--rm);font-size:.76rem;color:var(--amber);display:flex;align-items:flex-start;gap:8px}
+.lib-banner b{color:var(--t1)}
+.lib-sec-ttl{font-size:.78rem;font-weight:700;color:var(--t1);text-transform:uppercase;letter-spacing:.06em;display:flex;align-items:center;gap:8px;margin-bottom:var(--s2);padding-bottom:8px;border-bottom:1px solid var(--b1)}
+.lib-sec-ttl .ico{font-size:1rem}
+
+.book-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:var(--s2)}
+.bcard{background:var(--surf1);border:1px solid var(--b1);border-radius:var(--rl);padding:var(--s3);display:flex;flex-direction:column;gap:8px;transition:all var(--tr);position:relative;overflow:hidden}
+.bcard:hover{border-color:var(--accent);transform:translateY(-2px);box-shadow:var(--sh1)}
+.bcard-top{display:flex;align-items:flex-start;gap:12px}
+.bcover{width:54px;height:72px;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:1.4rem;flex-shrink:0;box-shadow:0 4px 12px rgba(0,0,0,.4)}
+.bcard-info{flex:1;min-width:0}
+.bttl{font-size:.92rem;font-weight:700;line-height:1.3;margin-bottom:3px;color:var(--t1)}
+.bauthor{font-size:.74rem;color:var(--t3);line-height:1.4}
+.bmeta{display:flex;gap:4px;flex-wrap:wrap}
+.bbtns{display:flex;gap:6px;margin-top:auto}
+.bbtns .btn{flex:1;justify-content:center}
+
+.slide-list{display:flex;flex-direction:column;gap:4px}
+.slide-row{display:flex;align-items:center;gap:12px;padding:10px 14px;background:var(--surf1);border:1px solid var(--b1);border-radius:var(--rm);transition:all var(--tr)}
+.slide-row:hover{border-color:var(--accent);background:var(--surf2)}
+.slide-ch{width:36px;height:36px;background:var(--accent-soft);color:var(--accent);font-family:var(--mono);font-weight:700;font-size:.78rem;border-radius:var(--rs);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.slide-ttl{flex:1;font-size:.88rem;font-weight:500}
+.exams-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:var(--s2)}
+.ex-card{padding:18px 16px;background:var(--surf1);border:1px solid var(--b1);border-radius:var(--rl);text-align:center;cursor:pointer;transition:all var(--tr);text-decoration:none;color:inherit;display:flex;flex-direction:column;align-items:center;gap:6px}
+.ex-card:hover{border-color:var(--accent);transform:translateY(-2px);box-shadow:var(--sh1);text-decoration:none;color:inherit}
+.ex-card .ex-ico{font-size:1.7rem;margin-bottom:4px}
+.ex-card .ex-lbl{font-size:.88rem;font-weight:600;color:var(--t1)}
+.ex-card .ex-sub{font-size:.7rem;color:var(--t3)}
+
+/* SETTINGS DRAWER */
+.drawer-bg{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:200;opacity:0;pointer-events:none;transition:opacity var(--trL);backdrop-filter:blur(2px)}
+.drawer-bg.on{opacity:1;pointer-events:auto}
+.drawer{position:fixed;top:0;right:0;height:100vh;width:380px;max-width:100vw;background:var(--surf1);border-left:1px solid var(--b1);z-index:201;transform:translateX(100%);transition:transform var(--trL);display:flex;flex-direction:column;box-shadow:-8px 0 32px rgba(0,0,0,.4)}
+.drawer.on{transform:translateX(0)}
+.drawer-hd{display:flex;align-items:center;justify-content:space-between;padding:16px 20px;border-bottom:1px solid var(--b1);flex-shrink:0}
+.drawer-ttl{font-size:.95rem;font-weight:700}
+.drawer-body{flex:1;overflow-y:auto;padding:20px}
+.drawer-foot{padding:14px 20px;border-top:1px solid var(--b1);font-size:.7rem;color:var(--t3);text-align:center;flex-shrink:0}
+.set-grp{margin-bottom:24px}
+.set-lbl{font-size:.7rem;color:var(--t3);text-transform:uppercase;letter-spacing:.07em;font-weight:600;margin-bottom:8px}
+.set-desc{font-size:.74rem;color:var(--t3);margin-top:4px;line-height:1.5}
+.lang-toggle{display:flex;background:var(--surf2);border:1px solid var(--b1);border-radius:var(--rm);padding:3px;gap:2px}
+.lang-toggle button{flex:1;padding:8px 12px;background:none;border:none;color:var(--t2);font-size:.8rem;font-weight:600;cursor:pointer;border-radius:6px;transition:all var(--tr)}
+.lang-toggle button.on{background:var(--accent);color:#0a0d12}
+.pom-pick{display:flex;gap:4px}
+.pom-pick button{flex:1;padding:8px;background:var(--surf2);border:1px solid var(--b1);border-radius:var(--rm);color:var(--t2);font-size:.78rem;font-weight:600;cursor:pointer;transition:all var(--tr)}
+.pom-pick button.on{background:var(--accent-soft);color:var(--accent);border-color:var(--accent)}
+.set-btn-row{display:flex;flex-direction:column;gap:8px}
+.danger-zone{padding:14px;background:var(--red-soft);border:1px solid #f8514944;border-radius:var(--rm)}
+.danger-ttl{font-size:.78rem;color:var(--red);font-weight:700;margin-bottom:6px}
+.danger-desc{font-size:.74rem;color:var(--t2);line-height:1.55;margin-bottom:10px}
+.confirm-input{width:100%;background:var(--surf2);border:1px solid var(--b1);border-radius:var(--rs);padding:6px 10px;color:var(--t1);font-size:.8rem;margin-bottom:8px}
+.confirm-input:focus{outline:none;border-color:var(--red)}
+
+/* TOOLTIP */
+#tip{position:fixed;pointer-events:none;z-index:500;background:var(--surf3);border:1px solid var(--b3);border-radius:var(--rm);padding:8px 12px;font-size:.76rem;color:var(--t1);box-shadow:var(--sh2);opacity:0;transition:opacity .12s;max-width:240px;line-height:1.5}
+#tip.on{opacity:1}
+#tip .tip-meta{font-size:.68rem;color:var(--t3);margin-top:3px}
+
+/* TOAST */
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--surf3);border:1px solid var(--b3);border-radius:var(--rm);padding:10px 16px;font-size:.82rem;color:var(--t1);box-shadow:var(--sh2);opacity:0;pointer-events:none;transition:all .25s;z-index:600;display:flex;align-items:center;gap:8px}
+.toast.on{opacity:1;transform:translateX(-50%) translateY(0)}
+
+/* utility */
+.gap8{display:flex;gap:8px;align-items:center}
+.muted{color:var(--t3)}
+.right{margin-left:auto}
+.copy-mini{padding:4px 7px;background:transparent;border:1px solid var(--b1);border-radius:4px;color:var(--t3);font-size:.66rem;cursor:pointer;transition:all var(--tr)}
+.copy-mini:hover{color:var(--accent);border-color:var(--accent)}
+</style>
+</head>
+<body>
+
+<div id="loading">
+  <div class="spin"></div>
+  <span style="color:var(--t3);font-size:.85rem">Loading dashboard…</span>
+</div>
+
+<div id="app"></div>
+<div id="tip"></div>
+
+<script>
+// ════════════════════════════════════════════════════════════════════
+// i18n DICTIONARY
+// ════════════════════════════════════════════════════════════════════
+const T = {
+  vi: {
+    'app.title':'Bảng điều khiển ML',
+    'app.subtitle':'Vo Duc · FPT University · AI Major',
+    'tab.today':'Hôm nay','tab.graph':'Sơ đồ kiến thức','tab.roadmap':'Lộ trình','tab.progress':'Tiến độ','tab.library':'Thư viện',
+    'hdr.streak':'{n} ngày liên tiếp','hdr.day':'Ngày {n}/84','hdr.done':'{n}% xong','hdr.toEN':'EN','hdr.toVI':'VI',
+    'hdr.settings':'Cài đặt','hdr.dbReady':'CSDL sẵn sàng',
+    'today.hi':'Chào, Đức 👋','today.date':'{wd}, {d}','today.day':'Ngày {n}/84 · {phase}',
+    'today.notStarted':'Lộ trình bắt đầu sau {n} ngày','today.startDate':'Bắt đầu: T2 25/5/2026',
+    'today.finished':'🎉 Bạn đã hoàn tất 12 tuần! Sẵn sàng nghiên cứu.',
+    'today.focusTtl':'Nhiệm vụ hôm nay','today.weekN':'Tuần {n}',
+    'today.markDone':'Đánh dấu đã hoàn thành','today.markedDone':'Đã hoàn thành ✓',
+    'today.openBook':'Mở sách','today.openSlide':'Mở slide',
+    'today.pomTtl':'Bộ đếm thời gian học','today.pomStart':'Bắt đầu','today.pomPause':'Tạm dừng','today.pomReset':'Đặt lại',
+    'today.pomSessions':'{n} phiên hôm nay','today.pomDone':'Hết giờ! Nghỉ ngơi nhé 🌿',
+    'today.noteTtl':'Ghi chú nhanh','today.notePh':'Ghi lại điều bạn học, câu hỏi, hay cảm xúc hôm nay…',
+    'today.noteSave':'Lưu ghi chú','today.noteSaved':'✓ Đã lưu',
+    'today.weekTtl':'Tuần hiện tại','today.weekBtn':'Đi tới Lộ trình →',
+    'today.weekTasks':'{d}/{t} nhiệm vụ',
+    'today.streakNone':'Bắt đầu chuỗi học của bạn','today.streakOne':'Bạn vừa bắt đầu — duy trì nhé!','today.streakMany':'🔥 {n} ngày liên tiếp',
+    'graph.searchPh':'Tìm khái niệm…','graph.all':'Tất cả','graph.found':'Nền tảng','graph.p1':'Phase 1 — Toán','graph.p2':'Phase 2 — Code','graph.p3':'Phase 3 — ML','graph.goal':'Mục tiêu',
+    'graph.zoomIn':'Phóng to','graph.zoomOut':'Thu nhỏ','graph.zoomReset':'Vừa khung','graph.legend':'Chú thích',
+    'graph.connected':'Khái niệm liên quan','graph.showPrereq':'Hiện chuỗi tiên quyết','graph.hidePrereq':'Ẩn chuỗi tiên quyết',
+    'graph.openBook':'Mở sách tham khảo','graph.week':'Tuần','graph.prereq':'Tiên quyết',
+    'rm.dailyPlan':'Kế hoạch hàng ngày','rm.checklist':'Danh sách kiểm tra','rm.notes':'Ghi chú','rm.notesEdit':'Sửa','rm.notesPreview':'Xem trước',
+    'rm.notesPh':'Viết ghi chú dạng Markdown… (vd: **đậm**, *nghiêng*, # tiêu đề, - danh sách)','rm.openBook':'Mở sách','rm.openSlide':'Slide bài giảng',
+    'rm.done':'Hoàn thành','rm.now':'Đang học','rm.upcoming':'Sắp tới','rm.pastDue':'Đã qua',
+    'pg.overall':'Tổng tiến độ','pg.overallSub':'{d}/{t} nhiệm vụ đã làm','pg.streakLbl':'Liên tiếp','pg.daysLbl':'Đã học','pg.minLbl':'Tổng giờ','pg.tasksLbl':'Nhiệm vụ',
+    'pg.heatTtl':'Bản đồ hoạt động (12 tuần)','pg.heatSub':'Mỗi ô là 1 ngày · Đậm hơn = học nhiều hơn',
+    'pg.scaleLess':'Ít','pg.scaleMore':'Nhiều','pg.byPhase':'Theo giai đoạn','pg.byWeek':'Theo tuần','pg.motiv':'Lời nhắn',
+    'pg.cur':'Tuần hiện tại','pg.tasks':'{d}/{t}',
+    'motiv.0':'Bạn đang ở vạch xuất phát. Tuần 1 khởi động ngày 25/5 — Hình học Giải tích + Phân rã Ma trận. Bắt đầu thôi! 🚀',
+    'motiv.1':'Khởi đầu tốt! Bạn đang ở Phase 1 — xây lại nền tảng Toán. Mỗi khái niệm nắm vững hôm nay sẽ tiết kiệm hàng giờ về sau.',
+    'motiv.2':'Đã đi nửa chặng! Bạn đang ở Phase 2 — biến Toán thành Code. Các công thức đang trở thành chương trình thật.',
+    'motiv.3':'Sắp tới rồi! Phase 3 — bạn đang tư duy như một nhà nghiên cứu. Đích đến rất gần.',
+    'motiv.4':'🎓 Hoàn thành! Bạn đã sẵn sàng nghiên cứu. Chọn một bài báo, tái hiện nó, rồi bắt đầu dự án của riêng bạn.',
+    'lib.banner':'Mẹo: Nếu link không mở được trong trình duyệt, hãy dùng nút "Sao chép đường dẫn" và dán vào trình quản lý tệp.',
+    'lib.books':'Sách','lib.slides':'Slide bài giảng (MAI391)','lib.exams':'Đề thi & Bài tập',
+    'lib.open':'Mở','lib.copyPath':'Sao chép đường dẫn','lib.pathCopied':'✓ Đã sao chép',
+    'lib.pages':'{n} trang','lib.langEN':'EN','lib.langVI':'VI','lib.phase':'Phase {p}','lib.phaseAll':'Tất cả phase',
+    'lib.examPapers':'Đề thi cũ','lib.examPapersSub':'Tham khảo cấu trúc đề','lib.examQ':'Câu hỏi mẫu','lib.examQSub':'Q1–Q26','lib.hw':'Bài tập về nhà','lib.hwSub':'Bài đã nộp',
+    'set.ttl':'Cài đặt','set.lang':'Ngôn ngữ','set.langDesc':'Chuyển đổi tiếng Việt và tiếng Anh. Mọi tab và nhãn sẽ cập nhật ngay.',
+    'set.pom':'Thời lượng Pomodoro','set.pomDesc':'Mặc định 25 phút theo phương pháp Pomodoro cổ điển.',
+    'set.data':'Dữ liệu','set.export':'Xuất CSDL (.db)','set.exportDesc':'Tải xuống tệp SQLite chứa toàn bộ tiến độ và ghi chú.',
+    'set.import':'Nhập CSDL (.db)','set.importDesc':'Khôi phục từ tệp đã xuất. Sẽ ghi đè dữ liệu hiện tại.',
+    'set.danger':'Khu vực nguy hiểm','set.reset':'Đặt lại tiến độ','set.resetDesc':'Xóa tất cả nhiệm vụ đã đánh dấu, ghi chú, lịch sử học. Không thể hoàn tác.',
+    'set.resetConfirm':'Gõ "XOA" để xác nhận','set.resetWord':'XOA','set.resetGo':'Đặt lại tất cả',
+    'set.about':'Về ứng dụng','set.aboutTxt':'Bảng điều khiển học tập cá nhân · Phiên bản 2.0 · Chỉ chạy trong trình duyệt, không cần máy chủ.',
+    'common.save':'Lưu','common.cancel':'Hủy','common.close':'Đóng','common.yes':'Có','common.no':'Không','common.ok':'Đồng ý',
+    'phase.1':'Phase 1 — Tái dựng nền Toán','phase.2':'Phase 2 — Toán thành Code','phase.3':'Phase 3 — Nền móng nghiên cứu ML',
+    'phase.1.short':'Toán','phase.2.short':'Code','phase.3.short':'ML',
+    'lang.label':'🌐','toast.imported':'Đã nhập CSDL','toast.reset':'Đã đặt lại tiến độ','toast.copied':'Đã sao chép',
+    'today.welcome':'Bạn còn {n} ngày để chuẩn bị. Hãy xem trước Lộ trình →',
+  },
+  en: {
+    'app.title':'ML Research Dashboard',
+    'app.subtitle':'Vo Duc · FPT University · AI Major',
+    'tab.today':'Today','tab.graph':'Knowledge Graph','tab.roadmap':'Roadmap','tab.progress':'Progress','tab.library':'Library',
+    'hdr.streak':'{n}-day streak','hdr.day':'Day {n}/84','hdr.done':'{n}% done','hdr.toEN':'EN','hdr.toVI':'VI',
+    'hdr.settings':'Settings','hdr.dbReady':'Database ready',
+    'today.hi':'Hello, Đức 👋','today.date':'{wd}, {d}','today.day':'Day {n}/84 · {phase}',
+    'today.notStarted':'Roadmap starts in {n} days','today.startDate':'Start: Mon May 25, 2026',
+    'today.finished':'🎉 You finished all 12 weeks! Research ready.',
+    'today.focusTtl':"Today's focus",'today.weekN':'Week {n}',
+    'today.markDone':'Mark as done','today.markedDone':'Done for today ✓',
+    'today.openBook':'Open book','today.openSlide':'Open slide',
+    'today.pomTtl':'Pomodoro timer','today.pomStart':'Start','today.pomPause':'Pause','today.pomReset':'Reset',
+    'today.pomSessions':'{n} sessions today','today.pomDone':"Time's up — take a break 🌿",
+    'today.noteTtl':'Quick note','today.notePh':"What did you learn today? Questions, thoughts, observations…",
+    'today.noteSave':'Save note','today.noteSaved':'✓ Saved',
+    'today.weekTtl':'This week','today.weekBtn':'Go to Roadmap →',
+    'today.weekTasks':'{d}/{t} tasks',
+    'today.streakNone':'Start your streak today','today.streakOne':'Just started — keep going!','today.streakMany':'🔥 {n}-day streak',
+    'graph.searchPh':'Search concept…','graph.all':'All','graph.found':'Foundation','graph.p1':'Phase 1 — Math','graph.p2':'Phase 2 — Code','graph.p3':'Phase 3 — ML','graph.goal':'Goal',
+    'graph.zoomIn':'Zoom in','graph.zoomOut':'Zoom out','graph.zoomReset':'Fit to view','graph.legend':'Legend',
+    'graph.connected':'Connected concepts','graph.showPrereq':'Show prerequisites','graph.hidePrereq':'Hide prerequisites',
+    'graph.openBook':'Open reference','graph.week':'Week','graph.prereq':'Prerequisite',
+    'rm.dailyPlan':'Daily plan','rm.checklist':'Checklist','rm.notes':'Notes','rm.notesEdit':'Edit','rm.notesPreview':'Preview',
+    'rm.notesPh':'Write notes in Markdown… (e.g., **bold**, *italic*, # heading, - list)','rm.openBook':'Open book','rm.openSlide':'Lecture slide',
+    'rm.done':'Done','rm.now':'In progress','rm.upcoming':'Upcoming','rm.pastDue':'Past',
+    'pg.overall':'Overall progress','pg.overallSub':'{d} of {t} tasks done','pg.streakLbl':'Streak','pg.daysLbl':'Days active','pg.minLbl':'Hours','pg.tasksLbl':'Tasks',
+    'pg.heatTtl':'Activity heatmap (12 weeks)','pg.heatSub':'Each cell is one day · Darker = more done',
+    'pg.scaleLess':'Less','pg.scaleMore':'More','pg.byPhase':'By phase','pg.byWeek':'By week','pg.motiv':'Message',
+    'pg.cur':'Current week','pg.tasks':'{d}/{t}',
+    'motiv.0':"You're at the starting line. Week 1 begins May 25 — Analytic Geometry + Matrix Decomposition. Let's go! 🚀",
+    'motiv.1':"Good start! You're in Phase 1 — rebuilding your math foundations. Every concept mastered now saves hours later.",
+    'motiv.2':"Halfway through! You're in Phase 2 — turning math into code. The formulas are becoming real programs.",
+    'motiv.3':"Almost there! Phase 3 — you're thinking like a researcher. The finish line is close.",
+    'motiv.4':'🎓 Complete! You are research-ready. Pick a paper, reproduce it, and launch your own research.',
+    'lib.banner':"Tip: If a link doesn't open in your browser, use the \"Copy path\" button and paste into a file manager.",
+    'lib.books':'Books','lib.slides':'Lecture slides (MAI391)','lib.exams':'Exams & Homework',
+    'lib.open':'Open','lib.copyPath':'Copy path','lib.pathCopied':'✓ Copied',
+    'lib.pages':'{n} pages','lib.langEN':'EN','lib.langVI':'VI','lib.phase':'Phase {p}','lib.phaseAll':'All phases',
+    'lib.examPapers':'Past exam papers','lib.examPapersSub':'Reference for exam format','lib.examQ':'Sample questions','lib.examQSub':'Q1–Q26','lib.hw':'Homework','lib.hwSub':'Submitted work',
+    'set.ttl':'Settings','set.lang':'Language','set.langDesc':'Switch between Vietnamese and English. All tabs and labels update immediately.',
+    'set.pom':'Pomodoro duration','set.pomDesc':'Default is 25 minutes following the classic Pomodoro technique.',
+    'set.data':'Data','set.export':'Export database (.db)','set.exportDesc':'Download a SQLite file with all progress and notes.',
+    'set.import':'Import database (.db)','set.importDesc':'Restore from an exported file. Current data will be overwritten.',
+    'set.danger':'Danger zone','set.reset':'Reset progress','set.resetDesc':'Erases all checked tasks, notes, and study history. Cannot be undone.',
+    'set.resetConfirm':'Type "DELETE" to confirm','set.resetWord':'DELETE','set.resetGo':'Reset everything',
+    'set.about':'About','set.aboutTxt':'Personal study dashboard · v2.0 · Runs entirely in your browser, no server.',
+    'common.save':'Save','common.cancel':'Cancel','common.close':'Close','common.yes':'Yes','common.no':'No','common.ok':'OK',
+    'phase.1':'Phase 1 — Math Reconstruction','phase.2':'Phase 2 — Math to Code','phase.3':'Phase 3 — ML Research Foundation',
+    'phase.1.short':'Math','phase.2.short':'Code','phase.3.short':'ML',
+    'lang.label':'🌐','toast.imported':'Database imported','toast.reset':'Progress reset','toast.copied':'Copied',
+    'today.welcome':'{n} days until you start. Preview the Roadmap →',
+  }
+};
+const WD_VI=['CN','T2','T3','T4','T5','T6','T7'];
+const WD_EN=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+const MO_EN=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+function fmtDate(d, lang){
+  const wd = (lang==='vi'?WD_VI:WD_EN)[d.getDay()];
+  if(lang==='vi') return `${wd}, ${d.getDate()}/${d.getMonth()+1}/${d.getFullYear()}`;
+  return `${wd}, ${MO_EN[d.getMonth()]} ${d.getDate()}, ${d.getFullYear()}`;
+}
+function fmtShortDate(d, lang){
+  if(lang==='vi') return `${(lang==='vi'?WD_VI:WD_EN)[d.getDay()]} ${d.getDate()}/${d.getMonth()+1}`;
+  return `${WD_EN[d.getDay()]} ${MO_EN[d.getMonth()]} ${d.getDate()}`;
+}
+function isoDate(d){const z=n=>String(n).padStart(2,'0');return `${d.getFullYear()}-${z(d.getMonth()+1)}-${z(d.getDate())}`;}
+
+// ════════════════════════════════════════════════════════════════════
+// DATA — Knowledge Graph
+// ════════════════════════════════════════════════════════════════════
+const GCH={found:'#58a6ff',w14:'#bc8cff',p2:'#d29922',p3:'#f85149',goal:'#3fb950'};
+
+const NODES=[
+  {id:'LA', lbl:'Linear\nAlgebra', g:'found',wk:0,book:'Prerequisite',
+    desc:{vi:'Ngôn ngữ của ML. Vector, ma trận, tích vô hướng — mọi thứ khác đều phụ thuộc vào nền này.',
+          en:'The language of ML. Vectors, matrices, dot products — everything else depends on this.'}},
+  {id:'CAL', lbl:'Calculus', g:'found',wk:0,book:'Prerequisite',
+    desc:{vi:'Đạo hàm và tích phân. Toán học của sự thay đổi — thiết yếu cho việc huấn luyện dựa trên gradient.',
+          en:'Derivatives and integrals. The math of change — essential for gradient-based training.'}},
+  {id:'PRB', lbl:'Probability', g:'found',wk:0,book:'Prerequisite',
+    desc:{vi:'Sự không chắc chắn và ngẫu nhiên. Mọi mô hình ML đều dựa trên giả định xác suất.',
+          en:'Uncertainty and randomness. All ML models make probabilistic assumptions.'}},
+  {id:'NRM', lbl:'Norms &\nInner Prod.', g:'w14',wk:1,book:'MML Ch3',
+    desc:{vi:'Đo độ dài, góc, độ tương đồng giữa các vector. Nền tảng cho các thuật toán ML dựa trên khoảng cách.',
+          en:'Measure vector length, angle, similarity. Foundation of distance-based ML algorithms.'}},
+  {id:'ORT', lbl:'Orthogonality &\nProjections', g:'w14',wk:1,book:'MML Ch3',
+    desc:{vi:'Vector vuông góc, cơ sở trực chuẩn, và phép chiếu. Hình học cốt lõi đằng sau PCA và hồi quy.',
+          en:'Perpendicular vectors, orthonormal bases, and projections. Core geometry behind PCA and regression.'}},
+  {id:'EIG', lbl:'Eigenvalues\n& Vectors', g:'w14',wk:1,book:'MML Ch4',
+    desc:{vi:'Các hướng mà ma trận kéo giãn hoặc nén. Cốt lõi của PCA, SVD, và phân tích ổn định.',
+          en:'Directions a matrix stretches or compresses. Core of PCA, SVD, and stability analysis.'}},
+  {id:'SVD', lbl:'SVD', g:'w14',wk:1,book:'MML Ch4',
+    desc:{vi:'Phân rã giá trị suy biến — phép phân rã ma trận quan trọng nhất. Dùng trong PCA, nén dữ liệu, hệ gợi ý.',
+          en:'Singular Value Decomposition — most important matrix factorization. Used in PCA, compression, recommender systems.'}},
+  {id:'GRD', lbl:'Gradients', g:'w14',wk:2,book:'MML Ch5',
+    desc:{vi:'Đạo hàm trong không gian nhiều chiều. Trỏ về hướng tăng nhanh nhất của hàm số.',
+          en:'The multi-dimensional derivative. Points in the direction of steepest ascent of a function.'}},
+  {id:'BP', lbl:'Back-\npropagation', g:'w14',wk:2,book:'MML Ch5',
+    desc:{vi:'Tính gradient hiệu quả bằng quy tắc dây chuyền áp dụng ngược qua mạng nơ-ron.',
+          en:'Efficient gradient computation via chain rule applied backwards through a network.'}},
+  {id:'GD', lbl:'Gradient\nDescent', g:'w14',wk:2,book:'MML Ch7',
+    desc:{vi:'Động cơ của huấn luyện ML. Lặp lại cập nhật tham số để tối thiểu hóa hàm mất mát.',
+          en:'The engine of ML training. Iteratively update parameters to minimize loss.'}},
+  {id:'BAY', lbl:"Bayes'\nTheorem", g:'w14',wk:3,book:'MML Ch6',
+    desc:{vi:'P(A|B)=P(B|A)P(A)/P(B). Nền tảng của ML Bayesian và suy luận xác suất.',
+          en:'P(A|B)=P(B|A)P(A)/P(B). The foundation of Bayesian ML and probabilistic reasoning.'}},
+  {id:'GAU', lbl:'Gaussian\nDistrib.', g:'w14',wk:3,book:'MML Ch6',
+    desc:{vi:'Đường cong chuông. Xuất hiện ở khắp nơi: mô hình nhiễu, phân phối tiên nghiệm, phân phối dữ liệu.',
+          en:'The bell curve. Appears everywhere: noise models, priors, and data distributions.'}},
+  {id:'MLE', lbl:'MLE', g:'w14',wk:3,book:'MML Ch6',
+    desc:{vi:'Ước lượng hợp lý cực đại: tìm tham số giải thích dữ liệu quan sát tốt nhất.',
+          en:'Maximum Likelihood Estimation: find parameters that best explain observed data.'}},
+  {id:'COV', lbl:'Covariance\nMatrix', g:'w14',wk:3,book:'MML Ch6',
+    desc:{vi:'Nắm bắt mối quan hệ tuyến tính giữa các chiều. Trung tâm của PCA và mô hình Gaussian.',
+          en:'Captures linear relationships between dimensions. Central to PCA and Gaussian models.'}},
+  {id:'LR', lbl:'Linear\nRegression', g:'w14',wk:4,book:'MML Ch9',
+    desc:{vi:'Mô hình ML đơn giản nhất. Kết nối đại số tuyến tính, giải tích, và xác suất trong một công thức.',
+          en:'The simplest ML model. Connects linear algebra, calculus, and probability in one formula.'}},
+  {id:'PCA', lbl:'PCA', g:'w14',wk:4,book:'MML Ch10',
+    desc:{vi:'Giảm số chiều trong khi bảo toàn phương sai. Dùng SVD + phép chiếu trực giao.',
+          en:'Reduce dimensions while preserving variance. Uses SVD + orthogonal projections.'}},
+  {id:'NP', lbl:'NumPy\nCode', g:'p2',wk:5,book:'d2l Ch2',
+    desc:{vi:'Phase 2 bắt đầu. Cài đặt SVD và phân rã trị riêng bằng Python — Toán trở thành Code.',
+          en:'Phase 2 starts. Implement SVD and eigendecomposition in Python — math becomes code.'}},
+  {id:'SCR', lbl:'From-Scratch\nCoding', g:'p2',wk:6,book:'ML Cơ Bản',
+    desc:{vi:'Xây dựng gradient descent, Linear Regression, PCA, và Naive Bayes từ Python/NumPy thuần.',
+          en:'Build gradient descent, Linear Regression, PCA, and Naive Bayes from raw Python/NumPy.'}},
+  {id:'LGR', lbl:'Logistic\nRegression', g:'p3',wk:9,book:'ML Cơ Bản',
+    desc:{vi:'Sigmoid + cross-entropy để phân loại. Nền tảng của lớp đầu ra trong mạng nơ-ron.',
+          en:'Sigmoid + cross-entropy for classification. Foundation of neural network output layers.'}},
+  {id:'SVM', lbl:'SVM', g:'p3',wk:9,book:'ML Cơ Bản',
+    desc:{vi:'Bộ phân loại lề cực đại. Hiệu quả cho tập dữ liệu nhỏ và không gian chiều cao.',
+          en:'Maximum margin classifier. Effective for small datasets and high-dimensional spaces.'}},
+  {id:'EVL', lbl:'Model\nEvaluation', g:'p3',wk:10,book:'d2l Ch4',
+    desc:{vi:'Chia train/val/test, cross-validation, F1, ROC-AUC. Không thể thiếu trong nghiên cứu.',
+          en:'Train/val/test splits, cross-validation, F1, ROC-AUC. Non-negotiable for research.'}},
+  {id:'REG', lbl:'Regularization\nL1/L2', g:'p3',wk:10,book:'d2l Ch4',
+    desc:{vi:'Phạt độ phức tạp để tránh overfitting. L1=thưa thớt, L2=trọng số nhỏ.',
+          en:'Penalize complexity to prevent overfitting. L1=sparsity, L2=small weights.'}},
+  {id:'NN', lbl:'Neural\nNetworks', g:'p3',wk:11,book:'DL Cơ Bản',
+    desc:{vi:'Các lớp xếp chồng với hàm kích hoạt phi tuyến. Bộ xấp xỉ hàm phổ quát.',
+          en:'Stacked layers with non-linear activations. Universal function approximators.'}},
+  {id:'CNN', lbl:'CNN', g:'p3',wk:12,book:'DL Cơ Bản',
+    desc:{vi:'Mạng nơ-ron tích chập. Tối tân cho các bài toán nghiên cứu trên ảnh.',
+          en:'Convolutional Neural Networks. State-of-the-art for image-based research tasks.'}},
+  {id:'RDY', lbl:'Research\nReady ✓', g:'goal',wk:12,book:'All books',
+    desc:{vi:'Bạn có thể đọc bài báo ML, hiểu toán học, cài đặt mô hình, và chạy thí nghiệm.',
+          en:'You can read ML papers, understand the math, implement models, and run experiments.'}},
+];
+
+const EDGES=[
+  ['LA','NRM'],['LA','EIG'],['LA','COV'],['CAL','GRD'],['CAL','GD'],
+  ['PRB','BAY'],['PRB','GAU'],['PRB','COV'],
+  ['NRM','ORT'],['ORT','PCA'],['ORT','LR'],['ORT','SVM'],
+  ['EIG','SVD'],['EIG','PCA'],['EIG','NP'],['SVD','PCA'],['SVD','NP'],
+  ['GRD','BP'],['GRD','GD'],['BP','NN'],
+  ['GD','LR'],['GD','LGR'],['GD','NN'],
+  ['BAY','SCR'],['GAU','MLE'],['GAU','SVM'],['MLE','LR'],['COV','PCA'],
+  ['LR','LGR'],['LR','EVL'],['LR','SCR'],['PCA','SCR'],['NP','SCR'],['SCR','LGR'],
+  ['LGR','EVL'],['LGR','NN'],['LGR','RDY'],['SVM','RDY'],
+  ['EVL','REG'],['EVL','RDY'],['REG','RDY'],['NN','CNN'],['NN','RDY'],['CNN','RDY'],
+];
+
+const PC=['','#58a6ff','#d29922','#f85149'];
+
+// ════════════════════════════════════════════════════════════════════
+// DATA — BOOKS / SLIDES / EXAMS
+// ════════════════════════════════════════════════════════════════════
+const BOOKS=[
+  {key:'MML', title:{vi:'Toán cho Học máy',en:'Mathematics for Machine Learning'},
+   author:'Deisenroth · Faisal · Ong (Cambridge UP, 2020)', lang:'EN', phases:[1],
+   color:'linear-gradient(135deg,#4a90d9,#2563eb)', emoji:'📐',
+   file:'./02_Books/Mathematics_for_Machine_Learning_MML.pdf'},
+  {key:'D2L', title:{vi:'Đắm mình vào Học Sâu',en:'Dive into Deep Learning'},
+   author:'Zhang · Lipton · Li · Smola', lang:'EN', phases:[2,3],
+   color:'linear-gradient(135deg,#10b981,#059669)', emoji:'🌊',
+   file:'./02_Books/Dive_into_Deep_Learning_d2l.pdf'},
+  {key:'MLCB', title:{vi:'Machine Learning Cơ Bản',en:'Machine Learning Cơ Bản'},
+   author:'Vũ Hữu Tiệp', lang:'VI', phases:[2,3],
+   color:'linear-gradient(135deg,#f59e0b,#d97706)', emoji:'📘',
+   file:'./02_Books/ML_Co_Ban_VuHuuTiep_Color.pdf'},
+  {key:'DLCB', title:{vi:'Deep Learning Cơ Bản',en:'Deep Learning Cơ Bản'},
+   author:'Nguyễn Thanh Tuấn', lang:'VI', phases:[3],
+   color:'linear-gradient(135deg,#ef4444,#dc2626)', emoji:'📕',
+   file:'./02_Books/Deep_Learning_Co_Ban_VI_nttuan8.pdf'},
+  {key:'DLVI', title:{vi:'Học Sâu — Bản dịch Goodfellow',en:'Deep Learning — VI translation (Goodfellow)'},
+   author:'Goodfellow et al. · Vietnamese translation', lang:'VI', phases:[1,2,3],
+   color:'linear-gradient(135deg,#8b5cf6,#7c3aed)', emoji:'🧠',
+   file:'./02_Books/DeepLearning_VI_Translation/DeepLearning_VI_Chap01-05.pdf'},
+];
+
+const SLIDES=[
+  {ch:3, title:{vi:'Hình học giải tích',en:'Analytic Geometry'}, file:'./01_Lecture_Slides/Ch03_Analytic_Geometry.pdf'},
+  {ch:4, title:{vi:'Phân rã ma trận',en:'Matrix Decomposition'}, file:'./01_Lecture_Slides/Ch04_Matrix_Decomposition.pdf'},
+  {ch:5, title:{vi:'Giải tích vector',en:'Vector Calculus'}, file:'./01_Lecture_Slides/Ch05_Vector_Calculus.pdf'},
+  {ch:6, title:{vi:'Xác suất và phân phối',en:'Probability and Distribution'}, file:'./01_Lecture_Slides/Ch06_Probability_and_Distribution.pdf'},
+  {ch:7, title:{vi:'Tối ưu liên tục',en:'Continuous Optimization'}, file:'./01_Lecture_Slides/Ch07_Continuous_Optimization.pdf'},
+  {ch:9, title:{vi:'Hồi quy tuyến tính',en:'Linear Regression'}, file:'./01_Lecture_Slides/Ch09_Linear_Regression.pdf'},
+  {ch:10, title:{vi:'Giảm chiều · PCA',en:'Dimensionality Reduction · PCA'}, file:'./01_Lecture_Slides/Ch10_Dimensionality_Reduction_PCA.pdf'},
+];
+
+const EXAMS=[
+  {key:'papers', icon:'📋', lblKey:'lib.examPapers', subKey:'lib.examPapersSub', file:'./03_Exercises/Exam_Papers/'},
+  {key:'qs',     icon:'❓', lblKey:'lib.examQ',     subKey:'lib.examQSub',     file:'./03_Exercises/Exam_Questions/'},
+  {key:'hw',     icon:'✏️', lblKey:'lib.hw',        subKey:'lib.hwSub',        file:'./03_Exercises/Homework/'},
+];
+
+// ════════════════════════════════════════════════════════════════════
+// DATA — WEEKS (bilingual)
+// ════════════════════════════════════════════════════════════════════
+function _d(vi, en){return {vi, en};}
+const WEEKS=[
+  {n:1, ph:1, book:'MML',
+   title:_d('Hình học giải tích + Phân rã ma trận','Analytic Geometry + Matrix Decomposition'),
+   dates:_d('25/5 – 31/5/2026','May 25 – May 31, 2026'),
+   days:[
+    {d:_d('T2 25/5','Mon May 25'), task:_d('Đọc MML Ch3.1–3.3: Norm, Tích vô hướng, Khoảng cách','Read MML Ch3.1–3.3: Norms, Inner Products, Distances'), ref:'MML#3'},
+    {d:_d('T3 26/5','Tue May 26'), task:_d('Đọc MML Ch3.4–3.8: Trực giao, Cơ sở trực chuẩn, Phép chiếu','Read MML Ch3.4–3.8: Orthogonality, Orthonormal Basis, Projections'), ref:'MML#3'},
+    {d:_d('T4 27/5','Wed May 27'), task:_d('Đọc MML Ch4.1–4.2: Định thức, Vết, Trị riêng','Read MML Ch4.1–4.2: Determinant, Trace, Eigenvalues'), ref:'MML#4'},
+    {d:_d('T5 28/5','Thu May 28'), task:_d('Đọc MML Ch4.4: Phân rã trị riêng — làm ví dụ bằng tay','Read MML Ch4.4: Eigendecomposition — work examples by hand'), ref:'MML#4'},
+    {d:_d('T6 29/5','Fri May 29'), task:_d('Đọc MML Ch4.5–4.6: SVD + Xấp xỉ ma trận (quan trọng nhất!)','Read MML Ch4.5–4.6: SVD + Matrix Approximation (most important!)'), ref:'MML#4'},
+    {d:_d('T7 30/5','Sat May 30'), task:_d('Ôn lại Ch3+Ch4. Làm lại các ví dụ khó.','Review Ch3+Ch4. Redo any examples you struggled with.'), ref:'MML'},
+    {d:_d('CN 31/5','Sun May 31'), task:_d('Tự kiểm tra: viết các công thức chính từ trí nhớ.','Self-test: write key formulas from memory.'), ref:'MML'},
+   ],
+   tasks:[
+    _d('Đọc xong Ch3','Ch3 reading complete'),
+    _d('Đọc xong Ch4','Ch4 reading complete'),
+    _d('Hiểu ý nghĩa hình học của SVD','SVD geometric meaning understood'),
+    _d('Tự kiểm tra xong vào Chủ Nhật','Self-test completed Sunday'),
+   ]},
+  {n:2, ph:1, book:'MML',
+   title:_d('Giải tích vector + Tối ưu liên tục','Vector Calculus + Continuous Optimization'),
+   dates:_d('1/6 – 7/6/2026','Jun 1 – Jun 7, 2026'),
+   days:[
+    {d:_d('T2 1/6','Mon Jun 1'), task:_d('Đọc MML Ch5.1–5.2: Đạo hàm riêng, Gradient','Read MML Ch5.1–5.2: Partial derivatives, Gradients'), ref:'MML#5'},
+    {d:_d('T3 2/6','Tue Jun 2'), task:_d('Đọc MML Ch5.3–5.4: Jacobian, Gradient của ma trận','Read MML Ch5.3–5.4: Jacobian, Gradients of matrices'), ref:'MML#5'},
+    {d:_d('T4 3/6','Wed Jun 3'), task:_d('Đọc MML Ch5.6: Backpropagation + Auto Differentiation','Read MML Ch5.6: Backpropagation + Auto Differentiation'), ref:'MML#5'},
+    {d:_d('T5 4/6','Thu Jun 4'), task:_d('Đọc MML Ch7.1: Gradient Descent — tự suy ra công thức cập nhật','Read MML Ch7.1: Gradient Descent — derive update rule on paper'), ref:'MML#7'},
+    {d:_d('T6 5/6','Fri Jun 5'), task:_d('Đọc MML Ch7.2–7.3: Nhân tử Lagrange, Tối ưu lồi','Read MML Ch7.2–7.3: Lagrange Multipliers, Convex Optimization'), ref:'MML#7'},
+    {d:_d('T7 6/6','Sat Jun 6'), task:_d('Ôn lại Ch5+Ch7. Làm lại các phép suy diễn khó.','Review Ch5+Ch7. Redo difficult derivations.'), ref:'MML'},
+    {d:_d('CN 7/6','Sun Jun 7'), task:_d('Tự kiểm tra: suy ra quy tắc dây chuyền cho mạng 3 lớp từ trí nhớ','Self-test: derive chain rule for a 3-layer network from memory'), ref:'MML'},
+   ],
+   tasks:[
+    _d('Đọc xong Ch5','Ch5 reading complete'),
+    _d('Đọc xong Ch7','Ch7 reading complete'),
+    _d('Hiểu quy tắc dây chuyền của backprop','Backprop chain rule understood'),
+    _d('Suy ra công thức GD trên giấy','GD update rule derived on paper'),
+   ]},
+  {n:3, ph:1, book:'MML',
+   title:_d('Xác suất & Phân phối','Probability & Distribution'),
+   dates:_d('8/6 – 14/6/2026','Jun 8 – Jun 14, 2026'),
+   days:[
+    {d:_d('T2 8/6','Mon Jun 8'), task:_d('Đọc MML Ch6.1: Không gian xác suất','Read MML Ch6.1: Probability Space'), ref:'MML#6'},
+    {d:_d('T3 9/6','Tue Jun 9'), task:_d('Đọc MML Ch6.2: Xác suất rời rạc & liên tục','Read MML Ch6.2: Discrete & Continuous Probabilities'), ref:'MML#6'},
+    {d:_d('T4 10/6','Wed Jun 10'), task:_d('Đọc MML Ch6.3: Quy tắc tổng, tích, Định lý Bayes','Read MML Ch6.3: Sum Rule, Product Rule, Bayes Theorem'), ref:'MML#6'},
+    {d:_d('T5 11/6','Thu Jun 11'), task:_d('Đọc MML Ch6.4: Thống kê tóm tắt, Độc lập, Hiệp phương sai','Read MML Ch6.4: Summary Statistics, Independence, Covariance'), ref:'MML#6'},
+    {d:_d('T6 12/6','Fri Jun 12'), task:_d('Đọc MML Ch6.5: Phân phối Gaussian','Read MML Ch6.5: Gaussian Distribution'), ref:'MML#6'},
+    {d:_d('T7 13/6','Sat Jun 13'), task:_d('Đọc bản dịch DL Ch3 (Xác suất) — giải thích bằng tiếng Việt','Read DL VI Translation Ch3 (Probability) — Vietnamese explanation'), ref:'MML'},
+    {d:_d('CN 14/6','Sun Jun 14'), task:_d('Tự kiểm tra: phát biểu Bayes, áp dụng vào bài toán xét nghiệm y tế','Self-test: state Bayes theorem, apply to a medical test'), ref:'MML'},
+   ],
+   tasks:[
+    _d('Đọc xong Ch6','Ch6 reading complete'),
+    _d('Suy ra định lý Bayes trên giấy',"Bayes' theorem derived on paper"),
+    _d('Hiểu phân phối Gaussian','Gaussian distribution understood'),
+    _d('Đã đọc bản dịch DL Ch3','Vietnamese DL Translation Ch3 read'),
+   ]},
+  {n:4, ph:1, book:'MML',
+   title:_d('Hồi quy tuyến tính + PCA','Linear Regression + PCA'),
+   dates:_d('15/6 – 21/6/2026','Jun 15 – Jun 21, 2026'),
+   days:[
+    {d:_d('T2 15/6','Mon Jun 15'), task:_d('Đọc MML Ch9.1: Phát biểu bài toán','Read MML Ch9.1: Problem Formulation'), ref:'MML#9'},
+    {d:_d('T3 16/6','Tue Jun 16'), task:_d('Đọc MML Ch9.2: Ước lượng tham số, Phương trình chuẩn — suy ra!','Read MML Ch9.2: Parameter Estimation, Normal Equation — derive it!'), ref:'MML#9'},
+    {d:_d('T4 17/6','Wed Jun 17'), task:_d('Đọc MML Ch10.1–10.2: Cài đặt bài toán, Phương sai cực đại','Read MML Ch10.1–10.2: Problem Setting, Max Variance'), ref:'MML#10'},
+    {d:_d('T5 18/6','Thu Jun 18'), task:_d('Đọc MML Ch10.3–10.4: Góc nhìn chiếu, Tính eigenvector','Read MML Ch10.3–10.4: Projection Perspective, Eigenvector Computation'), ref:'MML#10'},
+    {d:_d('T6 19/6','Fri Jun 19'), task:_d('Đọc MML Ch10.5–10.6: PCA chiều cao, PCA thực hành','Read MML Ch10.5–10.6: PCA in High Dimensions, PCA in Practice'), ref:'MML#10'},
+    {d:_d('T7 20/6','Sat Jun 20'), task:_d('Ôn lại Tuần 1–4. Viết bản tóm tắt 1 trang các công thức chính.','Review Weeks 1–4. Write a one-page summary of key formulas.'), ref:'MML'},
+    {d:_d('CN 21/6','Sun Jun 21'), task:_d('Tự đánh giá Phase 1: giải thích từng chương trong 3 câu','Phase 1 self-assessment: explain each chapter in 3 sentences'), ref:'MML'},
+   ],
+   tasks:[
+    _d('Đọc xong Ch9','Ch9 reading complete'),
+    _d('Đọc xong Ch10','Ch10 reading complete'),
+    _d('Suy ra Phương trình chuẩn trên giấy','Normal Equation derived on paper'),
+    _d('Hiểu quy trình PCA đầu-cuối','PCA steps understood end-to-end'),
+    _d('Viết bản tóm tắt 1 trang Phase 1','Phase 1 one-page summary written'),
+   ]},
+  {n:5, ph:2, book:'D2L',
+   title:_d('SVD & Phân rã trị riêng bằng NumPy','SVD & Eigendecomposition in NumPy'),
+   dates:_d('22/6 – 28/6/2026','Jun 22 – Jun 28, 2026'),
+   days:[
+    {d:_d('T2 22/6','Mon Jun 22'), task:_d('Thiết lập Jupyter. NumPy cơ bản: arrays, matmul, transpose, norm','Set up Jupyter. NumPy basics: arrays, matmul, transpose, norm'), ref:'D2L'},
+    {d:_d('T3 23/6','Tue Jun 23'), task:_d('Cài đặt eigendecomp. Kiểm tra: A@v == λv cho mỗi cặp trị/vector riêng','Implement eigendecomp. Verify: A@v == λv for each eigenpair'), ref:'D2L'},
+    {d:_d('T4 24/6','Wed Jun 24'), task:_d('Cài đặt SVD. Tái dựng: U @ diag(S) @ Vt','Implement SVD. Reconstruct: U @ diag(S) @ Vt'), ref:'D2L'},
+    {d:_d('T5 25/6','Thu Jun 25'), task:_d('Xấp xỉ hạng thấp: tái dựng với top-k giá trị suy biến, vẽ lỗi vs k','Low-rank approx: reconstruct with top-k singular values, plot error vs k'), ref:'D2L'},
+    {d:_d('T6 26/6','Fri Jun 26'), task:_d('Nén ảnh: tải ảnh xám, áp SVD, hiển thị k=5,20,50,100','Image compression: load grayscale image, apply SVD, show k=5,20,50,100'), ref:'D2L'},
+    {d:_d('T7 27/6','Sat Jun 27'), task:_d('Đọc ML Cơ Bản (Vũ Hữu Tiệp) Ch1–2 để hiểu bối cảnh tiếng Việt','Read ML Cơ Bản (Vũ Hữu Tiệp) Ch1–2 for Vietnamese context'), ref:'MLCB'},
+    {d:_d('CN 28/6','Sun Jun 28'), task:_d('Dọn dẹp notebook. Thêm chú thích toán cho mỗi dòng.','Clean notebook. Add math comments explaining each line.'), ref:'D2L'},
+   ],
+   tasks:[
+    _d('Cài đặt NumPy hoạt động','NumPy setup working'),
+    _d('Kiểm tra eigendecomposition (A@v == λv)','Eigendecomposition verified (A@v == λv)'),
+    _d('SVD tái dựng ma trận chính xác','SVD reconstructs matrix correctly'),
+    _d('Hoàn tất demo nén ảnh','Image compression demo done'),
+    _d('Notebook đã dọn dẹp và chú thích','Notebook cleaned and commented'),
+   ]},
+  {n:6, ph:2, book:'D2L',
+   title:_d('Gradient Descent từ đầu','Gradient Descent from Scratch'),
+   dates:_d('29/6 – 5/7/2026','Jun 29 – Jul 5, 2026'),
+   days:[
+    {d:_d('T2 29/6','Mon Jun 29'), task:_d('GD trên 1D: f(x)=x². Xem x hội tụ về 0','GD on 1D: f(x)=x². Watch x converge to 0'), ref:'D2L'},
+    {d:_d('T3 30/6','Tue Jun 30'), task:_d('GD trên 2D: f(x,y)=x²+y². Vẽ đường mức + đường gradient','GD on 2D: f(x,y)=x²+y². Plot contour + gradient path'), ref:'D2L'},
+    {d:_d('T4 1/7','Wed Jul 1'), task:_d('Linear Regression với GD trên dữ liệu tổng hợp. Vẽ loss','Linear Regression with GD on synthetic data. Plot loss curve'), ref:'D2L'},
+    {d:_d('T5 2/7','Thu Jul 2'), task:_d('Thử lr=0.001, 0.01, 0.1, 1.0 — vẽ tất cả đường','Experiment with lr=0.001, 0.01, 0.1, 1.0 — plot all curves'), ref:'D2L'},
+    {d:_d('T6 3/7','Fri Jul 3'), task:_d('Đọc d2l Ch3. So sánh với code của bạn.','Read d2l Ch3. Compare to your implementation.'), ref:'D2L'},
+    {d:_d('T7 4/7','Sat Jul 4'), task:_d('Cài đặt mini-batch GD: shuffle → batch → update','Implement mini-batch GD: shuffle → batch → update'), ref:'D2L'},
+    {d:_d('CN 5/7','Sun Jul 5'), task:_d('Viết: khác biệt giữa batch GD, mini-batch, SGD','Write: difference between batch GD, mini-batch, SGD'), ref:'D2L'},
+   ],
+   tasks:[
+    _d('GD 1D hoạt động','GD on 1D working'),
+    _d('Đường mức 2D đã vẽ','Contour plot done'),
+    _d('Linear Regression với GD hoạt động','Linear Regression with GD working'),
+    _d('Thí nghiệm learning rate xong','Learning rate experiment done'),
+    _d('Mini-batch GD đã cài','Mini-batch GD implemented'),
+   ]},
+  {n:7, ph:2, book:'MLCB',
+   title:_d('Xác suất & Bayesian trong Code','Probability & Bayesian in Code'),
+   dates:_d('6/7 – 12/7/2026','Jul 6 – Jul 12, 2026'),
+   days:[
+    {d:_d('T2 6/7','Mon Jul 6'), task:_d('Lấy mẫu từ Gaussian. Vẽ histogram vs PDF thật','Sample from Gaussian. Plot histogram vs true PDF'), ref:'MLCB'},
+    {d:_d('T3 7/7','Tue Jul 7'), task:_d('Cài Bayes bằng số: ví dụ bộ lọc spam','Implement Bayes numerically: spam filter example'), ref:'MLCB'},
+    {d:_d('T4 8/7','Wed Jul 8'), task:_d('MLE cho Gaussian: ước lượng μ và σ từ dữ liệu thủ công','MLE for Gaussian: estimate μ and σ from data manually'), ref:'MLCB'},
+    {d:_d('T5 9/7','Thu Jul 9'), task:_d('Tính ma trận hiệp phương sai từ đầu. So sánh với np.cov','Compute covariance matrix from scratch. Compare to np.cov'), ref:'MLCB'},
+    {d:_d('T6 10/7','Fri Jul 10'), task:_d('Vẽ contour Gaussian 2D (scipy.stats.multivariate_normal)','Plot 2D Gaussian contour (scipy.stats.multivariate_normal)'), ref:'MLCB'},
+    {d:_d('T7 11/7','Sat Jul 11'), task:_d('Đọc ML Cơ Bản — chương Naive Bayes','Read ML Cơ Bản — Naive Bayes chapter'), ref:'MLCB'},
+    {d:_d('CN 12/7','Sun Jul 12'), task:_d('Dự án nhỏ: Bộ phân loại Naive Bayes từ đầu','Mini-project: Naive Bayes classifier from scratch'), ref:'MLCB'},
+   ],
+   tasks:[
+    _d('Lấy mẫu & vẽ phân phối xong','Distribution sampling & plotting done'),
+    _d('Bayes đã cài bằng số','Bayes implemented numerically'),
+    _d('MLE cho Gaussian đã làm','MLE for Gaussian done'),
+    _d('Ma trận hiệp phương sai từ đầu','Covariance matrix from scratch'),
+    _d('Naive Bayes classifier đã làm','Naive Bayes classifier done'),
+   ]},
+  {n:8, ph:2, book:'MLCB',
+   title:_d('Linear Regression & PCA bằng Python','Linear Regression & PCA in Python'),
+   dates:_d('13/7 – 19/7/2026','Jul 13 – Jul 19, 2026'),
+   days:[
+    {d:_d('T2 13/7','Mon Jul 13'), task:_d('LinReg qua Phương trình chuẩn: w = (XᵀX)⁻¹Xᵀy','LinReg via Normal Equation: w = (XᵀX)⁻¹Xᵀy'), ref:'MLCB'},
+    {d:_d('T3 14/7','Tue Jul 14'), task:_d('LinReg qua GD. So sánh hai nghiệm cạnh nhau','LinReg via GD. Compare both solutions side-by-side'), ref:'MLCB'},
+    {d:_d('T4 15/7','Wed Jul 15'), task:_d('Cài MSE và R² từ đầu. Vẽ dự đoán vs thật','Implement MSE and R² from scratch. Plot predictions vs truth'), ref:'MLCB'},
+    {d:_d('T5 16/7','Thu Jul 16'), task:_d('PCA từ đầu: center → covariance → eigendecomp → project','PCA from scratch: center → covariance → eigendecomp → project'), ref:'MLCB'},
+    {d:_d('T6 17/7','Fri Jul 17'), task:_d('Áp PCA lên Iris (4D→2D). Trực quan hóa cụm.','Apply PCA to Iris dataset (4D→2D). Visualize clusters.'), ref:'MLCB'},
+    {d:_d('T7 18/7','Sat Jul 18'), task:_d('Kiểm tra PCA của bạn vs sklearn.decomposition.PCA','Verify your PCA against sklearn.decomposition.PCA'), ref:'MLCB'},
+    {d:_d('CN 19/7','Sun Jul 19'), task:_d('Ôn Phase 2: chạy lại tất cả notebooks. Mọi thứ vẫn hoạt động?','Phase 2 review: run all notebooks. Everything working?'), ref:'MLCB'},
+   ],
+   tasks:[
+    _d('LinReg Phương trình chuẩn xong','LinReg Normal Equation done'),
+    _d('LinReg GD xong','LinReg GD done'),
+    _d('MSE + R² đã cài','MSE + R² metrics implemented'),
+    _d('PCA từ đầu hoạt động','PCA from scratch working'),
+    _d('Iris PCA trực quan hóa','Iris PCA visualized'),
+    _d('Kiểm tra vs sklearn xong','Verified vs sklearn'),
+   ]},
+  {n:9, ph:3, book:'MLCB',
+   title:_d('Logistic Regression & SVM','Logistic Regression & SVM'),
+   dates:_d('20/7 – 26/7/2026','Jul 20 – Jul 26, 2026'),
+   days:[
+    {d:_d('T2 20/7','Mon Jul 20'), task:_d('Đọc ML Cơ Bản: chương Logistic Regression','Read ML Cơ Bản: Logistic Regression chapter'), ref:'MLCB'},
+    {d:_d('T3 21/7','Tue Jul 21'), task:_d('Cài Logistic Regression từ đầu với GD','Implement Logistic Regression from scratch with GD'), ref:'MLCB'},
+    {d:_d('T4 22/7','Wed Jul 22'), task:_d('Vẽ biên quyết định trên dữ liệu 2D tổng hợp','Plot decision boundary on 2D synthetic data'), ref:'MLCB'},
+    {d:_d('T5 23/7','Thu Jul 23'), task:_d('Mở rộng đa lớp: Softmax + Cross-Entropy','Extend to multi-class: Softmax + Cross-Entropy'), ref:'MLCB'},
+    {d:_d('T6 24/7','Fri Jul 24'), task:_d('Đọc ML Cơ Bản: chương SVM','Read ML Cơ Bản: SVM chapter'), ref:'MLCB'},
+    {d:_d('T7 25/7','Sat Jul 25'), task:_d('sklearn.svm.SVC: thử kernel linear, RBF, polynomial','sklearn.svm.SVC: try kernels linear, RBF, polynomial'), ref:'MLCB'},
+    {d:_d('CN 26/7','Sun Jul 26'), task:_d('Viết: khác biệt chính giữa LogReg và SVM','Write: key difference between LogReg and SVM'), ref:'MLCB'},
+   ],
+   tasks:[
+    _d('Logistic Regression từ đầu xong','Logistic Regression from scratch done'),
+    _d('Biên quyết định đã trực quan','Decision boundary visualized'),
+    _d('Softmax đa lớp xong','Softmax multi-class done'),
+    _d('Đã hiểu khái niệm SVM','SVM concept understood'),
+    _d('Thí nghiệm sklearn SVM xong','sklearn SVM experiments done'),
+   ]},
+  {n:10, ph:3, book:'D2L',
+   title:_d('Đánh giá mô hình & Regularization','Model Evaluation & Regularization'),
+   dates:_d('27/7 – 2/8/2026','Jul 27 – Aug 2, 2026'),
+   days:[
+    {d:_d('T2 27/7','Mon Jul 27'), task:_d('Cài chia train/val/test. Hiểu data leakage','Implement train/val/test split. Understand data leakage'), ref:'D2L'},
+    {d:_d('T3 28/7','Tue Jul 28'), task:_d('Chứng minh overfitting: poly regression bậc 1 vs 10 vs 20','Demonstrate overfitting: poly regression degree 1 vs 10 vs 20'), ref:'D2L'},
+    {d:_d('T4 29/7','Wed Jul 29'), task:_d('Cài k-fold cross-validation từ đầu','Implement k-fold cross-validation from scratch'), ref:'D2L'},
+    {d:_d('T5 30/7','Thu Jul 30'), task:_d('Cài các metric: accuracy, precision, recall, F1, ROC-AUC','Implement metrics: accuracy, precision, recall, F1, ROC-AUC'), ref:'D2L'},
+    {d:_d('T6 31/7','Fri Jul 31'), task:_d('Thêm L2 regularization vào Linear Regression của bạn','Add L2 regularization to your Linear Regression'), ref:'D2L'},
+    {d:_d('T7 1/8','Sat Aug 1'), task:_d('Đọc d2l Ch4 phần regularization','Read d2l Ch4 regularization sections'), ref:'D2L'},
+    {d:_d('CN 2/8','Sun Aug 2'), task:_d('Vẽ learning curves. Chẩn đoán: overfit? underfit? vừa đúng?','Plot learning curves. Diagnose: overfit? underfit? just right?'), ref:'D2L'},
+   ],
+   tasks:[
+    _d('Chia train/val/test xong','Train/val/test split done'),
+    _d('Đã chứng minh overfitting trực quan','Overfitting demonstrated visually'),
+    _d('K-fold CV đã cài','K-fold CV implemented'),
+    _d('Tất cả metric đã cài','All metrics implemented'),
+    _d('L2 regularization đã thêm','L2 regularization added'),
+   ]},
+  {n:11, ph:3, book:'DLCB',
+   title:_d('Mạng nơ-ron & Backpropagation','Neural Networks & Backpropagation'),
+   dates:_d('3/8 – 9/8/2026','Aug 3 – Aug 9, 2026'),
+   days:[
+    {d:_d('T2 3/8','Mon Aug 3'), task:_d('Đọc DL Cơ Bản Ch1–2. Đọc d2l Ch5.1','Read DL Cơ Bản Ch1–2. Read d2l Ch5.1'), ref:'DLCB'},
+    {d:_d('T3 4/8','Tue Aug 4'), task:_d('Một nơ-ron: sigmoid(w·x+b). Huấn luyện bằng GD.','Single neuron: sigmoid(w·x+b). Train with GD.'), ref:'DLCB'},
+    {d:_d('T4 5/8','Wed Aug 5'), task:_d('Mạng 2 lớp (NumPy). Chỉ forward pass.','2-layer network (NumPy). Forward pass only.'), ref:'DLCB'},
+    {d:_d('T5 6/8','Thu Aug 6'), task:_d('Thêm backpropagation. Suy ra + cài gradient từng lớp.','Add backpropagation. Derive + implement gradients layer by layer.'), ref:'DLCB'},
+    {d:_d('T6 7/8','Fri Aug 7'), task:_d('Huấn luyện XOR. Mục tiêu ~100% accuracy.','Train on XOR. Should reach ~100% accuracy.'), ref:'DLCB'},
+    {d:_d('T7 8/8','Sat Aug 8'), task:_d('Xây lại cùng mạng bằng PyTorch autograd','Rebuild same network in PyTorch using autograd'), ref:'DLCB'},
+    {d:_d('CN 9/8','Sun Aug 9'), task:_d('So sánh output NumPy vs PyTorch — phải khớp.','Compare NumPy vs PyTorch outputs — they must match.'), ref:'DLCB'},
+   ],
+   tasks:[
+    _d('Đọc xong DL Cơ Bản Ch1-2','DL Cơ Bản Ch1-2 read'),
+    _d('Đã huấn luyện một nơ-ron','Single neuron trained'),
+    _d('Backprop 2 lớp hoạt động','2-layer backprop working'),
+    _d('XOR giải xong (~100%)','XOR solved (~100%)'),
+    _d('Phiên bản PyTorch hoạt động','PyTorch version working'),
+    _d('Output NumPy vs PyTorch khớp','NumPy vs PyTorch outputs match'),
+   ]},
+  {n:12, ph:3, book:'DLCB',
+   title:_d('CNN cơ bản & Sẵn sàng nghiên cứu','CNN Basics & Research Ready'),
+   dates:_d('10/8 – 16/8/2026','Aug 10 – Aug 16, 2026'),
+   days:[
+    {d:_d('T2 10/8','Mon Aug 10'), task:_d('Đọc DL Cơ Bản Ch4: Giới thiệu CNN','Read DL Cơ Bản Ch4: CNN introduction'), ref:'DLCB'},
+    {d:_d('T3 11/8','Tue Aug 11'), task:_d('Cài tích chập 2D từ đầu bằng NumPy','Implement 2D convolution from scratch in NumPy'), ref:'DLCB'},
+    {d:_d('T4 12/8','Wed Aug 12'), task:_d('Xây LeNet-5 trong PyTorch: Conv2d, MaxPool2d, Linear','Build LeNet-5 in PyTorch: Conv2d, MaxPool2d, Linear'), ref:'DLCB'},
+    {d:_d('T5 13/8','Thu Aug 13'), task:_d('Huấn luyện LeNet-5 trên MNIST. Mục tiêu: >98% test accuracy','Train LeNet-5 on MNIST. Target: >98% test accuracy'), ref:'DLCB'},
+    {d:_d('T6 14/8','Fri Aug 14'), task:_d('Đọc một bài báo nghiên cứu. Xác định: dữ liệu, mô hình, metric','Read one research paper. Identify: data, model, metrics'), ref:'DLCB'},
+    {d:_d('T7 15/8','Sat Aug 15'), task:_d('Áp dụng vào bài toán nghiên cứu của bạn HOẶC viết tổng kết 12 tuần','Apply to your research problem OR write 12-week journey summary'), ref:'DLCB'},
+    {d:_d('CN 16/8','Sun Aug 16'), task:_d('CUỐI: chạy lại tất cả notebooks Tuần 5–12. Sẵn sàng nghiên cứu!','FINAL: run all notebooks Weeks 5–12. Research Ready!'), ref:'DLCB'},
+   ],
+   tasks:[
+    _d('Tích chập từ đầu xong','Convolution from scratch done'),
+    _d('LeNet-5 PyTorch đã xây','LeNet-5 in PyTorch built'),
+    _d('MNIST đã huấn luyện >98%','MNIST trained >98%'),
+    _d('Đã đọc & phân tích 1 bài báo','Research paper read & analyzed'),
+    _d('Đã chạy lại tất cả notebooks 12 tuần','All 12-week notebooks verified'),
+    _d('✓ SẴN SÀNG NGHIÊN CỨU','✓ RESEARCH READY'),
+   ]},
+];
+
+// Map chapter references in daily tasks → PDF file
+function resolveRef(ref){
+  if(!ref) return null;
+  if(ref.startsWith('MML')){
+    const ch = ref.split('#')[1];
+    return {book:'MML', ch, file:BOOKS[0].file};
+  }
+  if(ref.startsWith('D2L') || ref.startsWith('d2l')){
+    return {book:'D2L', file:BOOKS[1].file};
+  }
+  if(ref.startsWith('MLCB')) return {book:'MLCB', file:BOOKS[2].file};
+  if(ref.startsWith('DLCB')) return {book:'DLCB', file:BOOKS[3].file};
+  if(ref.startsWith('SLIDE')){
+    const ch = parseInt(ref.split('#')[1]);
+    const s = SLIDES.find(x=>x.ch===ch);
+    return s ? {slide:true, ch, file:s.file} : null;
+  }
+  return null;
+}
+
+// ════════════════════════════════════════════════════════════════════
+// DATABASE (sql.js + IndexedDB persistence)
+// ════════════════════════════════════════════════════════════════════
+const START_DATE = new Date('2026-05-25T00:00:00');
+const END_DATE   = new Date('2026-08-16T23:59:59');
+
+let db = null;
+const IDB_NAME='MLDash2', IDB_STORE='data', IDB_KEY='mldb';
+function openIDB(){
+  return new Promise((res, rej)=>{
+    const r = indexedDB.open(IDB_NAME, 1);
+    r.onupgradeneeded = e => e.target.result.createObjectStore(IDB_STORE);
+    r.onsuccess = e => res(e.target.result);
+    r.onerror = rej;
+  });
+}
+async function idbGet(){
+  const idb = await openIDB();
+  return new Promise(res=>{
+    const tx = idb.transaction(IDB_STORE, 'readonly');
+    const req = tx.objectStore(IDB_STORE).get(IDB_KEY);
+    req.onsuccess = ()=> res(req.result || null);
+    req.onerror = ()=> res(null);
+  });
+}
+async function idbPut(data){
+  const idb = await openIDB();
+  return new Promise((res, rej)=>{
+    const tx = idb.transaction(IDB_STORE, 'readwrite');
+    const req = tx.objectStore(IDB_STORE).put(data, IDB_KEY);
+    req.onsuccess = res; req.onerror = rej;
+  });
+}
+async function idbClear(){
+  const idb = await openIDB();
+  return new Promise((res, rej)=>{
+    const tx = idb.transaction(IDB_STORE, 'readwrite');
+    const req = tx.objectStore(IDB_STORE).clear();
+    req.onsuccess = res; req.onerror = rej;
+  });
+}
+async function initDB(SQL){
+  const saved = await idbGet();
+  db = saved ? new SQL.Database(saved) : new SQL.Database();
+  db.run(`CREATE TABLE IF NOT EXISTS tasks(
+    week_num INTEGER, task_idx INTEGER, done INTEGER DEFAULT 0,
+    updated_at TEXT, PRIMARY KEY(week_num, task_idx))`);
+  db.run(`CREATE TABLE IF NOT EXISTS notes(
+    week_num INTEGER PRIMARY KEY, content TEXT DEFAULT '', updated_at TEXT)`);
+  db.run(`CREATE TABLE IF NOT EXISTS settings(
+    key TEXT PRIMARY KEY, value TEXT)`);
+  db.run(`CREATE TABLE IF NOT EXISTS day_log(
+    date TEXT PRIMARY KEY,
+    minutes_studied INTEGER DEFAULT 0,
+    tasks_done INTEGER DEFAULT 0,
+    note TEXT DEFAULT '')`);
+  db.run(`CREATE TABLE IF NOT EXISTS day_tasks(
+    week_num INTEGER, day_idx INTEGER, done INTEGER DEFAULT 0,
+    updated_at TEXT, PRIMARY KEY(week_num, day_idx))`);
+  await saveDB();
+}
+let _saveTimer=null;
+async function saveDB(){
+  if(!db) return;
+  clearTimeout(_saveTimer);
+  _saveTimer = setTimeout(async ()=>{
+    try{ await idbPut(db.export()); }catch(e){console.warn('save failed',e)}
+  }, 80);
+}
+
+// settings (all guarded against null db — components may call these before DB init resolves)
+function setSetting(k,v){
+  if(!db) return;
+  db.run(`INSERT OR REPLACE INTO settings(key,value) VALUES(?,?)`,[k,String(v)]);
+  saveDB();
+}
+function getSetting(k, def){
+  if(!db) return def;
+  const r = db.exec(`SELECT value FROM settings WHERE key='${k}'`);
+  return r.length && r[0].values.length ? r[0].values[0][0] : def;
+}
+
+// week tasks
+function dbGetTask(wn, ti){
+  if(!db) return false;
+  const r = db.exec(`SELECT done FROM tasks WHERE week_num=${wn} AND task_idx=${ti}`);
+  return r.length && r[0].values.length ? r[0].values[0][0]===1 : false;
+}
+function dbSetTask(wn, ti, done){
+  if(!db) return;
+  db.run(`INSERT OR REPLACE INTO tasks(week_num,task_idx,done,updated_at) VALUES(?,?,?,datetime('now'))`,[wn,ti,done?1:0]);
+  saveDB();
+}
+
+// day tasks (per day-of-week)
+function dbGetDayTask(wn, di){
+  if(!db) return false;
+  const r = db.exec(`SELECT done FROM day_tasks WHERE week_num=${wn} AND day_idx=${di}`);
+  return r.length && r[0].values.length ? r[0].values[0][0]===1 : false;
+}
+function dbSetDayTask(wn, di, done){
+  if(!db) return;
+  db.run(`INSERT OR REPLACE INTO day_tasks(week_num,day_idx,done,updated_at) VALUES(?,?,?,datetime('now'))`,[wn,di,done?1:0]);
+  saveDB();
+}
+
+// notes (week-level)
+function dbGetNote(wn){
+  if(!db) return '';
+  const r = db.exec(`SELECT content FROM notes WHERE week_num=${wn}`);
+  return r.length && r[0].values.length ? (r[0].values[0][0]||'') : '';
+}
+function dbSetNote(wn, txt){
+  if(!db) return;
+  db.run(`INSERT OR REPLACE INTO notes(week_num,content,updated_at) VALUES(?,?,datetime('now'))`,[wn,txt]);
+  saveDB();
+}
+
+// day log
+function dbGetDayLog(date){
+  if(!db) return {minutes:0, tasks:0, note:''};
+  const r = db.exec(`SELECT minutes_studied,tasks_done,note FROM day_log WHERE date='${date}'`);
+  if(r.length && r[0].values.length){
+    const [m,t,n] = r[0].values[0];
+    return {minutes:m||0, tasks:t||0, note:n||''};
+  }
+  return {minutes:0, tasks:0, note:''};
+}
+function dbAddMinutes(date, m){
+  if(!db) return;
+  const cur = dbGetDayLog(date);
+  db.run(`INSERT OR REPLACE INTO day_log(date,minutes_studied,tasks_done,note) VALUES(?,?,?,?)`,
+    [date, cur.minutes+m, cur.tasks, cur.note]);
+  saveDB();
+}
+function dbBumpTaskCount(date, delta){
+  if(!db) return;
+  const cur = dbGetDayLog(date);
+  db.run(`INSERT OR REPLACE INTO day_log(date,minutes_studied,tasks_done,note) VALUES(?,?,?,?)`,
+    [date, cur.minutes, Math.max(0,cur.tasks+delta), cur.note]);
+  saveDB();
+}
+function dbSetDayNote(date, note){
+  if(!db) return;
+  const cur = dbGetDayLog(date);
+  db.run(`INSERT OR REPLACE INTO day_log(date,minutes_studied,tasks_done,note) VALUES(?,?,?,?)`,
+    [date, cur.minutes, cur.tasks, note]);
+  saveDB();
+}
+function dbAllDayLogs(){
+  if(!db) return {};
+  const r = db.exec(`SELECT date,minutes_studied,tasks_done,note FROM day_log`);
+  if(!r.length) return {};
+  const out = {};
+  r[0].values.forEach(([d,m,t,n])=>{out[d]={minutes:m||0,tasks:t||0,note:n||''}});
+  return out;
+}
+
+function exportDB(){
+  if(!db) return;
+  const data = db.export();
+  const blob = new Blob([data], {type:'application/x-sqlite3'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = `ml_dashboard_${isoDate(new Date())}.db`;
+  a.click();
+}
+async function importDBFile(file, SQL){
+  const buf = await file.arrayBuffer();
+  const arr = new Uint8Array(buf);
+  db = new SQL.Database(arr);
+  await idbPut(arr);
+}
+async function resetProgress(SQL){
+  await idbClear();
+  db = new SQL.Database();
+  db.run(`CREATE TABLE IF NOT EXISTS tasks(week_num INTEGER, task_idx INTEGER, done INTEGER DEFAULT 0, updated_at TEXT, PRIMARY KEY(week_num,task_idx))`);
+  db.run(`CREATE TABLE IF NOT EXISTS notes(week_num INTEGER PRIMARY KEY, content TEXT DEFAULT '', updated_at TEXT)`);
+  db.run(`CREATE TABLE IF NOT EXISTS settings(key TEXT PRIMARY KEY, value TEXT)`);
+  db.run(`CREATE TABLE IF NOT EXISTS day_log(date TEXT PRIMARY KEY, minutes_studied INTEGER DEFAULT 0, tasks_done INTEGER DEFAULT 0, note TEXT DEFAULT '')`);
+  db.run(`CREATE TABLE IF NOT EXISTS day_tasks(week_num INTEGER, day_idx INTEGER, done INTEGER DEFAULT 0, updated_at TEXT, PRIMARY KEY(week_num,day_idx))`);
+  await saveDB();
+}
+
+// ════════════════════════════════════════════════════════════════════
+// PROGRESS / STREAK helpers
+// ════════════════════════════════════════════════════════════════════
+function curWeek(){
+  const now = Date.now();
+  if(now < START_DATE.getTime()) return 0;
+  if(now > END_DATE.getTime()) return 12;
+  return Math.min(12, Math.max(1, Math.floor((now-START_DATE.getTime())/(7*864e5))+1));
+}
+function curDayIdx(){
+  // 0=Mon..6=Sun in our WEEKS structure
+  const now = Date.now();
+  if(now < START_DATE.getTime()) return -1;
+  const dim = (new Date().getDay()+6)%7; // Mon=0..Sun=6
+  return dim;
+}
+function daysUntilStart(){
+  const diff = START_DATE.getTime() - Date.now();
+  return Math.max(0, Math.ceil(diff/864e5));
+}
+function dayOfJourney(){
+  const diff = Math.floor((Date.now() - START_DATE.getTime())/864e5)+1;
+  if(diff<1) return 0; if(diff>84) return 84; return diff;
+}
+function weekProgress(wn){
+  const w = WEEKS.find(x=>x.n===wn);
+  if(!w) return {tot:0,done:0,pct:0};
+  const tot = w.tasks.length;
+  const done = w.tasks.reduce((s,_,i)=>s+(dbGetTask(wn,i)?1:0),0);
+  return {tot, done, pct:tot?Math.round(100*done/tot):0};
+}
+function phaseProgress(ph){
+  let tot=0, done=0;
+  WEEKS.filter(w=>w.ph===ph).forEach(w=>{const p=weekProgress(w.n); tot+=p.tot; done+=p.done;});
+  return {tot, done, pct:tot?Math.round(100*done/tot):0};
+}
+function totalProgress(){
+  let tot=0, done=0;
+  WEEKS.forEach(w=>{const p=weekProgress(w.n); tot+=p.tot; done+=p.done;});
+  return {tot, done, pct:tot?Math.round(100*done/tot):0};
+}
+function computeStreak(){
+  const logs = dbAllDayLogs();
+  let streak = 0;
+  const d = new Date();
+  for(let i=0;i<400;i++){
+    const k = isoDate(d);
+    if(logs[k] && logs[k].tasks>0){ streak++; }
+    else if(i===0){ /* today not yet logged is ok */ }
+    else break;
+    d.setDate(d.getDate()-1);
+  }
+  return streak;
+}
+function totalMinutes(){
+  const logs = dbAllDayLogs();
+  return Object.values(logs).reduce((s,l)=>s+(l.minutes||0),0);
+}
+function activeDays(){
+  const logs = dbAllDayLogs();
+  return Object.values(logs).filter(l=>l.tasks>0).length;
+}
+
+// ════════════════════════════════════════════════════════════════════
+// VUE APP
+// ════════════════════════════════════════════════════════════════════
+const { createApp, ref, reactive, computed, watch, watchEffect, onMounted, onBeforeUnmount, nextTick, provide, inject, h } = Vue;
+
+// Pomodoro beep via Web Audio
+function playBeep(){
+  try{
+    const ctx = new (window.AudioContext||window.webkitAudioContext)();
+    const o = ctx.createOscillator(); const g = ctx.createGain();
+    o.connect(g); g.connect(ctx.destination);
+    o.frequency.value = 660; g.gain.value = 0.12;
+    o.start(); o.frequency.exponentialRampToValueAtTime(440, ctx.currentTime+.5);
+    g.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime+.6);
+    o.stop(ctx.currentTime+.7);
+  }catch(e){}
+}
+
+async function copyToClipboard(txt){
+  try{ await navigator.clipboard.writeText(txt); return true; }catch(e){
+    const ta = document.createElement('textarea'); ta.value = txt;
+    document.body.appendChild(ta); ta.select(); try{document.execCommand('copy')}catch(_){};
+    document.body.removeChild(ta); return true;
+  }
+}
+
+const app = createApp({
+  setup(){
+    // ── state ──
+    const lang = ref('vi');
+    const tab = ref('today');
+    const SQL_REF = ref(null);
+    const dbReady = ref(false);
+    const settingsOpen = ref(false);
+    const toastMsg = ref(''); const toastOn = ref(false);
+    const refreshKey = ref(0); // bump to recompute derived progress reactively
+
+    const t = (key, params={}) => {
+      let s = (T[lang.value] || T.en)[key] || key;
+      Object.entries(params).forEach(([k,v])=> s = s.replace(`{${k}}`, v));
+      return s;
+    };
+    const showToast = (msg)=>{ toastMsg.value=msg; toastOn.value=true; setTimeout(()=>toastOn.value=false, 1800); };
+
+    // ── derived ──
+    const day = computed(()=> { refreshKey.value; return dayOfJourney(); });
+    const dStart = computed(()=> { refreshKey.value; return daysUntilStart(); });
+    const cw = computed(()=> { refreshKey.value; return curWeek(); });
+    const pct = computed(()=> { refreshKey.value; return totalProgress().pct; });
+    const streak = computed(()=> { refreshKey.value; return computeStreak(); });
+
+    const bump = ()=> refreshKey.value++;
+
+    // ── language toggle / persist ──
+    const setLang = (l)=>{ lang.value=l; document.documentElement.setAttribute('lang',l);
+      if(dbReady.value) setSetting('lang', l); };
+
+    // ── pomodoro state (global so it survives tab switches) ──
+    const pomMin = ref(25);
+    const pomLeft = ref(25*60); // seconds
+    const pomRunning = ref(false);
+    let pomTimer = null;
+    const pomSessionsToday = ref(0);
+    const pomReset = ()=>{ pomRunning.value=false; clearInterval(pomTimer); pomLeft.value=pomMin.value*60; };
+    const pomStart = ()=>{
+      if(pomRunning.value) return;
+      pomRunning.value=true;
+      pomTimer = setInterval(()=>{
+        pomLeft.value--;
+        if(pomLeft.value<=0){
+          pomRunning.value=false; clearInterval(pomTimer);
+          playBeep(); if(Notification.permission==='granted'){ new Notification(t('today.pomDone')); }
+          if(dbReady.value){ dbAddMinutes(isoDate(new Date()), pomMin.value); }
+          pomSessionsToday.value++;
+          pomLeft.value = pomMin.value*60;
+          showToast(t('today.pomDone'));
+        }
+      },1000);
+    };
+    const pomPause = ()=>{ pomRunning.value=false; clearInterval(pomTimer); };
+    const setPomMin = (m)=>{ pomMin.value=m; pomReset(); if(dbReady.value) setSetting('pomodoro_min', m); };
+
+    // ── action wrappers (update DB + bump) ──
+    const toggleWeekTask = (wn, ti)=>{
+      const cur = dbGetTask(wn, ti);
+      dbSetTask(wn, ti, !cur);
+      dbBumpTaskCount(isoDate(new Date()), cur?-1:1);
+      bump();
+    };
+    const toggleDayTask = (wn, di)=>{
+      const cur = dbGetDayTask(wn, di);
+      dbSetDayTask(wn, di, !cur);
+      dbBumpTaskCount(isoDate(new Date()), cur?-1:1);
+      bump();
+    };
+
+    // ── init ──
+    onMounted(async ()=>{
+      try{
+        const SQL = await initSqlJs({locateFile: f=>`https://cdn.jsdelivr.net/npm/sql.js@1.10.2/dist/${f}`});
+        SQL_REF.value = SQL;
+        await initDB(SQL);
+        dbReady.value = true;
+        // load settings
+        const savedLang = getSetting('lang', null);
+        if(savedLang) lang.value = savedLang;
+        else {
+          const navLang = (navigator.language||'').toLowerCase();
+          lang.value = navLang.startsWith('vi') ? 'vi' : 'vi'; // default vi
+        }
+        document.documentElement.setAttribute('lang', lang.value);
+        const savedPom = parseInt(getSetting('pomodoro_min', '25'));
+        if([15,25,45,60].includes(savedPom)) { pomMin.value = savedPom; pomLeft.value = savedPom*60; }
+        bump();
+        // request notification permission silently
+        if('Notification' in window && Notification.permission==='default'){ Notification.requestPermission().catch(()=>{}); }
+      }catch(e){ console.error('DB init failed', e); }
+      document.getElementById('loading').classList.add('hide');
+    });
+    onBeforeUnmount(()=> clearInterval(pomTimer));
+
+    // provide to all children
+    const goTab = (name)=> tab.value = name;
+    provide('ctx', {
+      t, lang, setLang,
+      day, dStart, cw, pct, streak,
+      pomMin, pomLeft, pomRunning, pomSessionsToday,
+      pomStart, pomPause, pomReset, setPomMin,
+      toggleWeekTask, toggleDayTask,
+      goTab, bump, showToast,
+      dbReady,
+      // data + helpers exposed for templates
+      WEEKS, NODES, EDGES, BOOKS, SLIDES, EXAMS,
+      weekProgress, phaseProgress, totalProgress,
+    });
+
+    // ── settings actions ──
+    const doExport = ()=> exportDB();
+    const doImport = async (ev)=>{
+      const f = ev.target.files[0]; if(!f) return;
+      await importDBFile(f, SQL_REF.value);
+      bump(); showToast(t('toast.imported'));
+      ev.target.value = '';
+    };
+    const doReset = async ()=>{
+      await resetProgress(SQL_REF.value);
+      bump(); showToast(t('toast.reset'));
+    };
+
+    return {
+      // state
+      lang, tab, dbReady, settingsOpen, toastMsg, toastOn,
+      // i18n
+      t, setLang,
+      // computed
+      day, dStart, cw, pct, streak,
+      bump,
+      // pomodoro
+      pomMin, pomLeft, pomRunning, pomSessionsToday,
+      pomStart, pomPause, pomReset, setPomMin,
+      // actions
+      toggleWeekTask, toggleDayTask, doExport, doImport, doReset,
+      showToast,
+      // refs/globals usable in template
+      WEEKS, NODES, EDGES, BOOKS, SLIDES, EXAMS, GCH, PC,
+      isoDate, fmtDate, fmtShortDate,
+      dbGetTask, dbGetDayTask, dbGetNote, dbSetNote, dbGetDayLog, dbSetDayNote,
+      weekProgress, phaseProgress, totalProgress, dbAllDayLogs, totalMinutes, activeDays,
+      resolveRef,
+    };
+  },
+  template: `
+<div>
+  <!-- HEADER -->
+  <header class="hdr">
+    <div class="hdr-l">
+      <div class="hdr-logo">📐</div>
+      <div>
+        <div class="hdr-ttl">{{ t('app.title') }}</div>
+        <div class="hdr-sub">{{ t('app.subtitle') }}</div>
+      </div>
+    </div>
+    <div class="hdr-r">
+      <span v-if="streak>0" class="bdg bdg-streak">🔥 {{ streak }}</span>
+      <span class="bdg bdg-day" v-if="day>0">{{ t('hdr.day',{n:day}) }}</span>
+      <span class="bdg bdg-pct">{{ t('hdr.done',{n:pct}) }}</span>
+      <button class="h-btn lang" @click="setLang(lang==='vi'?'en':'vi')" :title="t('hdr.settings')">
+        {{ lang.toUpperCase() }}
+      </button>
+      <button class="h-btn icon" @click="settingsOpen=true" :title="t('hdr.settings')">⚙</button>
+    </div>
+  </header>
+
+  <!-- TABS -->
+  <nav class="tabs">
+    <button class="tab" :class="{on:tab==='today'}"    @click="tab='today'"><span class="tab-ico">🏠</span> {{ t('tab.today') }}</button>
+    <button class="tab" :class="{on:tab==='graph'}"    @click="tab='graph'"><span class="tab-ico">🔗</span> {{ t('tab.graph') }}</button>
+    <button class="tab" :class="{on:tab==='roadmap'}"  @click="tab='roadmap'"><span class="tab-ico">📅</span> {{ t('tab.roadmap') }}</button>
+    <button class="tab" :class="{on:tab==='progress'}" @click="tab='progress'"><span class="tab-ico">📊</span> {{ t('tab.progress') }}</button>
+    <button class="tab" :class="{on:tab==='library'}"  @click="tab='library'"><span class="tab-ico">📚</span> {{ t('tab.library') }}</button>
+  </nav>
+
+  <!-- PANES -->
+  <today-pane    v-if="tab==='today'"    v-bind="paneProps"></today-pane>
+  <graph-pane    v-if="tab==='graph'"    v-bind="paneProps"></graph-pane>
+  <roadmap-pane  v-if="tab==='roadmap'"  v-bind="paneProps"></roadmap-pane>
+  <progress-pane v-if="tab==='progress'" v-bind="paneProps"></progress-pane>
+  <library-pane  v-if="tab==='library'"  v-bind="paneProps"></library-pane>
+
+  <!-- SETTINGS DRAWER -->
+  <div class="drawer-bg" :class="{on:settingsOpen}" @click="settingsOpen=false"></div>
+  <aside class="drawer" :class="{on:settingsOpen}">
+    <div class="drawer-hd">
+      <div class="drawer-ttl">{{ t('set.ttl') }}</div>
+      <button class="h-btn icon" @click="settingsOpen=false">✕</button>
+    </div>
+    <div class="drawer-body">
+      <div class="set-grp">
+        <div class="set-lbl">{{ t('set.lang') }}</div>
+        <div class="lang-toggle">
+          <button :class="{on:lang==='vi'}" @click="setLang('vi')">🇻🇳 Tiếng Việt</button>
+          <button :class="{on:lang==='en'}" @click="setLang('en')">🇬🇧 English</button>
+        </div>
+        <div class="set-desc">{{ t('set.langDesc') }}</div>
+      </div>
+      <div class="set-grp">
+        <div class="set-lbl">{{ t('set.pom') }}</div>
+        <div class="pom-pick">
+          <button v-for="m in [15,25,45,60]" :key="m" :class="{on:pomMin===m}" @click="setPomMin(m)">{{m}}m</button>
+        </div>
+        <div class="set-desc">{{ t('set.pomDesc') }}</div>
+      </div>
+      <div class="set-grp">
+        <div class="set-lbl">{{ t('set.data') }}</div>
+        <div class="set-btn-row">
+          <button class="btn" @click="doExport">⬇ {{ t('set.export') }}</button>
+          <label class="btn" style="cursor:pointer;text-align:center">
+            ⬆ {{ t('set.import') }}
+            <input type="file" accept=".db,.sqlite" @change="doImport" style="display:none">
+          </label>
+        </div>
+        <div class="set-desc">{{ t('set.exportDesc') }}</div>
+      </div>
+      <div class="set-grp">
+        <div class="set-lbl">{{ t('set.danger') }}</div>
+        <div class="danger-zone">
+          <div class="danger-ttl">⚠ {{ t('set.reset') }}</div>
+          <div class="danger-desc">{{ t('set.resetDesc') }}</div>
+          <input class="confirm-input" v-model="resetWord" :placeholder="t('set.resetConfirm')">
+          <button class="btn btn-danger" style="width:100%" :disabled="resetWord!==t('set.resetWord')" @click="confirmReset">
+            {{ t('set.resetGo') }}
+          </button>
+        </div>
+      </div>
+      <div class="set-grp">
+        <div class="set-lbl">{{ t('set.about') }}</div>
+        <div class="set-desc">{{ t('set.aboutTxt') }}</div>
+      </div>
+    </div>
+    <div class="drawer-foot">{{ dbReady ? '✓ '+t('hdr.dbReady') : '…' }}</div>
+  </aside>
+
+  <!-- TOAST -->
+  <div class="toast" :class="{on:toastOn}">{{ toastMsg }}</div>
+</div>
+`,
+  data(){ return { resetWord:'' }; },
+  computed: {
+    paneProps(){
+      return {
+        t: this.t, lang: this.lang, day: this.day, dStart: this.dStart, cw: this.cw,
+        streak: this.streak, pct: this.pct,
+        pomMin: this.pomMin, pomLeft: this.pomLeft, pomRunning: this.pomRunning,
+        pomSessionsToday: this.pomSessionsToday,
+      };
+    }
+  },
+  methods:{
+    async confirmReset(){
+      if(this.resetWord !== this.t('set.resetWord')) return;
+      await this.doReset();
+      this.resetWord='';
+      this.settingsOpen=false;
+    },
+    goTab(name){ this.tab = name; }
+  }
+});
+
+// ════════════════════════════════════════════════════════════════════
+// COMPONENT — TodayPane
+// ════════════════════════════════════════════════════════════════════
+app.component('today-pane', {
+  setup(){
+    const ctx = inject('ctx');
+    const today = new Date();
+    const wn = ctx.cw.value;
+    const di = curDayIdx();
+    const isInRange = ()=> ctx.day.value>0 && ctx.day.value<=84;
+    const todayKey = isoDate(today);
+
+    // today's focus
+    const focusWeek = computed(()=> WEEKS.find(w=>w.n===ctx.cw.value));
+    const focusDay = computed(()=>{
+      if(!isInRange() || di<0 || !focusWeek.value) return null;
+      return focusWeek.value.days[di];
+    });
+    const todayDone = ref(false);
+    const refreshTodayDone = ()=>{
+      todayDone.value = (ctx.cw.value && di>=0) ? dbGetDayTask(ctx.cw.value, di) : false;
+    };
+    refreshTodayDone();
+    watch(()=>[ctx.cw.value, ctx.bump], refreshTodayDone, {flush:'sync'});
+
+    const toggleTodayFocus = ()=>{
+      if(!focusDay.value) return;
+      ctx.toggleDayTask(ctx.cw.value, di);
+      refreshTodayDone();
+    };
+
+    // quick note for today (day_log.note)
+    const noteText = ref('');
+    const noteSaved = ref(false);
+    const loadNote = ()=>{ const log = dbGetDayLog(todayKey); noteText.value = log.note||''; };
+    onMounted(loadNote);
+    const saveNote = ()=>{
+      dbSetDayNote(todayKey, noteText.value);
+      noteSaved.value = true;
+      setTimeout(()=>noteSaved.value=false, 1500);
+    };
+
+    // ring chart for overall %
+    const ringDash = computed(()=>{
+      const r=32, c=2*Math.PI*r;
+      return { c, off: c*(1-(ctx.pct.value||0)/100) };
+    });
+
+    // pom ring
+    const pomTotal = computed(()=> ctx.pomMin.value*60);
+    const pomDash = computed(()=>{
+      const r=52, c=2*Math.PI*r;
+      const frac = ctx.pomLeft.value/pomTotal.value;
+      return { c, off: c*(1-frac) };
+    });
+    const pomMMSS = computed(()=>{
+      const m = Math.floor(ctx.pomLeft.value/60), s = ctx.pomLeft.value%60;
+      return `${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+    });
+
+    // week summary
+    const wkProg = computed(()=> { ctx.bump; return weekProgress(ctx.cw.value); });
+
+    // book chip
+    const focusBook = computed(()=>{
+      if(!focusDay.value) return null;
+      return resolveRef(focusDay.value.ref);
+    });
+
+    const streakText = computed(()=>{
+      const s = ctx.streak.value;
+      if(s<=0) return ctx.t('today.streakNone');
+      if(s===1) return ctx.t('today.streakOne');
+      return ctx.t('today.streakMany',{n:s});
+    });
+
+    return { ctx, today, wn, di, isInRange, focusWeek, focusDay, todayDone, toggleTodayFocus,
+             noteText, noteSaved, saveNote, ringDash, pomDash, pomMMSS, wkProg, focusBook, streakText, todayKey };
+  },
+  template: `
+<div class="pane today-wrap">
+  <div class="today-body">
+
+    <!-- GREETING -->
+    <div class="greet">
+      <div class="greet-ring">
+        <svg width="80" height="80" viewBox="0 0 80 80">
+          <circle cx="40" cy="40" r="32" fill="none" stroke="#21262d" stroke-width="6"/>
+          <circle cx="40" cy="40" r="32" fill="none" stroke="url(#ringG)" stroke-width="6"
+                  stroke-linecap="round" :stroke-dasharray="ringDash.c" :stroke-dashoffset="ringDash.off"
+                  style="transition:stroke-dashoffset .8s cubic-bezier(.4,0,.2,1)"/>
+          <defs>
+            <linearGradient id="ringG" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0" stop-color="#58a6ff"/>
+              <stop offset=".5" stop-color="#bc8cff"/>
+              <stop offset="1" stop-color="#3fb950"/>
+            </linearGradient>
+          </defs>
+        </svg>
+        <div class="greet-pct">{{ ctx.pct.value }}<small>%</small></div>
+      </div>
+      <div class="greet-info">
+        <div class="greet-hi">{{ ctx.t('today.hi') }}</div>
+        <div class="greet-date">{{ fmtDate(today, ctx.lang.value) }}</div>
+        <div class="greet-meta">
+          <span v-if="ctx.day.value>0 && ctx.day.value<=84" class="bdg bdg-day">{{ ctx.t('hdr.day',{n:ctx.day.value}) }}</span>
+          <span v-if="ctx.day.value>84" class="bdg bdg-green">✓ {{ ctx.t('today.finished') }}</span>
+          <span v-if="ctx.day.value===0" class="bdg bdg-amber" style="background:#d2992222;color:#d29922;border-color:#d2992244">{{ ctx.t('today.notStarted',{n:ctx.dStart.value}) }}</span>
+          <span class="bdg bdg-streak">{{ streakText }}</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- TODAY'S FOCUS -->
+    <div v-if="focusDay" class="focus">
+      <div class="focus-hd">
+        <span class="focus-week">{{ ctx.t('today.focusTtl') }} <b>{{ ctx.t('today.weekN',{n:ctx.cw.value}) }} — {{ focusWeek.title[ctx.lang.value] }}</b></span>
+        <span class="muted" style="font-size:.74rem">{{ focusDay.d[ctx.lang.value] }}</span>
+      </div>
+      <div class="focus-body">
+        <div class="focus-task">{{ focusDay.task[ctx.lang.value] }}</div>
+        <div class="focus-actions">
+          <button class="bigchk" :class="{done:todayDone}" @click="toggleTodayFocus">
+            <span class="bigchk-box">{{ todayDone ? '✓' : '' }}</span>
+            {{ todayDone ? ctx.t('today.markedDone') : ctx.t('today.markDone') }}
+          </button>
+          <a v-if="focusBook && focusBook.file" :href="focusBook.file" target="_blank" class="book-chip">
+            📖 {{ focusBook.slide ? ctx.t('today.openSlide') : ctx.t('today.openBook') }}
+            <span v-if="focusBook.ch" style="opacity:.7">· Ch{{ focusBook.ch }}</span>
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <!-- NOT STARTED PROMPT -->
+    <div v-else-if="ctx.day.value===0" class="card card-lg" style="text-align:center">
+      <div style="font-size:2.2rem;margin-bottom:6px">🌱</div>
+      <div style="font-size:1.05rem;font-weight:600;margin-bottom:6px">{{ ctx.t('today.notStarted',{n:ctx.dStart.value}) }}</div>
+      <div class="muted" style="font-size:.85rem;line-height:1.6">{{ ctx.t('today.welcome',{n:ctx.dStart.value}) }}</div>
+      <button class="btn btn-prim" style="margin-top:14px" @click="ctx.goTab('roadmap')">{{ ctx.t('today.weekBtn') }}</button>
+    </div>
+
+    <!-- TWO COL: POMODORO + NOTE -->
+    <div class="row2">
+      <!-- POMODORO -->
+      <div class="card card-lg">
+        <div class="card-ttl"><span class="ttl-ico">⏱</span> {{ ctx.t('today.pomTtl') }}</div>
+        <div class="pom">
+          <div class="pom-clock">
+            <svg width="120" height="120" viewBox="0 0 120 120">
+              <circle cx="60" cy="60" r="52" fill="none" stroke="#21262d" stroke-width="6"/>
+              <circle cx="60" cy="60" r="52" fill="none" stroke="#58a6ff" stroke-width="6"
+                      stroke-linecap="round" :stroke-dasharray="pomDash.c" :stroke-dashoffset="pomDash.off"
+                      style="transition:stroke-dashoffset 1s linear"/>
+            </svg>
+            <div class="pom-time">{{ pomMMSS }}<small>{{ ctx.pomRunning.value ? '· running' : '· paused' }}</small></div>
+          </div>
+          <div class="pom-right">
+            <div class="pom-presets">
+              <div v-for="m in [15,25,45,60]" :key="m" class="pom-pre" :class="{on:ctx.pomMin.value===m}" @click="ctx.setPomMin(m)">{{ m }}m</div>
+            </div>
+            <div class="pom-btns">
+              <button v-if="!ctx.pomRunning.value" class="btn btn-prim btn-sm" @click="ctx.pomStart">▶ {{ ctx.t('today.pomStart') }}</button>
+              <button v-else class="btn btn-sm" @click="ctx.pomPause">⏸ {{ ctx.t('today.pomPause') }}</button>
+              <button class="btn btn-sm" @click="ctx.pomReset">⟲ {{ ctx.t('today.pomReset') }}</button>
+            </div>
+            <div class="pom-stat">{{ ctx.t('today.pomSessions',{n:ctx.pomSessionsToday.value}) }}</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- QUICK NOTE -->
+      <div class="card card-lg">
+        <div class="card-ttl"><span class="ttl-ico">📝</span> {{ ctx.t('today.noteTtl') }}</div>
+        <div class="qnote">
+          <textarea class="ta" v-model="noteText" :placeholder="ctx.t('today.notePh')" @blur="saveNote"></textarea>
+          <div class="ta-bar">
+            <button class="btn btn-sm" @click="saveNote">💾 {{ ctx.t('today.noteSave') }}</button>
+            <span class="saved-tag" :class="{on:noteSaved}">{{ ctx.t('today.noteSaved') }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- THIS WEEK -->
+    <div v-if="focusWeek" class="card card-lg">
+      <div class="card-ttl"><span class="ttl-ico">📅</span> {{ ctx.t('today.weekTtl') }}</div>
+      <div class="wkmini">
+        <div class="wkmini-left">
+          <div class="wkmini-ttl">{{ ctx.t('today.weekN',{n:focusWeek.n}) }} — {{ focusWeek.title[ctx.lang.value] }}</div>
+          <div class="wkmini-meta">{{ focusWeek.dates[ctx.lang.value] }} · {{ ctx.t('today.weekTasks',{d:wkProg.done,t:wkProg.tot}) }}</div>
+          <div class="wkmini-bar"><div class="wkmini-fill" :style="{width:wkProg.pct+'%'}"></div></div>
+        </div>
+        <button class="btn btn-prim btn-sm" @click="ctx.goTab('roadmap')">{{ ctx.t('today.weekBtn') }}</button>
+      </div>
+    </div>
+
+  </div>
+</div>
+`
+});
+
+// ════════════════════════════════════════════════════════════════════
+// COMPONENT — GraphPane (D3 force-directed knowledge graph)
+// ════════════════════════════════════════════════════════════════════
+app.component('graph-pane', {
+  setup(){
+    const ctx = inject('ctx');
+    const canvasRef = ref(null);
+    const ipanelOpen = ref(false);
+    const ipNode = ref(null);
+    const search = ref('');
+    const filter = ref('all'); // all|found|w14|p2|p3|goal
+    const showPrereq = ref(false);
+
+    let gSvg, gZoom, gSim, gNodeSel, gLinkSel, gGroup, gW, gH;
+
+    // upstream prereq set (recursive)
+    const upstreamOf = (id)=>{
+      const set = new Set(); const queue=[id];
+      while(queue.length){
+        const cur = queue.shift();
+        EDGES.forEach(([s,tg])=>{ if(tg===cur && !set.has(s)){ set.add(s); queue.push(s); } });
+      }
+      return set;
+    };
+
+    const applyFilters = ()=>{
+      if(!gNodeSel) return;
+      const q = search.value.trim().toLowerCase();
+      const ph = filter.value;
+      const selId = ipNode.value ? ipNode.value.id : null;
+      const prereq = (showPrereq.value && selId) ? upstreamOf(selId) : null;
+
+      gNodeSel.classed('dim', n=>{
+        if(prereq) return n.id!==selId && !prereq.has(n.id);
+        if(q && !n.lbl.toLowerCase().replace('\n',' ').includes(q) && !n.id.toLowerCase().includes(q)) return true;
+        if(ph!=='all' && n.g!==ph) return true;
+        return false;
+      });
+      gLinkSel.classed('prereq', l=> prereq && (prereq.has(l.source.id) || l.source.id===selId) && (prereq.has(l.target.id) || l.target.id===selId));
+      gLinkSel.classed('lit', l=> !prereq && selId && (l.source.id===selId || l.target.id===selId));
+    };
+
+    watch([search, filter, showPrereq], applyFilters);
+
+    const initGraph = ()=>{
+      const wrap = canvasRef.value; if(!wrap) return;
+      wrap.innerHTML='';
+      const svg = d3.select(wrap).append('svg');
+      const g = svg.append('g');
+      gGroup = g; gSvg = svg;
+      gW = wrap.clientWidth; gH = wrap.clientHeight;
+
+      const defs = svg.append('defs');
+      defs.append('marker').attr('id','arr').attr('markerWidth',9).attr('markerHeight',9)
+          .attr('refX',32).attr('refY',3.5).attr('orient','auto')
+        .append('path').attr('d','M0,0 L0,7 L8,3.5 z').attr('fill','#444c56');
+      defs.append('marker').attr('id','arr-lit').attr('markerWidth',9).attr('markerHeight',9)
+          .attr('refX',32).attr('refY',3.5).attr('orient','auto')
+        .append('path').attr('d','M0,0 L0,7 L8,3.5 z').attr('fill','#58a6ff');
+      defs.append('marker').attr('id','arr-pre').attr('markerWidth',9).attr('markerHeight',9)
+          .attr('refX',32).attr('refY',3.5).attr('orient','auto')
+        .append('path').attr('d','M0,0 L0,7 L8,3.5 z').attr('fill','#d29922');
+      const filt = defs.append('filter').attr('id','glow').attr('x','-50%').attr('y','-50%').attr('width','200%').attr('height','200%');
+      filt.append('feGaussianBlur').attr('stdDeviation','5').attr('result','blur');
+      const m = filt.append('feMerge');
+      m.append('feMergeNode').attr('in','blur'); m.append('feMergeNode').attr('in','SourceGraphic');
+
+      gZoom = d3.zoom().scaleExtent([.2,4]).on('zoom', e => g.attr('transform', e.transform));
+      svg.call(gZoom);
+
+      const nodeData = NODES.map(d=>({...d}));
+      const linkData = EDGES.map(([s,t])=>({source:s, target:t}));
+
+      gSim = d3.forceSimulation(nodeData)
+        .force('link', d3.forceLink(linkData).id(d=>d.id).distance(135).strength(.55))
+        .force('charge', d3.forceManyBody().strength(-620))
+        .force('center', d3.forceCenter(gW/2, gH/2))
+        .force('collide', d3.forceCollide(62).strength(.9))
+        .force('x', d3.forceX(gW/2).strength(.04))
+        .force('y', d3.forceY(gH/2).strength(.04));
+
+      gLinkSel = g.append('g').selectAll('path').data(linkData).join('path')
+        .attr('class','glink').attr('marker-end','url(#arr)');
+
+      gNodeSel = g.append('g').selectAll('g').data(nodeData).join('g')
+        .attr('class','gnode')
+        .call(d3.drag()
+          .on('start',(e,d)=>{if(!e.active)gSim.alphaTarget(.3).restart();d.fx=d.x;d.fy=d.y;})
+          .on('drag', (e,d)=>{d.fx=e.x;d.fy=e.y;})
+          .on('end',  (e,d)=>{if(!e.active)gSim.alphaTarget(0);d.fx=null;d.fy=null;}))
+        .on('mouseenter',(e,d)=>showTip(e,d))
+        .on('mousemove', e=>moveTip(e))
+        .on('mouseleave',()=>hideTip())
+        .on('click',(e,d)=>{e.stopPropagation(); openNode(d);});
+
+      svg.on('click',()=> closeNode());
+
+      const rRing = d => d.g==='goal'?40:d.g==='found'?34:28;
+      const rCore = d => d.g==='goal'?24:d.g==='found'?18:14;
+
+      gNodeSel.append('circle').attr('class','ring')
+        .attr('r', rRing).attr('fill', d=>GCH[d.g]+'1f')
+        .attr('stroke', d=>GCH[d.g]).attr('stroke-width', 1.9);
+
+      gNodeSel.append('circle').attr('class','core')
+        .attr('r', rCore).attr('fill', d=>GCH[d.g]+'4a').attr('stroke','none');
+
+      gNodeSel.each(function(d){
+        const el = d3.select(this);
+        const lines = d.lbl.split('\n'); const lh=12;
+        const baseY = lines.length>1 ? -(lh*(lines.length-1)/2) : 0;
+        lines.forEach((ln,i)=> el.append('text').attr('dy', baseY+i*lh+4).attr('x',0).text(ln));
+      });
+
+      gSim.on('tick',()=>{
+        gLinkSel.attr('d', d=>{
+          const dx=d.target.x-d.source.x, dy=d.target.y-d.source.y;
+          const qx=(d.source.x+d.target.x)/2+dy*.2, qy=(d.source.y+d.target.y)/2-dx*.2;
+          return `M${d.source.x},${d.source.y}Q${qx},${qy} ${d.target.x},${d.target.y}`;
+        });
+        gNodeSel.attr('transform', d=>`translate(${d.x},${d.y})`);
+      });
+      gSim.on('end', autoFit);
+      setTimeout(autoFit, 2400);
+    };
+
+    const autoFit = ()=>{
+      if(!gGroup) return;
+      const bbox = gGroup.node().getBBox();
+      if(!bbox.width || !bbox.height) return;
+      const pad = 60;
+      const scale = Math.min(.95, (gW-pad*2)/bbox.width, (gH-pad*2)/bbox.height);
+      const tx = gW/2 - (bbox.x+bbox.width/2)*scale;
+      const ty = gH/2 - (bbox.y+bbox.height/2)*scale;
+      gSvg.transition().duration(700).ease(d3.easeCubicInOut)
+        .call(gZoom.transform, d3.zoomIdentity.translate(tx,ty).scale(scale));
+    };
+
+    const tipEl = ()=> document.getElementById('tip');
+    const showTip = (e,d)=>{
+      const wl = d.wk>0 ? ctx.t('graph.week')+' '+d.wk+' · '+d.book : ctx.t('graph.found')+' · '+d.book;
+      tipEl().innerHTML = `<div><strong>${d.lbl.replace('\n',' ')}</strong></div><div class="tip-meta">${wl}</div>`;
+      tipEl().classList.add('on'); moveTip(e);
+    };
+    const moveTip = e=>{ tipEl().style.left=(e.clientX+14)+'px'; tipEl().style.top=(e.clientY-12)+'px'; };
+    const hideTip = ()=> tipEl().classList.remove('on');
+
+    const openNode = (d)=>{
+      ipNode.value = d; ipanelOpen.value = true;
+      gNodeSel.classed('sel', n=>n.id===d.id);
+      applyFilters();
+    };
+    const closeNode = ()=>{
+      ipNode.value = null; ipanelOpen.value = false; showPrereq.value = false;
+      if(gNodeSel) gNodeSel.classed('sel dim', false);
+      if(gLinkSel) gLinkSel.classed('lit prereq', false).attr('marker-end','url(#arr)');
+    };
+
+    // recompute "marker-end" based on prereq / lit classes
+    watch([showPrereq, ipNode], ()=>{
+      if(!gLinkSel) return;
+      gLinkSel.attr('marker-end', l=>{
+        if(showPrereq.value && ipNode.value){
+          const us = upstreamOf(ipNode.value.id);
+          if((us.has(l.source.id) || l.source.id===ipNode.value.id) && (us.has(l.target.id) || l.target.id===ipNode.value.id))
+            return 'url(#arr-pre)';
+        }
+        if(!showPrereq.value && ipNode.value && (l.source.id===ipNode.value.id || l.target.id===ipNode.value.id))
+          return 'url(#arr-lit)';
+        return 'url(#arr)';
+      });
+    });
+
+    const refocus = (id)=>{
+      const n = NODES.find(x=>x.id===id);
+      if(!n || !gNodeSel) return;
+      let live=null; gNodeSel.each(nd=>{if(nd.id===id) live=nd;});
+      if(live) openNode(live);
+    };
+
+    const conns = computed(()=>{
+      if(!ipNode.value) return [];
+      const id = ipNode.value.id;
+      const set = new Set();
+      EDGES.forEach(([s,t])=>{ if(s===id) set.add(t); if(t===id) set.add(s); });
+      return [...set].map(x=> NODES.find(n=>n.id===x));
+    });
+
+    const ipBook = computed(()=>{
+      if(!ipNode.value) return null;
+      const b = BOOKS.find(b=> ipNode.value.book.startsWith(b.title.en.slice(0,3)) || b.key===ipNode.value.book.split(' ')[0]);
+      // simpler: match by prefix
+      const map = {MML:0, d2l:1, ML:2, DL:3};
+      const prefix = Object.keys(map).find(k=> ipNode.value.book.startsWith(k));
+      return prefix!==undefined ? BOOKS[map[prefix]] : null;
+    });
+
+    onMounted(()=>{ nextTick(initGraph); });
+    onBeforeUnmount(()=>{ if(gSim) gSim.stop(); });
+
+    const filters = [
+      {key:'all', i18n:'graph.all'},
+      {key:'found', i18n:'graph.found', color:GCH.found},
+      {key:'w14', i18n:'graph.p1', color:GCH.w14},
+      {key:'p2', i18n:'graph.p2', color:GCH.p2},
+      {key:'p3', i18n:'graph.p3', color:GCH.p3},
+      {key:'goal', i18n:'graph.goal', color:GCH.goal},
+    ];
+
+    return { ctx, canvasRef, ipanelOpen, ipNode, search, filter, showPrereq, filters,
+             conns, ipBook, closeNode, refocus, autoFit,
+             zI:()=>gSvg && gSvg.transition().duration(250).call(gZoom.scaleBy,1.4),
+             zO:()=>gSvg && gSvg.transition().duration(250).call(gZoom.scaleBy,.72),
+             zR:autoFit, GCH };
+  },
+  template: `
+<div class="pane graph-wrap">
+  <div class="gcanvas" ref="canvasRef">
+    <div class="graph-toolbar">
+      <div class="gsearch">
+        <span class="gsearch-ico">🔍</span>
+        <input type="text" v-model="search" :placeholder="ctx.t('graph.searchPh')">
+      </div>
+      <div class="gfilters">
+        <button v-for="f in filters" :key="f.key" class="gfilter" :class="{on:filter===f.key}" @click="filter=f.key">
+          <span v-if="f.color" class="gfilter-dot" :style="{background:f.color}"></span>
+          {{ ctx.t(f.i18n) }}
+        </button>
+      </div>
+    </div>
+    <div class="glegend">
+      <div style="font-size:.62rem;color:var(--t3);text-transform:uppercase;letter-spacing:.08em;font-weight:700;margin-bottom:5px">{{ ctx.t('graph.legend') }}</div>
+      <div class="leg"><div class="leg-dot" :style="{background:GCH.found}"></div>{{ ctx.t('graph.found') }}</div>
+      <div class="leg"><div class="leg-dot" :style="{background:GCH.w14}"></div>{{ ctx.t('graph.p1') }}</div>
+      <div class="leg"><div class="leg-dot" :style="{background:GCH.p2}"></div>{{ ctx.t('graph.p2') }}</div>
+      <div class="leg"><div class="leg-dot" :style="{background:GCH.p3}"></div>{{ ctx.t('graph.p3') }}</div>
+      <div class="leg"><div class="leg-dot" :style="{background:GCH.goal}"></div>{{ ctx.t('graph.goal') }}</div>
+    </div>
+    <div class="gctrl">
+      <button class="gbtn" @click="zI" :title="ctx.t('graph.zoomIn')">+</button>
+      <button class="gbtn" @click="zO" :title="ctx.t('graph.zoomOut')">−</button>
+      <button class="gbtn" @click="zR" :title="ctx.t('graph.zoomReset')">⊙</button>
+    </div>
+  </div>
+
+  <aside class="gipanel" :class="{on:ipanelOpen}">
+    <div class="gipanel-in" v-if="ipNode">
+      <button class="gipanel-x" @click="closeNode">✕</button>
+      <div class="gipanel-ttl">{{ ipNode.lbl.replace('\\n',' ') }}</div>
+      <div class="gipanel-meta">
+        <span class="bdg" :style="{background:GCH[ipNode.g]+'22',color:GCH[ipNode.g],borderColor:GCH[ipNode.g]+'44'}">
+          {{ ipNode.g==='found' ? ctx.t('graph.found') : ipNode.g==='w14' ? ctx.t('graph.p1') : ipNode.g==='p2' ? ctx.t('graph.p2') : ipNode.g==='p3' ? ctx.t('graph.p3') : ctx.t('graph.goal') }}
+        </span>
+        <span class="bdg bdg-dim" v-if="ipNode.wk>0">{{ ctx.t('graph.week') }} {{ ipNode.wk }}</span>
+      </div>
+      <div class="gipanel-desc">{{ ipNode.desc[ctx.lang.value] }}</div>
+      <div class="gipanel-book" v-if="ipBook">
+        <span>📖 <b>{{ ipBook.title[ctx.lang.value] }}</b><br><span class="muted" style="font-size:.7rem">{{ ipNode.book }}</span></span>
+        <a :href="ipBook.file" target="_blank" class="btn btn-sm">{{ ctx.t('graph.openBook') }}</a>
+      </div>
+      <div class="gipanel-tool">
+        <button class="btn btn-sm" :class="{'btn-prim':showPrereq}" @click="showPrereq=!showPrereq">
+          {{ showPrereq ? ctx.t('graph.hidePrereq') : ctx.t('graph.showPrereq') }}
+        </button>
+      </div>
+      <div class="gipanel-lbl">{{ ctx.t('graph.connected') }}</div>
+      <div class="relchips">
+        <span v-for="n in conns" :key="n.id" class="relchip"
+              :style="{borderColor:GCH[n.g]+'55',color:GCH[n.g]}"
+              @click="refocus(n.id)">{{ n.lbl.replace('\\n',' ') }}</span>
+      </div>
+    </div>
+  </aside>
+</div>
+`
+});
+
+// ════════════════════════════════════════════════════════════════════
+// COMPONENT — RoadmapPane
+// ════════════════════════════════════════════════════════════════════
+app.component('roadmap-pane', {
+  setup(){
+    const ctx = inject('ctx');
+    const openWeek = ref(ctx.cw.value || 1);
+    const notesMode = reactive({}); // wn -> 'edit'|'preview'
+    const notesText = reactive({}); // wn -> string
+    const saveTags = reactive({}); // wn -> bool
+
+    WEEKS.forEach(w=>{
+      notesText[w.n] = dbGetNote(w.n);
+      notesMode[w.n] = 'edit';
+    });
+
+    const toggle = (n)=>{ openWeek.value = openWeek.value===n ? 0 : n; };
+
+    const saveWeekNote = (wn)=>{
+      dbSetNote(wn, notesText[wn]);
+      saveTags[wn] = true;
+      setTimeout(()=>saveTags[wn]=false, 1500);
+    };
+
+    const dayDoneMap = reactive({});
+    const refreshDayDone = ()=>{
+      WEEKS.forEach(w => {
+        w.days.forEach((_,di)=>{ dayDoneMap[w.n+'-'+di] = dbGetDayTask(w.n, di); });
+      });
+    };
+    refreshDayDone();
+
+    const toggleDay = (wn, di)=>{
+      ctx.toggleDayTask(wn, di);
+      dayDoneMap[wn+'-'+di] = dbGetDayTask(wn, di);
+    };
+
+    const toggleWeekChecklist = (wn, ti)=>{
+      ctx.toggleWeekTask(wn, ti);
+    };
+
+    const taskDone = (wn, ti)=> { ctx.bump; return dbGetTask(wn, ti); };
+
+    const cwn = computed(()=> ctx.cw.value);
+    const todayDayIdx = curDayIdx();
+
+    const wProgress = (wn)=> { ctx.bump; return weekProgress(wn); };
+    const pProgress = (ph)=> { ctx.bump; return phaseProgress(ph); };
+
+    // markdown render
+    const mdRender = (txt)=>{
+      try{ return marked.parse(txt||'', {breaks:true}); }catch(e){ return (txt||'').replace(/&/g,'&amp;').replace(/</g,'&lt;'); }
+    };
+
+    const phaseList = [
+      {ph:1, icon:'📐', color:PC[1]},
+      {ph:2, icon:'💻', color:PC[2]},
+      {ph:3, icon:'🧠', color:PC[3]},
+    ];
+
+    const refLink = (ref)=>{
+      const r = resolveRef(ref); if(!r) return null;
+      return { file:r.file, ch:r.ch, slide:!!r.slide };
+    };
+
+    // pattern-match chapter mentions in task text, add inline chip
+    const taskWithChip = (task, ref)=>{
+      const r = refLink(ref);
+      return r;
+    };
+
+    return { ctx, openWeek, toggle, saveWeekNote, notesText, notesMode, saveTags,
+             toggleDay, toggleWeekChecklist, taskDone, dayDoneMap,
+             cwn, todayDayIdx, wProgress, pProgress, mdRender, phaseList, refLink, PC, BOOKS };
+  },
+  template: `
+<div class="pane rm-wrap">
+  <div class="rm-body">
+    <template v-for="ph in phaseList" :key="ph.ph">
+      <div class="ph-bar" :style="{background:ph.color+'18',color:ph.color,border:'1px solid '+ph.color+'33'}">
+        <span class="ph-ico">{{ ph.icon }}</span>
+        {{ ctx.t('phase.'+ph.ph) }}
+        <span class="ph-pct">{{ pProgress(ph.ph).done }}/{{ pProgress(ph.ph).tot }}</span>
+      </div>
+
+      <div v-for="w in ctx.WEEKS.filter(x=>x.ph===ph.ph)" :key="w.n"
+           class="wkc" :class="{open:openWeek===w.n, now:w.n===cwn, done:w.n<cwn}">
+        <div class="wkc-hd" @click="toggle(w.n)">
+          <div class="wkn" :style="{
+            background: w.n<cwn ? '#3fb95022' : w.n===cwn ? PC[w.ph]+'22' : '#8b949e15',
+            color:      w.n<cwn ? '#3fb950'   : w.n===cwn ? PC[w.ph]      : '#8b949e',
+            borderColor:w.n<cwn ? '#3fb95066' : w.n===cwn ? PC[w.ph]      : '#8b949e44'
+          }">{{ w.n<cwn ? '✓' : w.n }}</div>
+          <div class="wki">
+            <div class="wkttl">{{ w.n===cwn ? '▶ ' : '' }}{{ ctx.t('today.weekN',{n:w.n}) }} — {{ w.title[ctx.lang.value] }}</div>
+            <div class="wkdt">{{ w.dates[ctx.lang.value] }}</div>
+          </div>
+          <div class="wkr">
+            <div class="wkmb"><div class="wkmf" :style="{width:wProgress(w.n).pct+'%',background:PC[w.ph]}"></div></div>
+            <div class="wkp">{{ wProgress(w.n).pct }}%</div>
+            <div class="wkarr">›</div>
+          </div>
+        </div>
+
+        <div class="wkb">
+          <!-- Daily plan -->
+          <div class="seclb">
+            <span>{{ ctx.t('rm.dailyPlan') }}</span>
+            <a v-for="b in [BOOKS.find(bk=>bk.key===w.book)]" :key="b?.key" v-if="b" :href="b.file" target="_blank" class="dchap">📖 {{ ctx.t('rm.openBook') }}</a>
+          </div>
+          <table class="dtbl">
+            <tbody>
+              <tr v-for="(d,di) in w.days" :key="di"
+                  :class="{today: w.n===cwn && di===todayDayIdx, tdone: dayDoneMap[w.n+'-'+di]}">
+                <td><div class="dchk" :class="{on:dayDoneMap[w.n+'-'+di]}" @click="toggleDay(w.n,di)">{{ dayDoneMap[w.n+'-'+di] ? '✓' : '' }}</div></td>
+                <td>{{ d.d[ctx.lang.value] }}</td>
+                <td>
+                  <span class="dtask">{{ d.task[ctx.lang.value] }}</span>
+                  <a v-if="refLink(d.ref)" :href="refLink(d.ref).file" target="_blank" class="dchap">
+                    {{ refLink(d.ref).slide ? '🎓' : '📖' }}
+                    <span v-if="refLink(d.ref).ch">Ch{{ refLink(d.ref).ch }}</span>
+                    <span v-else>{{ ctx.t('rm.openBook') }}</span>
+                  </a>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+
+          <!-- Checklist -->
+          <div class="seclb">{{ ctx.t('rm.checklist') }}</div>
+          <div class="tasks">
+            <label v-for="(tk,ti) in w.tasks" :key="ti" class="tk" :class="{done:taskDone(w.n,ti)}">
+              <input type="checkbox" :checked="taskDone(w.n,ti)" @change="toggleWeekChecklist(w.n,ti)">
+              <span>{{ tk[ctx.lang.value] }}</span>
+            </label>
+          </div>
+
+          <!-- Notes -->
+          <div class="seclb">
+            <span>{{ ctx.t('rm.notes') }}</span>
+            <div class="gap8">
+              <button class="copy-mini" :class="{on:notesMode[w.n]==='edit'}" @click="notesMode[w.n]='edit'">{{ ctx.t('rm.notesEdit') }}</button>
+              <button class="copy-mini" :class="{on:notesMode[w.n]==='preview'}" @click="notesMode[w.n]='preview'">{{ ctx.t('rm.notesPreview') }}</button>
+            </div>
+          </div>
+          <textarea v-if="notesMode[w.n]==='edit'" class="ta" v-model="notesText[w.n]"
+                    :placeholder="ctx.t('rm.notesPh')" @blur="saveWeekNote(w.n)"></textarea>
+          <div v-else class="note-prev" v-html="mdRender(notesText[w.n]) || '<span class=muted>'+ctx.t('rm.notesPh')+'</span>'"></div>
+          <div class="ta-bar" v-if="notesMode[w.n]==='edit'" style="margin-top:6px">
+            <button class="btn btn-sm" @click="saveWeekNote(w.n)">💾 {{ ctx.t('common.save') }}</button>
+            <span class="saved-tag" :class="{on:saveTags[w.n]}">{{ ctx.t('today.noteSaved') }}</span>
+          </div>
+        </div>
+      </div>
+    </template>
+  </div>
+</div>
+`
+});
+
+// ════════════════════════════════════════════════════════════════════
+// COMPONENT — ProgressPane (heatmap + bars)
+// ════════════════════════════════════════════════════════════════════
+app.component('progress-pane', {
+  setup(){
+    const ctx = inject('ctx');
+
+    // Build 12-week × 7-day grid based on START_DATE (Mon May 25, 2026)
+    const grid = computed(()=>{
+      ctx.bump;
+      const logs = dbAllDayLogs();
+      const cols = [];
+      const todayKey = isoDate(new Date());
+      for(let w=0; w<12; w++){
+        const col = [];
+        for(let d=0; d<7; d++){
+          const date = new Date(START_DATE);
+          date.setDate(START_DATE.getDate() + w*7 + d);
+          const k = isoDate(date);
+          const log = logs[k] || {tasks:0, minutes:0};
+          const future = date > new Date() && k!==todayKey;
+          let lvl = 0;
+          if(log.tasks>=4) lvl=4;
+          else if(log.tasks===3) lvl=3;
+          else if(log.tasks===2) lvl=2;
+          else if(log.tasks===1) lvl=1;
+          col.push({ date:k, dateObj:date, tasks:log.tasks, minutes:log.minutes, lvl, future, isToday:k===todayKey });
+        }
+        cols.push(col);
+      }
+      return cols;
+    });
+
+    const totalProg = computed(()=> { ctx.bump; return totalProgress(); });
+    const tMin = computed(()=> { ctx.bump; return totalMinutes(); });
+    const aDays = computed(()=> { ctx.bump; return activeDays(); });
+
+    const phaseList = [
+      {ph:1, color:PC[1]},
+      {ph:2, color:PC[2]},
+      {ph:3, color:PC[3]},
+    ];
+
+    const motivIdx = computed(()=>{
+      const p = totalProg.value.pct;
+      if(p===0) return 0; if(p<33) return 1; if(p<66) return 2; if(p<100) return 3; return 4;
+    });
+
+    const showHeatTip = (e, cell)=>{
+      const tip = document.getElementById('tip');
+      const dateStr = fmtShortDate(cell.dateObj, ctx.lang.value);
+      const tasks = cell.tasks||0;
+      const mins = cell.minutes||0;
+      tip.innerHTML = `<div><strong>${dateStr}</strong></div><div class="tip-meta">${tasks} ${ctx.t('pg.tasksLbl').toLowerCase()} · ${mins} min</div>`;
+      tip.classList.add('on');
+      tip.style.left=(e.clientX+14)+'px'; tip.style.top=(e.clientY-12)+'px';
+    };
+    const hideHeatTip = ()=> document.getElementById('tip').classList.remove('on');
+
+    return { ctx, grid, totalProg, tMin, aDays, phaseList, motivIdx, showHeatTip, hideHeatTip, PC, WEEKS };
+  },
+  template: `
+<div class="pane pg-wrap">
+  <div class="pg-body">
+
+    <!-- OVERALL -->
+    <div class="overall">
+      <div class="ov-top">
+        <div class="ov-num">{{ totalProg.pct }}%</div>
+        <div class="ov-r">
+          <div class="ov-lbl">{{ ctx.t('pg.overall') }}</div>
+          <div class="ov-tasks">{{ ctx.t('pg.overallSub',{d:totalProg.done,t:totalProg.tot}) }}</div>
+        </div>
+      </div>
+      <div class="ov-bar"><div class="ov-fill" :style="{width:totalProg.pct+'%'}"></div></div>
+      <div class="ov-foot">
+        <div class="ov-stat">
+          <div class="ov-stat-v">🔥 {{ ctx.streak.value }}</div>
+          <div class="ov-stat-l">{{ ctx.t('pg.streakLbl') }}</div>
+        </div>
+        <div class="ov-stat">
+          <div class="ov-stat-v">{{ aDays }}</div>
+          <div class="ov-stat-l">{{ ctx.t('pg.daysLbl') }}</div>
+        </div>
+        <div class="ov-stat">
+          <div class="ov-stat-v">{{ Math.round(tMin/60*10)/10 }}h</div>
+          <div class="ov-stat-l">{{ ctx.t('pg.minLbl') }}</div>
+        </div>
+        <div class="ov-stat">
+          <div class="ov-stat-v">{{ totalProg.done }}</div>
+          <div class="ov-stat-l">{{ ctx.t('pg.tasksLbl') }}</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- HEATMAP -->
+    <div class="heatcard">
+      <div class="card-ttl"><span class="ttl-ico">📆</span> {{ ctx.t('pg.heatTtl') }}</div>
+      <div class="muted" style="font-size:.74rem">{{ ctx.t('pg.heatSub') }}</div>
+      <div class="heat-grid">
+        <div class="heat-col" v-for="(col,wi) in grid" :key="wi">
+          <div v-for="(c,di) in col" :key="di"
+               class="heat-cell"
+               :class="['l'+c.lvl, {future:c.future}]"
+               :style="c.isToday ? 'outline:2px solid #58a6ff;outline-offset:1px' : ''"
+               @mouseenter="showHeatTip($event,c)"
+               @mousemove="showHeatTip($event,c)"
+               @mouseleave="hideHeatTip"></div>
+        </div>
+      </div>
+      <div class="heat-foot">
+        <span>{{ ctx.t('pg.scaleLess') }}</span>
+        <span class="heat-scale">
+          <span class="heat-scale-cells">
+            <span class="heat-cell" style="width:11px;height:11px"></span>
+            <span class="heat-cell l1" style="width:11px;height:11px"></span>
+            <span class="heat-cell l2" style="width:11px;height:11px"></span>
+            <span class="heat-cell l3" style="width:11px;height:11px"></span>
+            <span class="heat-cell l4" style="width:11px;height:11px"></span>
+          </span>
+        </span>
+        <span>{{ ctx.t('pg.scaleMore') }}</span>
+      </div>
+    </div>
+
+    <!-- BY PHASE -->
+    <div>
+      <div class="card-ttl" style="margin-bottom:8px">{{ ctx.t('pg.byPhase') }}</div>
+      <div style="display:flex;flex-direction:column;gap:6px">
+        <div v-for="ph in phaseList" :key="ph.ph" class="prog-card">
+          <div class="prog-row">
+            <span class="prog-name">{{ ctx.t('phase.'+ph.ph) }}</span>
+            <span class="prog-cnt">{{ ctx.phaseProgress(ph.ph).done }}/{{ ctx.phaseProgress(ph.ph).tot }}</span>
+          </div>
+          <div class="pbar"><div class="pbfill" :style="{width:ctx.phaseProgress(ph.ph).pct+'%',background:ph.color}"></div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- BY WEEK -->
+    <div>
+      <div class="card-ttl" style="margin-bottom:8px">{{ ctx.t('pg.byWeek') }}</div>
+      <div style="display:flex;flex-direction:column;gap:5px">
+        <div v-for="w in WEEKS" :key="w.n" class="prog-card" style="padding:10px 14px">
+          <div class="prog-row" style="margin-bottom:4px">
+            <span :style="{fontSize:'.82rem',color: w.n===ctx.cw.value ? PC[w.ph] : 'var(--t1)'}">
+              {{ w.n===ctx.cw.value ? '▶ ' : '' }}W{{ w.n }} — {{ w.title[ctx.lang.value] }}
+            </span>
+            <span class="prog-cnt">{{ ctx.weekProgress(w.n).done }}/{{ ctx.weekProgress(w.n).tot }}</span>
+          </div>
+          <div class="pbar"><div class="pbfill" :style="{width:ctx.weekProgress(w.n).pct+'%',background:PC[w.ph]+'aa'}"></div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- MOTIV -->
+    <div class="motiv">{{ ctx.t('motiv.'+motivIdx) }}</div>
+
+  </div>
+</div>
+`
+});
+
+// ════════════════════════════════════════════════════════════════════
+// COMPONENT — LibraryPane
+// ════════════════════════════════════════════════════════════════════
+app.component('library-pane', {
+  setup(){
+    const ctx = inject('ctx');
+    const copiedKey = ref(null);
+    const copyPath = async (path, key)=>{
+      // resolve to absolute-ish path the user can paste in file manager
+      const absPath = path.replace(/^\.\//, '/run/media/ngmint/4f84d369-b671-4539-af6f-f34e432fa951/Document/Document/Math/MAI/');
+      await copyToClipboard(absPath);
+      copiedKey.value = key;
+      ctx.showToast(ctx.t('toast.copied'));
+      setTimeout(()=>copiedKey.value=null, 1500);
+    };
+    return { ctx, copiedKey, copyPath, BOOKS, SLIDES, EXAMS };
+  },
+  template: `
+<div class="pane lib-wrap">
+  <div class="lib-body">
+    <div class="lib-banner">
+      <span>💡</span>
+      <span>{{ ctx.t('lib.banner') }}</span>
+    </div>
+
+    <!-- BOOKS -->
+    <div>
+      <div class="lib-sec-ttl"><span class="ico">📚</span> {{ ctx.t('lib.books') }}</div>
+      <div class="book-grid">
+        <div v-for="b in BOOKS" :key="b.key" class="bcard">
+          <div class="bcard-top">
+            <div class="bcover" :style="{background:b.color}">{{ b.emoji }}</div>
+            <div class="bcard-info">
+              <div class="bttl">{{ b.title[ctx.lang.value] }}</div>
+              <div class="bauthor">{{ b.author }}</div>
+              <div class="bmeta" style="margin-top:6px">
+                <span class="bdg" :class="b.lang==='VI' ? 'bdg-amber' : 'bdg-blue'" :style="b.lang==='VI'?'background:#d2992222;color:#d29922;border-color:#d2992244':''">{{ b.lang }}</span>
+                <span v-for="p in b.phases" :key="p" class="bdg bdg-dim">P{{ p }}</span>
+              </div>
+            </div>
+          </div>
+          <div class="bbtns">
+            <a :href="b.file" target="_blank" class="btn btn-prim btn-sm">📖 {{ ctx.t('lib.open') }}</a>
+            <button class="btn btn-sm" @click="copyPath(b.file, b.key)">
+              {{ copiedKey===b.key ? ctx.t('lib.pathCopied') : '📋 '+ctx.t('lib.copyPath') }}
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SLIDES -->
+    <div>
+      <div class="lib-sec-ttl"><span class="ico">🎓</span> {{ ctx.t('lib.slides') }}</div>
+      <div class="slide-list">
+        <div v-for="s in SLIDES" :key="s.ch" class="slide-row">
+          <div class="slide-ch">Ch{{ s.ch }}</div>
+          <div class="slide-ttl">{{ s.title[ctx.lang.value] }}</div>
+          <button class="btn btn-sm" @click="copyPath(s.file, 'slide-'+s.ch)">
+            {{ copiedKey==='slide-'+s.ch ? '✓' : '📋' }}
+          </button>
+          <a :href="s.file" target="_blank" class="btn btn-prim btn-sm">{{ ctx.t('lib.open') }} →</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- EXAMS -->
+    <div>
+      <div class="lib-sec-ttl"><span class="ico">📝</span> {{ ctx.t('lib.exams') }}</div>
+      <div class="exams-grid">
+        <a v-for="e in EXAMS" :key="e.key" :href="e.file" target="_blank" class="ex-card">
+          <div class="ex-ico">{{ e.icon }}</div>
+          <div class="ex-lbl">{{ ctx.t(e.lblKey) }}</div>
+          <div class="ex-sub">{{ ctx.t(e.subKey) }}</div>
+        </a>
+      </div>
+    </div>
+
+  </div>
+</div>
+`
+});
+
+// ════════════════════════════════════════════════════════════════════
+// MOUNT
+// ════════════════════════════════════════════════════════════════════
+app.mount('#app');
+
+
+
+
+</script>
+</body>
+</html>
