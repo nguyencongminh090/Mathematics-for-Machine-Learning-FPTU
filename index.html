@@ -364,6 +364,108 @@ textarea.ta::placeholder{color:var(--t4)}
 .ex-card .ex-lbl{font-size:.88rem;font-weight:600;color:var(--t1)}
 .ex-card .ex-sub{font-size:.7rem;color:var(--t3)}
 
+/* ──────── VISUALIZE PANE ──────── */
+.vz-wrap{overflow-y:auto;overflow-x:hidden;padding:var(--s4)}
+.vz-body{max-width:1080px;margin:0 auto;display:flex;flex-direction:column;gap:var(--s4)}
+.vz-intro{padding:var(--s3) var(--s3);background:linear-gradient(135deg,var(--accent-soft),var(--purple-soft));border:1px solid #58a6ff44;border-radius:var(--rl);font-size:.84rem;color:var(--t1);line-height:1.6}
+.vz-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(420px,1fr));gap:var(--s4)}
+.vz-card{background:var(--surf1);border:1px solid var(--b1);border-radius:var(--rl);overflow:hidden;display:flex;flex-direction:column;transition:all var(--tr)}
+.vz-card:hover{border-color:var(--b3);box-shadow:var(--sh1)}
+.vz-hd{padding:14px 16px;border-bottom:1px solid var(--b1);display:flex;flex-direction:column;gap:3px}
+.vz-hd-row{display:flex;align-items:flex-start;justify-content:space-between;gap:10px}
+.vz-ttl{font-size:.96rem;font-weight:700;color:var(--t1);line-height:1.3}
+.vz-sub{font-size:.74rem;color:var(--t3);font-weight:500}
+.vz-refchip{font-size:.66rem;font-weight:600;padding:3px 8px;border-radius:var(--rx);background:var(--surf3);border:1px solid var(--b2);color:var(--t2);white-space:nowrap;font-family:var(--mono);letter-spacing:.02em}
+.vz-gotochip{font-size:.66rem;font-weight:700;padding:3px 8px;border-radius:var(--rx);background:var(--accent-soft);border:1px solid #58a6ff44;color:var(--accent);white-space:nowrap;font-family:var(--mono);cursor:pointer;transition:all var(--tr);margin-top:4px;display:inline-block}
+.vz-gotochip:hover{background:var(--accent);color:#0a0d12}
+.vz-hd-row{flex-wrap:wrap}
+.vz-hd-r{display:flex;flex-direction:column;align-items:flex-end;gap:2px;flex-shrink:0}
+.vz-stage{position:relative;background:var(--bg);min-height:280px;display:flex;align-items:center;justify-content:center;padding:8px}
+.vz-stage svg{display:block;max-width:100%;height:auto;cursor:crosshair}
+.vz-stage.draggy svg{cursor:grab}
+.vz-stage.draggy svg:active{cursor:grabbing}
+.vz-ctrls{padding:12px 16px;border-top:1px solid var(--b1);background:var(--surf2);display:flex;flex-direction:column;gap:10px}
+.vz-row{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.vz-slbl{font-size:.7rem;color:var(--t3);font-weight:600;min-width:78px;text-transform:uppercase;letter-spacing:.04em}
+.vz-slider{flex:1;-webkit-appearance:none;appearance:none;height:4px;background:var(--surf4);border-radius:2px;outline:none;min-width:80px}
+.vz-slider::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;width:14px;height:14px;border-radius:50%;background:var(--accent);cursor:pointer;border:2px solid var(--surf1);box-shadow:0 0 0 1px var(--accent)}
+.vz-slider::-moz-range-thumb{width:14px;height:14px;border-radius:50%;background:var(--accent);cursor:pointer;border:2px solid var(--surf1);box-shadow:0 0 0 1px var(--accent)}
+.vz-val{font-family:var(--mono);font-size:.74rem;color:var(--t1);min-width:46px;text-align:right;font-weight:600}
+.vz-btns{display:flex;flex-wrap:wrap;gap:6px}
+.vz-btn{background:var(--surf3);border:1px solid var(--b2);color:var(--t1);border-radius:var(--rm);padding:6px 12px;font-size:.72rem;font-weight:600;cursor:pointer;transition:all var(--tr);display:inline-flex;align-items:center;gap:5px}
+.vz-btn:hover{background:var(--surf4);border-color:var(--b3)}
+.vz-btn.on{background:var(--accent-soft);color:var(--accent);border-color:var(--accent)}
+.vz-btn.prim{background:var(--accent);color:#0a0d12;border-color:var(--accent)}
+.vz-btn.prim:hover{background:var(--accent-strong)}
+.vz-stat{display:flex;gap:8px;flex-wrap:wrap;font-size:.72rem;color:var(--t2)}
+.vz-stat b{color:var(--t1);font-family:var(--mono);font-weight:700}
+.vz-pill{display:inline-flex;align-items:center;gap:4px;padding:3px 8px;border-radius:var(--rx);background:var(--surf3);border:1px solid var(--b2);font-size:.7rem;font-family:var(--mono);color:var(--t1)}
+.vz-mat{display:grid;grid-template-columns:auto auto;gap:6px;align-items:center;font-family:var(--mono);font-size:.74rem;padding:8px 10px;background:var(--surf3);border-radius:var(--rs);border:1px solid var(--b2);width:max-content}
+.vz-mat input{width:56px;background:var(--surf2);border:1px solid var(--b2);color:var(--t1);font-family:var(--mono);font-size:.74rem;padding:4px 6px;border-radius:var(--rs);text-align:center}
+.vz-mat input:focus{outline:none;border-color:var(--accent)}
+.vz-bracketmat{display:flex;align-items:center;gap:10px}
+.vz-bm-lbl{font-family:var(--mono);font-size:.95rem;font-weight:700;color:var(--t1)}
+.vz-bm-bracket{position:relative;padding:7px 14px;display:grid;grid-template-columns:auto auto;gap:4px 18px;font-family:var(--mono);font-size:.84rem;color:var(--t1);min-height:44px;align-items:center}
+.vz-bm-bracket::before,.vz-bm-bracket::after{content:'';position:absolute;top:0;bottom:0;width:8px;border:2px solid var(--accent);border-radius:1px}
+.vz-bm-bracket::before{left:0;border-right:none}
+.vz-bm-bracket::after{right:0;border-left:none}
+.vz-bm-cell{text-align:center;min-width:42px;font-variant-numeric:tabular-nums}
+.vz-bm-cell.neg{color:var(--red)}
+.vz-bm-cell.pos{color:var(--t1)}
+.vz-bm-bracket input{width:46px;background:var(--surf2);border:1px solid var(--b2);color:var(--t1);font-family:var(--mono);font-size:.78rem;padding:3px 4px;border-radius:var(--rs);text-align:center;font-variant-numeric:tabular-nums}
+.vz-bm-bracket input:focus{outline:none;border-color:var(--accent)}
+.vz-vec-bracket{position:relative;padding:6px 12px;display:flex;flex-direction:column;gap:3px;font-family:var(--mono);font-size:.78rem;color:var(--t1);min-height:38px;justify-content:center}
+.vz-vec-bracket::before,.vz-vec-bracket::after{content:'';position:absolute;top:0;bottom:0;width:6px;border:2px solid var(--t2);border-radius:1px}
+.vz-vec-bracket::before{left:0;border-right:none}
+.vz-vec-bracket::after{right:0;border-left:none}
+.vz-vec-bracket span{text-align:center;min-width:36px}
+.vz-formula{font-family:var(--mono);font-size:.78rem;color:var(--t1);padding:6px 10px;background:var(--surf3);border:1px solid var(--b2);border-radius:var(--rm);display:inline-flex;align-items:center;gap:6px}
+.vz-formula em{color:var(--accent-strong);font-style:normal;font-weight:600}
+.vz-flow{display:flex;align-items:stretch;gap:10px;flex-wrap:wrap;padding:12px;background:linear-gradient(135deg,var(--surf2),var(--surf3));border:1px solid var(--b1);border-radius:var(--rm)}
+.vz-flow-step{flex:1 1 180px;min-width:180px;display:flex;flex-direction:column;gap:6px;padding:10px 12px;background:var(--surf1);border:1px solid var(--b1);border-radius:var(--rs);position:relative;overflow:hidden}
+.vz-flow-step.process{flex:1.4 1 240px;min-width:240px}
+.vz-flow-step.input{border-left:3px solid var(--accent)}
+.vz-flow-step.process{border-left:3px solid var(--amber)}
+.vz-flow-step.output{border-left:3px solid var(--green)}
+.vz-flow-lbl{font-size:.6rem;color:var(--t3);text-transform:uppercase;letter-spacing:.1em;font-weight:700}
+.vz-flow-step.input .vz-flow-lbl{color:var(--accent)}
+.vz-flow-step.process .vz-flow-lbl{color:var(--amber)}
+.vz-flow-step.output .vz-flow-lbl{color:var(--green)}
+.vz-flow-body{font-family:var(--mono);font-size:.76rem;color:var(--t1);line-height:1.55;display:flex;flex-direction:column;gap:2px}
+.vz-flow-body .sub{color:var(--t2);font-size:.7rem}
+.vz-flow-arrow{display:flex;align-items:center;color:var(--t3);font-size:1.2rem;flex-shrink:0;align-self:center}
+@media(max-width:560px){.vz-flow{flex-direction:column}.vz-flow-arrow{transform:rotate(90deg)}}
+.vz-pickbtn{font-family:var(--mono);font-size:.7rem;padding:3px 8px;background:var(--surf3);border:1px solid var(--b2);color:var(--t2);border-radius:var(--rs);cursor:pointer}
+.vz-pickbtn.on{background:var(--accent-soft);color:var(--accent);border-color:var(--accent)}
+.vz-theory-toggle{padding:10px 16px;background:var(--surf2);border-top:1px solid var(--b1);display:flex;align-items:center;gap:8px;cursor:pointer;font-size:.78rem;color:var(--t2);font-weight:600;transition:all var(--tr);user-select:none}
+.vz-theory-toggle:hover{background:var(--surf3);color:var(--t1)}
+.vz-theory-toggle .caret{transition:transform .2s ease;display:inline-block}
+.vz-theory-toggle.open .caret{transform:rotate(90deg)}
+.vz-theory{padding:14px 16px;background:var(--surf1);border-top:1px solid var(--b1);font-size:.8rem;color:var(--t1);line-height:1.6;display:flex;flex-direction:column;gap:14px;animation:fadein .25s ease}
+.vz-th-block{padding:10px 12px;background:var(--surf2);border:1px solid var(--b1);border-radius:var(--rm);display:flex;flex-direction:column;gap:6px}
+.vz-th-block.active{border-color:var(--accent);background:linear-gradient(135deg,var(--surf2),var(--accent-soft))}
+.vz-th-name{font-size:.7rem;font-weight:700;color:var(--accent);text-transform:uppercase;letter-spacing:.06em;display:flex;align-items:center;gap:6px}
+.vz-th-name .badge{padding:1px 7px;background:var(--surf3);border:1px solid var(--b2);border-radius:var(--rx);font-size:.62rem;color:var(--t2);font-weight:600}
+.vz-th-eqn{font-family:var(--mono);font-size:.84rem;color:var(--t1);padding:6px 0;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.vz-th-eqn em{color:var(--accent-strong);font-style:normal;font-weight:700}
+.vz-th-note{font-size:.72rem;color:var(--t3);line-height:1.55;font-style:italic}
+.vz-th-ctrl{display:flex;align-items:center;gap:8px;flex-wrap:wrap;padding-top:4px}
+.vz-th-ctrl input[type=range]{flex:1;min-width:120px}
+.vz-th-ctrl input[type=number]{width:64px;background:var(--surf3);border:1px solid var(--b2);color:var(--t1);font-family:var(--mono);font-size:.74rem;padding:3px 6px;border-radius:var(--rs);text-align:center}
+.vz-th-ctrl input[type=number]:focus{outline:none;border-color:var(--accent)}
+.vz-th-ctrl .lbl{font-family:var(--mono);font-size:.74rem;color:var(--t2);min-width:30px}
+.vz-th-apply{background:var(--accent);color:#0a0d12;border:1px solid var(--accent);padding:4px 12px;border-radius:var(--rm);font-size:.7rem;font-weight:700;cursor:pointer;transition:all var(--tr)}
+.vz-th-apply:hover{background:var(--accent-strong)}
+.vz-mini-mat{display:inline-grid;grid-template-columns:auto auto;gap:2px 12px;padding:4px 10px;font-family:var(--mono);font-size:.74rem;position:relative;color:var(--t1)}
+.vz-mini-mat::before,.vz-mini-mat::after{content:'';position:absolute;top:0;bottom:0;width:6px;border:1.5px solid var(--t3);border-radius:1px}
+.vz-mini-mat::before{left:0;border-right:none}
+.vz-mini-mat::after{right:0;border-left:none}
+.vz-mini-mat span{text-align:center;min-width:36px}
+.vz-desc{padding:12px 16px;font-size:.78rem;color:var(--t2);line-height:1.6;background:var(--surf1);border-top:1px solid var(--b1)}
+.vz-eqn{display:inline-block;font-family:var(--mono);font-size:.72rem;background:var(--surf3);border:1px solid var(--b2);border-radius:var(--rs);padding:2px 8px;color:var(--accent-strong)}
+.vz-hint{font-size:.7rem;color:var(--t3);font-style:italic}
+@media(max-width:680px){.vz-grid{grid-template-columns:1fr}}
+
 /* SETTINGS DRAWER */
 .drawer-bg{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:200;opacity:0;pointer-events:none;transition:opacity var(--trL);backdrop-filter:blur(2px)}
 .drawer-bg.on{opacity:1;pointer-events:auto}
@@ -533,7 +635,7 @@ const T = {
   vi: {
     'app.title':'Bảng điều khiển ML',
     'app.subtitle':'{name} · FPT University · AI Major',
-    'tab.today':'Hôm nay','tab.graph':'Sơ đồ kiến thức','tab.roadmap':'Lộ trình','tab.progress':'Tiến độ','tab.library':'Thư viện',
+    'tab.today':'Hôm nay','tab.graph':'Sơ đồ kiến thức','tab.roadmap':'Lộ trình','tab.progress':'Tiến độ','tab.visualize':'Trực quan','tab.library':'Thư viện',
     'hdr.streak':'{n} ngày liên tiếp','hdr.day':'Ngày {n}/84','hdr.done':'{n}% xong','hdr.toEN':'EN','hdr.toVI':'VI',
     'hdr.settings':'Cài đặt','hdr.dbReady':'CSDL sẵn sàng',
     'today.hi':'Chào, {name}!','today.date':'{wd}, {d}','today.day':'Ngày {n}/84 · {phase}',
@@ -566,6 +668,67 @@ const T = {
     'motiv.2':'Đã đi nửa chặng! Bạn đang ở Phase 2 — biến Toán thành Code. Các công thức đang trở thành chương trình thật.',
     'motiv.3':'Sắp tới rồi! Phase 3 — bạn đang tư duy như một nhà nghiên cứu. Đích đến rất gần.',
     'motiv.4':'🎓 Hoàn thành! Bạn đã sẵn sàng nghiên cứu. Chọn một bài báo, tái hiện nó, rồi bắt đầu dự án của riêng bạn.',
+    'vz.intro':'Toán học cảm thấy trừu tượng cho đến khi bạn nhìn thấy nó chuyển động. Mỗi mô-đun bên dưới là một thí nghiệm tương tác — hãy kéo, trượt, và quan sát ý nghĩa hình học đằng sau các công thức.',
+    'vz.input':'Đầu vào','vz.process':'Xử lý','vz.output':'Đầu ra','vz.formula':'Công thức','vz.dragInput':'Kéo điểm xanh để thay đổi vector đầu vào',
+    'vz.gotoWeek':'→ Tuần {n}',
+    'vz.showTheory':'Mở rộng — Công thức chi tiết','vz.hideTheory':'Thu gọn',
+    'vz.apply':'Áp dụng','vz.deg':'độ','vz.rad':'radian',
+    'vz.t1.theory':'Các phép biến đổi 2D tiêu chuẩn',
+    'vz.t1.thRot':'Phép xoay R(θ)','vz.t1.thRotNote':'Bảo toàn độ dài và góc — xoay quanh gốc.',
+    'vz.t1.thScale':'Co giãn S(sₓ, sᵧ)','vz.t1.thScaleNote':'Nhân mỗi trục với một hệ số. sₓ = sᵧ = đồng dạng.',
+    'vz.t1.thShear':'Kéo lệch (Shear)','vz.t1.thShearNote':'Giữ một trục cố định, làm lệch trục còn lại theo hệ số k.',
+    'vz.t1.thRefl':'Phản chiếu','vz.t1.thReflNote':'Lật mặt phẳng qua trục — định thức = −1.',
+    'vz.t1.thReflX':'Qua trục x','vz.t1.thReflY':'Qua trục y','vz.t1.thReflYX':'Qua đường y = x',
+    'vz.t1.shearH':'ngang','vz.t1.shearV':'dọc',
+    'vz.t2.theory':'Phương trình đặc trưng & cách tính',
+    'vz.t2.thPoly':'Phương trình đặc trưng','vz.t2.thPolyNote':'Tìm λ sao cho A − λI suy biến (định thức = 0).',
+    'vz.t2.thQuad':'Công thức nghiệm','vz.t2.thQuadNote':'Biệt số Δ < 0 ⇒ nghiệm phức ⇒ không có vector riêng thực.',
+    'vz.t2.thEvec':'Tìm vector riêng','vz.t2.thEvecNote':'Với mỗi λ, giải (A − λI)v = 0.',
+    'vz.t3.theory':'Quy tắc Gradient Descent',
+    'vz.t3.thRule':'Quy tắc cập nhật','vz.t3.thRuleNote':'Đi ngược chiều gradient với bước α.',
+    'vz.t3.thGrad':'Gradient của f','vz.t3.thGradNote':'Đạo hàm riêng theo từng biến.',
+    'vz.t3.thConv':'Điều kiện hội tụ','vz.t3.thConvNote':'Để x_{t+1} = x_t·(1 − 2aα) hội tụ, cần |1 − 2aα| < 1, tức α < 1/a.',
+    'vz.t4.theory':'Phân phối Gaussian — chi tiết',
+    'vz.t4.thPDF':'Hàm mật độ xác suất','vz.t4.thPDFNote':'Hằng số 1/(σ√2π) đảm bảo tích phân toàn miền = 1.',
+    'vz.t4.thZ':'Điểm chuẩn hóa (z-score)','vz.t4.thZNote':'Khoảng cách từ x tới μ, đo bằng đơn vị σ.',
+    'vz.t4.thRule':'Quy tắc 68–95–99.7','vz.t4.thRuleNote':'Tỷ lệ mẫu nằm trong ±1σ, ±2σ, ±3σ tương ứng.',
+    'vz.t4.thBM':'Lấy mẫu Box-Muller','vz.t4.thBMNote':'Sinh hai số ngẫu nhiên đều và biến đổi thành mẫu Gaussian.',
+    'vz.t5.theory':'Bình phương tối thiểu — Dẫn xuất',
+    'vz.t5.thObj':'Hàm mục tiêu','vz.t5.thObjNote':'Tổng bình phương khoảng cách dọc từ điểm đến đường thẳng.',
+    'vz.t5.thNorm':'Phương trình chuẩn (Normal equations)','vz.t5.thNormNote':'Đặt đạo hàm theo m và b bằng 0.',
+    'vz.t5.thMat':'Dạng ma trận','vz.t5.thMatNote':'Tổng quát cho nhiều biến — đây là gốc rễ của hồi quy tuyến tính.',
+    'vz.t6.theory':'Hàm kích hoạt — chi tiết toán học',
+    'vz.t6.thSig':'Sigmoid σ(x)','vz.t6.thSigNote':'Đạo hàm cực đại 0.25 tại x = 0. Bão hòa nhanh ⇒ gradient biến mất.',
+    'vz.t6.thTanh':'Tanh','vz.t6.thTanhNote':'Đối xứng quanh 0 nên trung bình kích hoạt ~0 ⇒ huấn luyện ổn định hơn sigmoid.',
+    'vz.t6.thRelu':'ReLU','vz.t6.thReluNote':'Đạo hàm = 1 với x > 0 nên không bị bão hòa. Nhược điểm: nơ-ron "chết" khi luôn x < 0.',
+    'vz.eqn.det':'det(A) = ad − bc','vz.eqn.tr':'tr(A) = a + d',
+    'vz.relatedWk':'Tuần {n}','vz.relatedRef':'Tham khảo',
+    'vz.reset':'Đặt lại','vz.play':'Chạy','vz.pause':'Tạm dừng','vz.step':'Bước','vz.add':'Thêm điểm','vz.clear':'Xóa hết','vz.random':'Ngẫu nhiên',
+    'vz.t1.title':'Phép biến đổi tuyến tính 2D','vz.t1.sub':'Ma trận làm gì với không gian',
+    'vz.t1.desc':'Một ma trận 2×2 không chỉ là một bảng số — nó là một hàm biến mọi vector trong mặt phẳng thành một vector mới. Kéo các thanh trượt để thay đổi ma trận và xem hình vuông đơn vị biến dạng. Định thức cho biết diện tích bị co giãn bao nhiêu (âm = lật mặt).',
+    'vz.t1.ref':'MML Ch2.7 · Tuần 1–2',
+    'vz.t1.det':'Định thức','vz.t1.area':'Diện tích','vz.t1.flip':'Lật','vz.t1.preset':'Mẫu',
+    'vz.t1.identity':'Đồng nhất','vz.t1.rot':'Xoay 45°','vz.t1.scale':'Co giãn','vz.t1.shear':'Kéo lệch','vz.t1.reflect':'Phản chiếu',
+    'vz.t2.title':'Vector riêng & Giá trị riêng','vz.t2.sub':'Những hướng không xoay',
+    'vz.t2.desc':'Hầu hết các vector đều bị xoay khi nhân với ma trận. Nhưng có những hướng đặc biệt — vector riêng — chỉ bị co giãn, không xoay. Lượng co giãn là giá trị riêng. Đây là chìa khóa của PCA, SVD, và phân tích động lực học.',
+    'vz.t2.ref':'MML Ch4 · Tuần 2',
+    'vz.t2.eig':'Giá trị riêng','vz.t2.evec':'Vector riêng','vz.t2.complex':'(phức — không có vector riêng thực)',
+    'vz.t2.preset':'Mẫu','vz.t2.symm':'Đối xứng','vz.t2.shear':'Kéo lệch','vz.t2.rot':'Xoay',
+    'vz.t3.title':'Gradient Descent','vz.t3.sub':'Cách máy học tìm điểm thấp nhất',
+    'vz.t3.desc':'Để huấn luyện một mô hình, ta tối thiểu hóa hàm mất mát. Gradient Descent đi ngược chiều gradient — hướng dốc nhất xuống — từng bước nhỏ. Tốc độ học quá lớn → nhảy vọt; quá nhỏ → chậm. Đây là động cơ của mọi mạng nơ-ron.',
+    'vz.t3.ref':'MML Ch7 · Tuần 3–4',
+    'vz.t3.lr':'Tốc độ học','vz.t3.steps':'Số bước','vz.t3.loss':'Mất mát','vz.t3.shape':'Hình dạng hàm',
+    'vz.t4.title':'Phân phối Gaussian','vz.t4.sub':'Đường cong hình chuông quen thuộc',
+    'vz.t4.desc':'Phân phối chuẩn N(μ, σ²) xuất hiện khắp nơi: nhiễu cảm biến, lỗi đo lường, khởi tạo trọng số. Trung bình μ dịch chuyển đỉnh, độ lệch chuẩn σ điều khiển độ rộng. ~68% mẫu nằm trong σ, ~95% trong 2σ.',
+    'vz.t4.ref':'MML Ch6 · Tuần 4',
+    'vz.t4.mean':'Trung bình μ','vz.t4.std':'Độ lệch chuẩn σ','vz.t4.resample':'Lấy mẫu lại',
+    'vz.t5.title':'Hồi quy Tuyến tính','vz.t5.sub':'Đường thẳng tốt nhất qua dữ liệu',
+    'vz.t5.desc':'Cho một tập điểm, tìm đường thẳng y = mx + b tối thiểu hóa tổng bình phương khoảng cách (Least Squares). Nhấp để thêm điểm hoặc kéo điểm để di chuyển. Quan sát đường thẳng tự động khớp lại và sai số giảm.',
+    'vz.t5.ref':'ML Cơ Bản Ch3 · Tuần 5','vz.t5.slope':'Độ dốc','vz.t5.icpt':'Hệ số chặn','vz.t5.sse':'Sai số bình phương',
+    'vz.t5.tip':'Nhấp vào ô để thêm điểm, kéo để di chuyển',
+    'vz.t6.title':'Hàm Kích hoạt','vz.t6.sub':'Phi tuyến tính trong mạng nơ-ron',
+    'vz.t6.desc':'Nếu không có hàm kích hoạt, mạng nơ-ron sâu sẽ thu gọn thành một phép biến đổi tuyến tính duy nhất. Sigmoid bóp mọi thứ vào (0,1). Tanh vào (−1,1). ReLU đơn giản đặt giá trị âm về 0. Đạo hàm cho biết gradient chảy bao nhiêu khi backprop.',
+    'vz.t6.ref':'DL Cơ Bản · Tuần 9–10','vz.t6.deriv':'Hiện đạo hàm',
     'lib.banner':'Mẹo: Nếu link không mở được trong trình duyệt, hãy dùng nút "Sao chép đường dẫn" và dán vào trình quản lý tệp.',
     'lib.books':'Sách','lib.slides':'Slide bài giảng (MAI391)','lib.exams':'Đề thi & Bài tập',
     'lib.open':'Mở','lib.copyPath':'Sao chép đường dẫn','lib.pathCopied':'✓ Đã sao chép',
@@ -587,7 +750,7 @@ const T = {
   en: {
     'app.title':'ML Research Dashboard',
     'app.subtitle':'{name} · FPT University · AI Major',
-    'tab.today':'Today','tab.graph':'Knowledge Graph','tab.roadmap':'Roadmap','tab.progress':'Progress','tab.library':'Library',
+    'tab.today':'Today','tab.graph':'Knowledge Graph','tab.roadmap':'Roadmap','tab.progress':'Progress','tab.visualize':'Visualize','tab.library':'Library',
     'hdr.streak':'{n}-day streak','hdr.day':'Day {n}/84','hdr.done':'{n}% done','hdr.toEN':'EN','hdr.toVI':'VI',
     'hdr.settings':'Settings','hdr.dbReady':'Database ready',
     'today.hi':'Hello, {name}!','today.date':'{wd}, {d}','today.day':'Day {n}/84 · {phase}',
@@ -620,6 +783,67 @@ const T = {
     'motiv.2':"Halfway through! You're in Phase 2 — turning math into code. The formulas are becoming real programs.",
     'motiv.3':"Almost there! Phase 3 — you're thinking like a researcher. The finish line is close.",
     'motiv.4':'🎓 Complete! You are research-ready. Pick a paper, reproduce it, and launch your own research.',
+    'vz.intro':"Math feels abstract until you see it move. Each module below is a hands-on experiment — drag, slide, and watch the geometric meaning behind the formulas.",
+    'vz.input':'Input','vz.process':'Process','vz.output':'Output','vz.formula':'Formula','vz.dragInput':'Drag the blue dot to change the input vector',
+    'vz.gotoWeek':'→ Week {n}',
+    'vz.showTheory':'Expand — Detailed formulas','vz.hideTheory':'Collapse',
+    'vz.apply':'Apply','vz.deg':'deg','vz.rad':'rad',
+    'vz.t1.theory':'Standard 2D transformations',
+    'vz.t1.thRot':'Rotation R(θ)','vz.t1.thRotNote':'Preserves lengths and angles — rotates about the origin.',
+    'vz.t1.thScale':'Scaling S(sₓ, sᵧ)','vz.t1.thScaleNote':'Multiply each axis by a factor. sₓ = sᵧ ⇒ uniform.',
+    'vz.t1.thShear':'Shear','vz.t1.thShearNote':'Keep one axis fixed, slant the other by factor k.',
+    'vz.t1.thRefl':'Reflection','vz.t1.thReflNote':'Flip the plane across an axis — det = −1.',
+    'vz.t1.thReflX':'Across x-axis','vz.t1.thReflY':'Across y-axis','vz.t1.thReflYX':'Across y = x',
+    'vz.t1.shearH':'horizontal','vz.t1.shearV':'vertical',
+    'vz.t2.theory':'Characteristic equation & solving',
+    'vz.t2.thPoly':'Characteristic equation','vz.t2.thPolyNote':'Find λ such that A − λI is singular (det = 0).',
+    'vz.t2.thQuad':'Quadratic formula','vz.t2.thQuadNote':'Discriminant Δ < 0 ⇒ complex roots ⇒ no real eigenvectors.',
+    'vz.t2.thEvec':'Finding eigenvectors','vz.t2.thEvecNote':'For each λ, solve (A − λI)v = 0.',
+    'vz.t3.theory':'Gradient Descent rule',
+    'vz.t3.thRule':'Update rule','vz.t3.thRuleNote':'Step opposite to the gradient by amount α.',
+    'vz.t3.thGrad':'Gradient of f','vz.t3.thGradNote':'Partial derivatives with respect to each variable.',
+    'vz.t3.thConv':'Convergence condition','vz.t3.thConvNote':'For x_{t+1} = x_t·(1 − 2aα) to converge, need |1 − 2aα| < 1, i.e. α < 1/a.',
+    'vz.t4.theory':'Gaussian Distribution — details',
+    'vz.t4.thPDF':'Probability density function','vz.t4.thPDFNote':'The 1/(σ√2π) constant makes the integral over ℝ equal 1.',
+    'vz.t4.thZ':'Standardized z-score','vz.t4.thZNote':'Distance from x to μ, measured in units of σ.',
+    'vz.t4.thRule':'68–95–99.7 rule','vz.t4.thRuleNote':'Fraction of samples within ±1σ, ±2σ, ±3σ.',
+    'vz.t4.thBM':'Box-Muller sampling','vz.t4.thBMNote':'Two uniform randoms transformed into a Gaussian sample.',
+    'vz.t5.theory':'Least Squares — derivation',
+    'vz.t5.thObj':'Objective','vz.t5.thObjNote':'Sum of squared vertical distances from points to the line.',
+    'vz.t5.thNorm':'Normal equations','vz.t5.thNormNote':'Set derivatives w.r.t. m and b to zero.',
+    'vz.t5.thMat':'Matrix form','vz.t5.thMatNote':'Generalizes to many variables — the root of linear regression.',
+    'vz.t6.theory':'Activation functions — math details',
+    'vz.t6.thSig':'Sigmoid σ(x)','vz.t6.thSigNote':'Max derivative 0.25 at x = 0. Saturates quickly ⇒ vanishing gradient.',
+    'vz.t6.thTanh':'Tanh','vz.t6.thTanhNote':'Symmetric around 0 so activations average ~0 ⇒ more stable training than sigmoid.',
+    'vz.t6.thRelu':'ReLU','vz.t6.thReluNote':"Derivative = 1 for x > 0 so it doesn't saturate. Drawback: 'dead' neurons when stuck at x < 0.",
+    'vz.eqn.det':'det(A) = ad − bc','vz.eqn.tr':'tr(A) = a + d',
+    'vz.relatedWk':'Week {n}','vz.relatedRef':'Reference',
+    'vz.reset':'Reset','vz.play':'Play','vz.pause':'Pause','vz.step':'Step','vz.add':'Add point','vz.clear':'Clear','vz.random':'Random',
+    'vz.t1.title':'2D Linear Transformation','vz.t1.sub':'What a matrix does to space',
+    'vz.t1.desc':'A 2×2 matrix is not just a table of numbers — it is a function that maps every vector in the plane to a new one. Drag the sliders to change the matrix and see the unit square deform. The determinant tells you how much area is scaled (negative = a flip).',
+    'vz.t1.ref':'MML Ch2.7 · Week 1–2',
+    'vz.t1.det':'Determinant','vz.t1.area':'Area','vz.t1.flip':'Flipped','vz.t1.preset':'Preset',
+    'vz.t1.identity':'Identity','vz.t1.rot':'Rotate 45°','vz.t1.scale':'Scale','vz.t1.shear':'Shear','vz.t1.reflect':'Reflect',
+    'vz.t2.title':'Eigenvectors & Eigenvalues','vz.t2.sub':'The directions that do not rotate',
+    'vz.t2.desc':'Most vectors rotate when multiplied by a matrix. But special directions — eigenvectors — only stretch, never turn. How much they stretch is the eigenvalue. This is the foundation of PCA, SVD, and dynamical-systems analysis.',
+    'vz.t2.ref':'MML Ch4 · Week 2',
+    'vz.t2.eig':'Eigenvalues','vz.t2.evec':'Eigenvectors','vz.t2.complex':'(complex — no real eigenvectors)',
+    'vz.t2.preset':'Preset','vz.t2.symm':'Symmetric','vz.t2.shear':'Shear','vz.t2.rot':'Rotation',
+    'vz.t3.title':'Gradient Descent','vz.t3.sub':'How machine learning finds the bottom',
+    'vz.t3.desc':'Training a model means minimizing a loss function. Gradient Descent walks opposite the gradient — the steepest-downhill direction — one small step at a time. Too-large learning rate → it overshoots; too small → it crawls. This is the engine of every neural net.',
+    'vz.t3.ref':'MML Ch7 · Week 3–4',
+    'vz.t3.lr':'Learning rate','vz.t3.steps':'Steps','vz.t3.loss':'Loss','vz.t3.shape':'Loss shape',
+    'vz.t4.title':'Gaussian Distribution','vz.t4.sub':'The familiar bell curve',
+    'vz.t4.desc':'The normal distribution N(μ, σ²) shows up everywhere: sensor noise, measurement error, weight initialization. The mean μ shifts the peak; the standard deviation σ controls the width. About 68% of samples fall within σ, about 95% within 2σ.',
+    'vz.t4.ref':'MML Ch6 · Week 4',
+    'vz.t4.mean':'Mean μ','vz.t4.std':'Std-dev σ','vz.t4.resample':'Resample',
+    'vz.t5.title':'Linear Regression','vz.t5.sub':'The best line through your data',
+    'vz.t5.desc':'Given a cloud of points, find the line y = mx + b that minimizes the sum of squared distances (Least Squares). Click to add points or drag a point to move it. Watch the line snap into place and the error shrink.',
+    'vz.t5.ref':'ML Cơ Bản Ch3 · Week 5','vz.t5.slope':'Slope','vz.t5.icpt':'Intercept','vz.t5.sse':'Sum of squared errors',
+    'vz.t5.tip':'Click on the canvas to add a point, drag to move',
+    'vz.t6.title':'Activation Functions','vz.t6.sub':'Non-linearity inside neural nets',
+    'vz.t6.desc':'Without activation functions, a deep network collapses into a single linear map. Sigmoid squashes everything into (0,1). Tanh into (−1,1). ReLU simply zeroes negatives. Their derivatives govern how much gradient flows backward during training.',
+    'vz.t6.ref':'DL Cơ Bản · Week 9–10','vz.t6.deriv':'Show derivative',
     'lib.banner':"Tip: If a link doesn't open in your browser, use the \"Copy path\" button and paste into a file manager.",
     'lib.books':'Books','lib.slides':'Lecture slides (MAI391)','lib.exams':'Exams & Homework',
     'lib.open':'Open','lib.copyPath':'Copy path','lib.pathCopied':'✓ Copied',
@@ -1430,13 +1654,15 @@ const app = createApp({
 
     // provide to all children
     const goTab = (name)=> tab.value = name;
+    const deepLinkWeek = ref(null);
+    const gotoWeek = (n)=>{ deepLinkWeek.value = n; tab.value = 'roadmap'; };
     provide('ctx', {
       t, lang, setLang,
       day, dStart, cw, pct, streak,
       pomMin, pomLeft, pomRunning, pomSessionsToday,
       pomStart, pomPause, pomReset, setPomMin,
       toggleWeekTask, toggleDayTask,
-      goTab, bump, showToast,
+      goTab, gotoWeek, deepLinkWeek, bump, showToast,
       dbReady,
       studentName, setStudentName,
       // data + helpers exposed for templates
@@ -1521,6 +1747,10 @@ const app = createApp({
       <svg class="tab-ico-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
       {{ t('tab.progress') }}
     </button>
+    <button class="tab" :class="{on:tab==='visualize'}" @click="tab='visualize'">
+      <svg class="tab-ico-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M3 3v18h18"/><path d="M7 14l4-4 4 4 5-7"/><circle cx="11" cy="10" r="1.6"/><circle cx="15" cy="14" r="1.6"/></svg>
+      {{ t('tab.visualize') }}
+    </button>
     <button class="tab" :class="{on:tab==='library'}" @click="tab='library'">
       <svg class="tab-ico-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M4 4.5A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1-2.5-2.5v-15z"/></svg>
       {{ t('tab.library') }}
@@ -1528,11 +1758,12 @@ const app = createApp({
   </nav>
 
   <!-- PANES -->
-  <today-pane    v-if="tab==='today'"    v-bind="paneProps"></today-pane>
-  <graph-pane    v-if="tab==='graph'"    v-bind="paneProps"></graph-pane>
-  <roadmap-pane  v-if="tab==='roadmap'"  v-bind="paneProps"></roadmap-pane>
-  <progress-pane v-if="tab==='progress'" v-bind="paneProps"></progress-pane>
-  <library-pane  v-if="tab==='library'"  v-bind="paneProps"></library-pane>
+  <today-pane     v-if="tab==='today'"     v-bind="paneProps"></today-pane>
+  <graph-pane     v-if="tab==='graph'"     v-bind="paneProps"></graph-pane>
+  <roadmap-pane   v-if="tab==='roadmap'"   v-bind="paneProps"></roadmap-pane>
+  <progress-pane  v-if="tab==='progress'"  v-bind="paneProps"></progress-pane>
+  <visualize-pane v-if="tab==='visualize'" v-bind="paneProps"></visualize-pane>
+  <library-pane   v-if="tab==='library'"   v-bind="paneProps"></library-pane>
 
   <!-- SETTINGS DRAWER -->
   <div class="drawer-bg" :class="{on:settingsOpen}" @click="settingsOpen=false"></div>
@@ -1872,7 +2103,7 @@ app.component('graph-pane', {
 
     watch([search, filter, showPrereq], applyFilters);
 
-    const getCapsuleOffset = (node, dx, dy, len) => {
+    const getRectOffset = (node, dx, dy, len) => {
       if (len === 0) return 0;
       const w = node.w / 2;
       const h = node.h / 2;
@@ -1936,8 +2167,8 @@ app.component('graph-pane', {
             const len = Math.sqrt(dx * dx + dy * dy);
             if (len === 0) return '';
             
-            const srcOffset = getCapsuleOffset(d.source, dx, dy, len) + 2;
-            const tgOffset = getCapsuleOffset(d.target, -dx, -dy, len) + 8;
+            const srcOffset = getRectOffset(d.source, dx, dy, len) + 2;
+            const tgOffset = getRectOffset(d.target, -dx, -dy, len) + 8;
             
             if (len <= srcOffset + tgOffset) return '';
             
@@ -2063,8 +2294,8 @@ app.component('graph-pane', {
           const len=Math.sqrt(dx*dx+dy*dy);
           if (len === 0) return '';
           
-          const srcOffset = getCapsuleOffset(d.source, dx, dy, len) + 2;
-          const tgOffset = getCapsuleOffset(d.target, -dx, -dy, len) + 8; // terminate exactly at arrowhead tip
+          const srcOffset = getRectOffset(d.source, dx, dy, len) + 2;
+          const tgOffset = getRectOffset(d.target, -dx, -dy, len) + 8; // terminate exactly at arrowhead tip
           
           if (len <= srcOffset + tgOffset) return ''; // prevent overlapping edge cross
           
@@ -2303,6 +2534,20 @@ app.component('roadmap-pane', {
 
     const toggle = (n)=>{ openWeek.value = openWeek.value===n ? 0 : n; };
 
+    // Deep-link: when other tabs call ctx.gotoWeek(n), open & scroll to that week.
+    const applyDeepLink = ()=>{
+      const n = ctx.deepLinkWeek.value;
+      if(!n) return;
+      openWeek.value = n;
+      nextTick(()=>{
+        const el = document.getElementById('wkc-'+n);
+        if(el) el.scrollIntoView({behavior:'smooth', block:'start'});
+        ctx.deepLinkWeek.value = null;
+      });
+    };
+    watch(()=>ctx.deepLinkWeek.value, applyDeepLink);
+    onMounted(applyDeepLink);
+
     const saveWeekNote = (wn)=>{
       dbSetNote(wn, notesText[wn]);
       saveTags[wn] = true;
@@ -2370,6 +2615,7 @@ app.component('roadmap-pane', {
       </div>
 
       <div v-for="w in ctx.WEEKS.filter(x=>x.ph===ph.ph)" :key="w.n"
+           :id="'wkc-'+w.n"
            class="wkc" :class="{open:openWeek===w.n, now:w.n===cwn, done:w.n<cwn}">
          <div class="wkc-hd" @click="toggle(w.n)">
           <div class="wkn" :style="{
@@ -2606,6 +2852,1289 @@ app.component('progress-pane', {
     <!-- MOTIV -->
     <div class="motiv">{{ ctx.t('motiv.'+motivIdx) }}</div>
 
+  </div>
+</div>
+`
+});
+
+// ════════════════════════════════════════════════════════════════════
+// COMPONENT — VisualizePane (interactive math geometry)
+// ════════════════════════════════════════════════════════════════════
+app.component('visualize-pane', {
+  setup(){
+    const ctx = inject('ctx');
+
+    // theory section open/closed state per demo
+    const theoryOpen = reactive({1:false, 2:false, 3:false, 4:false, 5:false, 6:false});
+    const toggleTheory = (n)=> { theoryOpen[n] = !theoryOpen[n]; };
+
+    // ── Demo 1: Linear Transformation ──
+    // matrix [[a,b],[c,d]] — start at identity
+    const m1 = reactive({a:1, b:0, c:0, d:1});
+    const det1 = computed(()=> +(m1.a*m1.d - m1.b*m1.c).toFixed(3));
+    const t1_preset = (which)=>{
+      const presets = {
+        identity:{a:1,b:0,c:0,d:1},
+        rot:    {a:Math.cos(Math.PI/4), b:-Math.sin(Math.PI/4), c:Math.sin(Math.PI/4), d:Math.cos(Math.PI/4)},
+        scale:  {a:1.5,b:0,c:0,d:0.6},
+        shear:  {a:1,b:0.7,c:0,d:1},
+        reflect:{a:1,b:0,c:0,d:-1},
+      };
+      const p = presets[which]; if(!p) return;
+      m1.a=+p.a.toFixed(2); m1.b=+p.b.toFixed(2); m1.c=+p.c.toFixed(2); m1.d=+p.d.toFixed(2);
+    };
+    // unit square corners + grid lines → transformed
+    const t1_W = 360, t1_H = 280, t1_unit = 38; // px per unit
+    const t1_cx = t1_W/2, t1_cy = t1_H/2;
+    const t1_xy = (x,y)=> [t1_cx + x*t1_unit, t1_cy - y*t1_unit];
+    const t1_tx = (x,y)=> [t1_cx + (m1.a*x + m1.b*y)*t1_unit, t1_cy - (m1.c*x + m1.d*y)*t1_unit];
+    const t1_shape = computed(()=> {
+      // unit square: (0,0),(1,0),(1,1),(0,1) — transformed
+      const pts = [[0,0],[1,0],[1,1],[0,1]].map(([x,y])=> t1_tx(x,y));
+      return pts.map(p=>p.join(',')).join(' ');
+    });
+    const t1_origSq = (()=>[[0,0],[1,0],[1,1],[0,1]].map(([x,y])=>t1_xy(x,y)).map(p=>p.join(',')).join(' '))();
+    const t1_iHat = computed(()=> t1_tx(1,0));
+    const t1_jHat = computed(()=> t1_tx(0,1));
+    // Demo 1 — interactive transform-matrix parameters (theory section)
+    const t1_th = reactive({
+      rotDeg: 45,
+      scaleX: 1.5,
+      scaleY: 0.6,
+      shearK: 0.5,
+      shearDir: 'h', // 'h' or 'v'
+    });
+    const t1_applyRot = ()=>{
+      const r = t1_th.rotDeg * Math.PI/180;
+      m1.a = +Math.cos(r).toFixed(2); m1.b = +(-Math.sin(r)).toFixed(2);
+      m1.c = +Math.sin(r).toFixed(2); m1.d = +Math.cos(r).toFixed(2);
+    };
+    const t1_applyScale = ()=>{
+      m1.a = +t1_th.scaleX.toFixed(2); m1.b = 0;
+      m1.c = 0; m1.d = +t1_th.scaleY.toFixed(2);
+    };
+    const t1_applyShear = ()=>{
+      if(t1_th.shearDir==='h'){
+        m1.a = 1; m1.b = +t1_th.shearK.toFixed(2);
+        m1.c = 0; m1.d = 1;
+      } else {
+        m1.a = 1; m1.b = 0;
+        m1.c = +t1_th.shearK.toFixed(2); m1.d = 1;
+      }
+    };
+    const t1_applyReflect = (axis)=>{
+      if(axis==='x'){ m1.a = 1; m1.b = 0; m1.c = 0; m1.d = -1; }
+      else if(axis==='y'){ m1.a = -1; m1.b = 0; m1.c = 0; m1.d = 1; }
+      else if(axis==='yx'){ m1.a = 0; m1.b = 1; m1.c = 1; m1.d = 0; }
+    };
+    // Demo 1 input vector (draggable)
+    const v1 = reactive({x:1.4, y:0.8});
+    const v1_in = computed(()=> t1_xy(v1.x, v1.y));
+    const v1_out = computed(()=> {
+      const ox = m1.a*v1.x + m1.b*v1.y;
+      const oy = m1.c*v1.x + m1.d*v1.y;
+      return {x:+ox.toFixed(3), y:+oy.toFixed(3), px:t1_tx(v1.x, v1.y)};
+    });
+    let v1_drag = false;
+    const v1_pdown = (e)=>{
+      e.stopPropagation(); e.preventDefault();
+      v1_drag = true;
+      window.addEventListener('pointermove', v1_pmove);
+      window.addEventListener('pointerup', v1_pup);
+    };
+    const v1_pmove = (e)=>{
+      if(!v1_drag) return;
+      const svg = document.getElementById('vz-t1-svg');
+      if(!svg) return;
+      const r = svg.getBoundingClientRect();
+      const sx = t1_W/r.width, sy = t1_H/r.height;
+      const px = (e.clientX - r.left)*sx, py = (e.clientY - r.top)*sy;
+      v1.x = +((px - t1_cx)/t1_unit).toFixed(2);
+      v1.y = +((t1_cy - py)/t1_unit).toFixed(2);
+      v1.x = Math.max(-3.5, Math.min(3.5, v1.x));
+      v1.y = Math.max(-2.5, Math.min(2.5, v1.y));
+    };
+    const v1_pup = ()=>{
+      v1_drag = false;
+      window.removeEventListener('pointermove', v1_pmove);
+      window.removeEventListener('pointerup', v1_pup);
+    };
+    onBeforeUnmount(()=>{
+      window.removeEventListener('pointermove', v1_pmove);
+      window.removeEventListener('pointerup', v1_pup);
+    });
+
+    // ── Demo 2: Eigenvectors ──
+    const m2 = reactive({a:2, b:1, c:1, d:2}); // symmetric → real eigs
+    const eig2_disc = computed(()=>{
+      const tr = m2.a+m2.d, dt = m2.a*m2.d - m2.b*m2.c;
+      return +(tr*tr - 4*dt).toFixed(3);
+    });
+    const t2_preset = (which)=>{
+      const presets = {
+        symm: {a:2, b:1, c:1, d:2},
+        shear:{a:1, b:1, c:0, d:1},
+        rot:  {a:0, b:-1, c:1, d:0},
+      };
+      const p = presets[which]; if(!p) return;
+      m2.a = p.a; m2.b = p.b; m2.c = p.c; m2.d = p.d;
+    };
+    const eig2 = computed(()=> {
+      const tr = m2.a + m2.d;
+      const dt = m2.a*m2.d - m2.b*m2.c;
+      const disc = tr*tr - 4*dt;
+      if(disc < 0){
+        return {real:false, l1:0, l2:0, v1:null, v2:null};
+      }
+      const s = Math.sqrt(disc);
+      const l1 = (tr + s)/2, l2 = (tr - s)/2;
+      // eigenvector for λ: solve (A-λI)v = 0
+      const eVec = (l)=>{
+        // (a-l)x + b y = 0  ⇒ if b!=0: v=(b, l-a); else v=(l-d, c) or (1,0)
+        let vx, vy;
+        if(Math.abs(m2.b) > 1e-6){ vx = m2.b; vy = l - m2.a; }
+        else if(Math.abs(m2.c) > 1e-6){ vx = l - m2.d; vy = m2.c; }
+        else { vx = 1; vy = 0; }
+        const n = Math.hypot(vx,vy) || 1;
+        return [vx/n, vy/n];
+      };
+      return {real:true, l1:+l1.toFixed(2), l2:+l2.toFixed(2), v1:eVec(l1), v2:eVec(l2)};
+    });
+    const t2_W = 360, t2_H = 280, t2_unit = 50;
+    const t2_cx = t2_W/2, t2_cy = t2_H/2;
+    const t2_xy = (x,y)=> [t2_cx + x*t2_unit, t2_cy - y*t2_unit];
+    const t2_tx = (x,y)=> [t2_cx + (m2.a*x + m2.b*y)*t2_unit, t2_cy - (m2.c*x + m2.d*y)*t2_unit];
+    // sample probe vectors at angles, show original (dim) vs transformed
+    const t2_probes = computed(()=> {
+      const arr = [];
+      for(let i=0;i<12;i++){
+        const a = (i/12)*Math.PI*2;
+        const x = Math.cos(a)*1.2, y = Math.sin(a)*1.2;
+        arr.push({ orig:t2_xy(x,y), tx:t2_tx(x,y) });
+      }
+      return arr;
+    });
+
+    // ── Demo 3: Gradient Descent ──
+    const m3 = reactive({lr:0.15, a:1, b:3, x0:-2.4, y0:1.8}); // f = a x² + b y²
+    const g3_path = ref([]);
+    const g3_running = ref(false);
+    let g3_timer = null;
+    const g3_loss = (x,y)=> m3.a*x*x + m3.b*y*y;
+    const g3_step = ()=>{
+      const last = g3_path.value[g3_path.value.length-1] || [m3.x0, m3.y0];
+      const [x,y] = last;
+      const nx = x - m3.lr * (2*m3.a*x);
+      const ny = y - m3.lr * (2*m3.b*y);
+      g3_path.value = [...g3_path.value, [nx,ny]];
+    };
+    const g3_reset = ()=>{
+      g3_path.value = [[m3.x0, m3.y0]];
+      if(g3_timer){ clearInterval(g3_timer); g3_timer=null; }
+      g3_running.value = false;
+    };
+    const g3_toggle = ()=>{
+      if(g3_running.value){
+        clearInterval(g3_timer); g3_timer=null; g3_running.value=false;
+      } else {
+        if(g3_path.value.length===0) g3_path.value = [[m3.x0, m3.y0]];
+        g3_running.value = true;
+        g3_timer = setInterval(()=>{
+          g3_step();
+          if(g3_path.value.length > 60){ clearInterval(g3_timer); g3_timer=null; g3_running.value=false; }
+        }, 220);
+      }
+    };
+    onBeforeUnmount(()=>{ if(g3_timer) clearInterval(g3_timer); });
+    g3_reset();
+    // contour rendering
+    const t3_W = 360, t3_H = 280, t3_unit = 48;
+    const t3_cx = t3_W/2, t3_cy = t3_H/2;
+    const t3_xy = (x,y)=> [t3_cx + x*t3_unit, t3_cy - y*t3_unit];
+    const t3_contours = computed(()=> {
+      const levels = [0.5, 1.5, 3, 5, 8, 12];
+      return levels.map(L => {
+        // (x,y) on a x² + b y² = L → ellipse with semi-axes (√(L/a), √(L/b))
+        const rx = Math.sqrt(L/m3.a)*t3_unit;
+        const ry = Math.sqrt(L/m3.b)*t3_unit;
+        return {rx, ry, L};
+      });
+    });
+    const t3_pathStr = computed(()=> {
+      if(!g3_path.value.length) return '';
+      return g3_path.value.map(([x,y],i)=> {
+        const [px,py] = t3_xy(x,y);
+        return (i===0?'M':'L')+px+' '+py;
+      }).join(' ');
+    });
+    const t3_curLoss = computed(()=> {
+      const last = g3_path.value[g3_path.value.length-1];
+      if(!last) return 0;
+      return +g3_loss(last[0], last[1]).toFixed(3);
+    });
+    const t3_curPoint = computed(()=> {
+      const last = g3_path.value[g3_path.value.length-1];
+      return last ? {x:+last[0].toFixed(3), y:+last[1].toFixed(3)} : {x:0,y:0};
+    });
+    const t3_curGrad = computed(()=> {
+      const p = t3_curPoint.value;
+      return {gx:+(2*m3.a*p.x).toFixed(3), gy:+(2*m3.b*p.y).toFixed(3)};
+    });
+    const t3_nextPoint = computed(()=> {
+      const p = t3_curPoint.value, g = t3_curGrad.value;
+      return {x:+(p.x - m3.lr*g.gx).toFixed(3), y:+(p.y - m3.lr*g.gy).toFixed(3)};
+    });
+
+    // ── Demo 4: Gaussian ──
+    const m4 = reactive({mu:0, sigma:1});
+    const t4_samples = ref([]);
+    const t4_resample = ()=>{
+      const arr = [];
+      for(let i=0;i<60;i++){
+        // Box-Muller
+        const u1 = Math.random(), u2 = Math.random();
+        const z = Math.sqrt(-2*Math.log(u1)) * Math.cos(2*Math.PI*u2);
+        arr.push(m4.mu + m4.sigma*z);
+      }
+      t4_samples.value = arr;
+    };
+    t4_resample();
+    const t4_W = 360, t4_H = 240;
+    const t4_xRange = [-5, 5];
+    const t4_xMap = (x)=> ((x - t4_xRange[0])/(t4_xRange[1]-t4_xRange[0])) * (t4_W - 30) + 15;
+    const t4_pdf = (x)=> {
+      const z = (x - m4.mu)/m4.sigma;
+      return (1/(m4.sigma*Math.sqrt(2*Math.PI))) * Math.exp(-0.5*z*z);
+    };
+    const t4_path = computed(()=> {
+      const peak = t4_pdf(m4.mu);
+      const maxY = Math.max(peak, 0.45);
+      const pts = [];
+      const N = 160;
+      for(let i=0;i<=N;i++){
+        const x = t4_xRange[0] + (t4_xRange[1]-t4_xRange[0])*i/N;
+        const px = t4_xMap(x);
+        const py = t4_H - 30 - (t4_pdf(x)/maxY)*(t4_H - 50);
+        pts.push((i===0?'M':'L')+px+' '+py.toFixed(2));
+      }
+      return pts.join(' ');
+    });
+    const t4_sampleDots = computed(()=> t4_samples.value.map((s,i)=>{
+      const px = t4_xMap(s);
+      const py = t4_H - 22 + (i%6)*1.6;
+      return {x:px, y:py, in:Math.abs(s-m4.mu) <= m4.sigma};
+    }));
+    const t4_evalX = ref(0.5);
+    const t4_evalPDF = computed(()=> +t4_pdf(t4_evalX.value).toFixed(4));
+    const t4_evalZ = computed(()=> +((t4_evalX.value - m4.mu)/m4.sigma).toFixed(3));
+
+    // ── Demo 5: Linear Regression ──
+    const t5_W = 380, t5_H = 280;
+    const t5_pad = 28;
+    const pts5 = ref([
+      {x:1, y:2.2}, {x:2, y:2.8}, {x:3, y:3.6}, {x:4, y:5.1},
+      {x:5, y:5.4}, {x:6, y:7.2}, {x:7, y:7.9}, {x:8, y:9.0},
+    ]);
+    const t5_xR = [0, 10], t5_yR = [0, 10];
+    const t5_X = (x)=> t5_pad + ((x - t5_xR[0])/(t5_xR[1]-t5_xR[0])) * (t5_W - 2*t5_pad);
+    const t5_Y = (y)=> (t5_H - t5_pad) - ((y - t5_yR[0])/(t5_yR[1]-t5_yR[0])) * (t5_H - 2*t5_pad);
+    const t5_invX = (px)=> t5_xR[0] + ((px - t5_pad)/(t5_W - 2*t5_pad)) * (t5_xR[1] - t5_xR[0]);
+    const t5_invY = (py)=> t5_yR[0] + (((t5_H - t5_pad) - py)/(t5_H - 2*t5_pad)) * (t5_yR[1] - t5_yR[0]);
+    const reg5 = computed(()=> {
+      const n = pts5.value.length;
+      if(n < 2) return {m:0, b:0, sse:0};
+      const mx = pts5.value.reduce((s,p)=>s+p.x,0)/n;
+      const my = pts5.value.reduce((s,p)=>s+p.y,0)/n;
+      let num=0, den=0;
+      for(const p of pts5.value){ num += (p.x-mx)*(p.y-my); den += (p.x-mx)*(p.x-mx); }
+      const slope = den===0 ? 0 : num/den;
+      const icpt = my - slope*mx;
+      let sse = 0;
+      for(const p of pts5.value){ const e = p.y - (slope*p.x + icpt); sse += e*e; }
+      return {m:+slope.toFixed(3), b:+icpt.toFixed(3), sse:+sse.toFixed(2)};
+    });
+    const t5_line = computed(()=> {
+      const r = reg5.value;
+      const x1 = t5_xR[0], x2 = t5_xR[1];
+      return {
+        x1:t5_X(x1), y1:t5_Y(r.m*x1 + r.b),
+        x2:t5_X(x2), y2:t5_Y(r.m*x2 + r.b),
+      };
+    });
+    const t5_residuals = computed(()=> {
+      const r = reg5.value;
+      return pts5.value.map(p=>({
+        x1:t5_X(p.x), y1:t5_Y(p.y),
+        x2:t5_X(p.x), y2:t5_Y(r.m*p.x + r.b),
+      }));
+    });
+    let t5_dragIdx = -1;
+    const t5_onPointerDown = (e, idx)=>{
+      e.stopPropagation();
+      t5_dragIdx = idx;
+      window.addEventListener('pointermove', t5_onMove);
+      window.addEventListener('pointerup', t5_onUp);
+    };
+    const t5_onMove = (e)=>{
+      if(t5_dragIdx < 0) return;
+      const svg = document.getElementById('vz-reg-svg');
+      if(!svg) return;
+      const rect = svg.getBoundingClientRect();
+      const sx = t5_W / rect.width;
+      const sy = t5_H / rect.height;
+      const px = (e.clientX - rect.left) * sx;
+      const py = (e.clientY - rect.top) * sy;
+      const x = Math.max(t5_xR[0], Math.min(t5_xR[1], t5_invX(px)));
+      const y = Math.max(t5_yR[0], Math.min(t5_yR[1], t5_invY(py)));
+      pts5.value = pts5.value.map((p,i)=> i===t5_dragIdx ? {x:+x.toFixed(2), y:+y.toFixed(2)} : p);
+    };
+    const t5_onUp = ()=>{
+      t5_dragIdx = -1;
+      window.removeEventListener('pointermove', t5_onMove);
+      window.removeEventListener('pointerup', t5_onUp);
+    };
+    const t5_onCanvasClick = (e)=>{
+      if(t5_dragIdx >= 0) return;
+      const svg = document.getElementById('vz-reg-svg');
+      if(!svg) return;
+      const rect = svg.getBoundingClientRect();
+      const sx = t5_W / rect.width, sy = t5_H / rect.height;
+      const px = (e.clientX - rect.left) * sx;
+      const py = (e.clientY - rect.top) * sy;
+      const x = t5_invX(px), y = t5_invY(py);
+      if(x < t5_xR[0] || x > t5_xR[1] || y < t5_yR[0] || y > t5_yR[1]) return;
+      pts5.value = [...pts5.value, {x:+x.toFixed(2), y:+y.toFixed(2)}];
+    };
+    const t5_clear = ()=> pts5.value = [];
+    const t5_random = ()=>{
+      const arr = [];
+      const slope = 0.6 + Math.random()*0.8;
+      const icpt = Math.random()*2;
+      for(let i=0;i<8;i++){
+        const x = 1 + i*1.1;
+        const y = slope*x + icpt + (Math.random()-0.5)*1.6;
+        arr.push({x:+x.toFixed(2), y:+y.toFixed(2)});
+      }
+      pts5.value = arr;
+    };
+    onBeforeUnmount(()=>{
+      window.removeEventListener('pointermove', t5_onMove);
+      window.removeEventListener('pointerup', t5_onUp);
+    });
+
+    // ── Demo 6: Activation Functions ──
+    const t6_showDeriv = ref(false);
+    const t6_W = 380, t6_H = 240;
+    const t6_xR = [-6, 6];
+    const t6_yR = [-1.3, 1.3];
+    const t6_pad = 22;
+    const t6_X = (x)=> t6_pad + ((x - t6_xR[0])/(t6_xR[1]-t6_xR[0])) * (t6_W - 2*t6_pad);
+    const t6_Y = (y)=> (t6_H/2) - y * ((t6_H/2 - t6_pad)/(t6_yR[1]));
+    const sigmoid = (x)=> 1/(1+Math.exp(-x));
+    const sigmoid_d = (x)=> { const s = sigmoid(x); return s*(1-s); };
+    const tanh = (x)=> Math.tanh(x);
+    const tanh_d = (x)=> 1 - Math.tanh(x)**2;
+    const relu = (x)=> Math.max(0,x);
+    const relu_d = (x)=> x>0 ? 1 : 0;
+    const buildPath = (fn, scale=1)=>{
+      const pts = [];
+      const N = 200;
+      for(let i=0;i<=N;i++){
+        const x = t6_xR[0] + (t6_xR[1]-t6_xR[0])*i/N;
+        let y = fn(x) * scale;
+        // map sigmoid (0..1) to (−1..1)-ish friendly: re-center? Keep as-is, axis goes 0..1 for sigmoid.
+        const px = t6_X(x);
+        const py = t6_Y(y);
+        pts.push((i===0?'M':'L')+px.toFixed(1)+' '+py.toFixed(1));
+      }
+      return pts.join(' ');
+    };
+    // For sigmoid, scale 2x then offset so it shows nicely against ±1 axis; alternatively show as-is
+    const path_sigmoid = computed(()=> buildPath(sigmoid));
+    const path_sigmoid_d = computed(()=> buildPath(sigmoid_d));
+    const path_tanh = computed(()=> buildPath(tanh));
+    const path_tanh_d = computed(()=> buildPath(tanh_d));
+    const path_relu = computed(()=> buildPath((x)=> Math.min(relu(x), 1.2))); // clamp for view
+    const path_relu_d = computed(()=> buildPath(relu_d));
+    const t6_evalX = ref(1.0);
+    const t6_eval = computed(()=> ({
+      sig:+sigmoid(t6_evalX.value).toFixed(4),
+      tanh:+tanh(t6_evalX.value).toFixed(4),
+      relu:+relu(t6_evalX.value).toFixed(4),
+    }));
+
+    // helpers for slider updates (need to round so display stays clean)
+    const setMat = (mat, key, val)=> { mat[key] = +(+val).toFixed(2); };
+
+    return {
+      ctx,
+      // theory toggle
+      theoryOpen, toggleTheory,
+      // demo 1
+      m1, det1, t1_preset, t1_W, t1_H, t1_shape, t1_origSq, t1_iHat, t1_jHat, t1_xy, t1_tx, t1_cx, t1_cy, t1_unit,
+      v1, v1_in, v1_out, v1_pdown,
+      t1_th, t1_applyRot, t1_applyScale, t1_applyShear, t1_applyReflect,
+      // demo 2
+      m2, eig2, eig2_disc, t2_W, t2_H, t2_xy, t2_tx, t2_probes, t2_cx, t2_cy, t2_unit, t2_preset,
+      // demo 3
+      m3, g3_path, g3_running, g3_step, g3_reset, g3_toggle, t3_W, t3_H, t3_xy, t3_contours, t3_pathStr, t3_curLoss, t3_cx, t3_cy,
+      t3_curPoint, t3_curGrad, t3_nextPoint,
+      // demo 4
+      m4, t4_W, t4_H, t4_path, t4_sampleDots, t4_xMap, t4_resample, t4_evalX, t4_evalPDF, t4_evalZ,
+      // demo 5
+      pts5, reg5, t5_W, t5_H, t5_X, t5_Y, t5_line, t5_residuals, t5_onPointerDown, t5_onCanvasClick, t5_clear, t5_random,
+      // demo 6
+      t6_showDeriv, t6_W, t6_H, t6_xR, t6_yR, t6_X, t6_Y, path_sigmoid, path_sigmoid_d, path_tanh, path_tanh_d, path_relu, path_relu_d,
+      t6_evalX, t6_eval,
+      setMat,
+    };
+  },
+  template: `
+<div class="pane vz-wrap">
+  <div class="vz-body">
+    <div class="vz-intro">
+      <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:-3px;margin-right:6px;color:var(--accent)"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+      {{ ctx.t('vz.intro') }}
+    </div>
+
+    <div class="vz-grid">
+
+      <!-- DEMO 1: Linear Transformation -->
+      <div class="vz-card">
+        <div class="vz-hd">
+          <div class="vz-hd-row">
+            <div>
+              <div class="vz-ttl">{{ ctx.t('vz.t1.title') }}</div>
+              <div class="vz-sub">{{ ctx.t('vz.t1.sub') }}</div>
+            </div>
+            <div class="vz-hd-r">
+              <span class="vz-refchip">{{ ctx.t('vz.t1.ref') }}</span>
+              <span class="vz-gotochip" @click="ctx.gotoWeek(1)">{{ ctx.t('vz.gotoWeek',{n:1}) }}</span>
+            </div>
+          </div>
+        </div>
+        <div class="vz-stage draggy">
+          <svg id="vz-t1-svg" :viewBox="'0 0 '+t1_W+' '+t1_H" :width="t1_W" :height="t1_H">
+            <!-- background grid -->
+            <g stroke="#21262d" stroke-width="1">
+              <line v-for="i in 11" :key="'gx'+i" :x1="(i-1)*(t1_W/10)" :y1="0" :x2="(i-1)*(t1_W/10)" :y2="t1_H"/>
+              <line v-for="i in 9" :key="'gy'+i" :x1="0" :y1="(i-1)*(t1_H/8)" :x2="t1_W" :y2="(i-1)*(t1_H/8)"/>
+            </g>
+            <!-- axes -->
+            <line :x1="0" :y1="t1_cy" :x2="t1_W" :y2="t1_cy" stroke="#4d535c" stroke-width="1.4"/>
+            <line :x1="t1_cx" :y1="0" :x2="t1_cx" :y2="t1_H" stroke="#4d535c" stroke-width="1.4"/>
+            <!-- original square (dim) -->
+            <polygon :points="t1_origSq" fill="#58a6ff15" stroke="#58a6ff66" stroke-width="1.5" stroke-dasharray="4 3"/>
+            <!-- transformed -->
+            <polygon :points="t1_shape" fill="#bc8cff33" stroke="#bc8cff" stroke-width="2"/>
+            <!-- basis vectors -->
+            <line :x1="t1_cx" :y1="t1_cy" :x2="t1_iHat[0]" :y2="t1_iHat[1]" stroke="#f85149" stroke-width="2.5" marker-end="url(#vzArrowR)"/>
+            <line :x1="t1_cx" :y1="t1_cy" :x2="t1_jHat[0]" :y2="t1_jHat[1]" stroke="#3fb950" stroke-width="2.5" marker-end="url(#vzArrowG)"/>
+            <text :x="t1_iHat[0]+6" :y="t1_iHat[1]-4" fill="#f85149" font-size="11" font-family="JetBrains Mono">î</text>
+            <text :x="t1_jHat[0]+6" :y="t1_jHat[1]-4" fill="#3fb950" font-size="11" font-family="JetBrains Mono">ĵ</text>
+            <!-- INPUT vector v (blue, draggable) → OUTPUT vector Av (gold) -->
+            <line :x1="t1_cx" :y1="t1_cy" :x2="v1_in[0]" :y2="v1_in[1]" stroke="#58a6ff" stroke-width="2" stroke-dasharray="3 3" opacity="0.7"/>
+            <line :x1="t1_cx" :y1="t1_cy" :x2="v1_out.px[0]" :y2="v1_out.px[1]" stroke="#d29922" stroke-width="3" marker-end="url(#vzArrowY)"/>
+            <text :x="v1_out.px[0]+6" :y="v1_out.px[1]-4" fill="#d29922" font-size="11" font-family="JetBrains Mono">Av</text>
+            <circle :cx="v1_in[0]" :cy="v1_in[1]" r="6.5" fill="#58a6ff" stroke="#0a0d12" stroke-width="2" style="cursor:grab" @pointerdown="v1_pdown"/>
+            <text :x="v1_in[0]+9" :y="v1_in[1]+4" fill="#58a6ff" font-size="11" font-family="JetBrains Mono">v</text>
+            <defs>
+              <marker id="vzArrowR" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+                <path d="M0 0 L10 5 L0 10 z" fill="#f85149"/>
+              </marker>
+              <marker id="vzArrowG" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+                <path d="M0 0 L10 5 L0 10 z" fill="#3fb950"/>
+              </marker>
+              <marker id="vzArrowY" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+                <path d="M0 0 L10 5 L0 10 z" fill="#d29922"/>
+              </marker>
+            </defs>
+          </svg>
+        </div>
+        <div class="vz-ctrls">
+          <!-- INPUT → PROCESS → OUTPUT flow -->
+          <div class="vz-flow">
+            <div class="vz-flow-step input">
+              <div class="vz-flow-lbl">① {{ ctx.t('vz.input') }} · v</div>
+              <div class="vz-flow-body">
+                <div>v = <span style="color:#58a6ff">[{{ v1.x.toFixed(2) }}, {{ v1.y.toFixed(2) }}]ᵀ</span></div>
+                <div class="sub">{{ ctx.t('vz.dragInput') }}</div>
+              </div>
+            </div>
+            <div class="vz-flow-arrow">→</div>
+            <div class="vz-flow-step process">
+              <div class="vz-flow-lbl">② {{ ctx.t('vz.process') }} · Av</div>
+              <div class="vz-flow-body">
+                <div style="display:flex;align-items:center;gap:6px">
+                  <span>Av =</span>
+                  <div class="vz-bm-bracket" style="padding:6px 12px;font-size:.74rem;grid-template-columns:auto;gap:8px;min-height:auto">
+                    <span style="white-space:nowrap"><em style="color:#f85149">{{ m1.a.toFixed(2) }}</em>·{{ v1.x.toFixed(2) }} + <em style="color:#f85149">{{ m1.b.toFixed(2) }}</em>·{{ v1.y.toFixed(2) }}</span>
+                    <span style="white-space:nowrap"><em style="color:#3fb950">{{ m1.c.toFixed(2) }}</em>·{{ v1.x.toFixed(2) }} + <em style="color:#3fb950">{{ m1.d.toFixed(2) }}</em>·{{ v1.y.toFixed(2) }}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="vz-flow-arrow">=</div>
+            <div class="vz-flow-step output">
+              <div class="vz-flow-lbl">③ {{ ctx.t('vz.output') }} · Av</div>
+              <div class="vz-flow-body">
+                <div style="color:#d29922;font-weight:700">[{{ v1_out.x }}, {{ v1_out.y }}]ᵀ</div>
+                <div class="sub">‖Av‖ = {{ Math.sqrt(v1_out.x*v1_out.x + v1_out.y*v1_out.y).toFixed(3) }}</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="vz-row" style="justify-content:space-between">
+            <div class="vz-bracketmat">
+              <span class="vz-bm-lbl">A =</span>
+              <div class="vz-bm-bracket">
+                <span class="vz-bm-cell" :class="m1.a<0?'neg':'pos'">{{ m1.a.toFixed(2) }}</span>
+                <span class="vz-bm-cell" :class="m1.b<0?'neg':'pos'">{{ m1.b.toFixed(2) }}</span>
+                <span class="vz-bm-cell" :class="m1.c<0?'neg':'pos'">{{ m1.c.toFixed(2) }}</span>
+                <span class="vz-bm-cell" :class="m1.d<0?'neg':'pos'">{{ m1.d.toFixed(2) }}</span>
+              </div>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:4px;align-items:center">
+              <span style="font-family:var(--mono);font-size:.7rem;color:#f85149">î ↦</span>
+              <div class="vz-vec-bracket">
+                <span style="color:#f85149">{{ m1.a.toFixed(2) }}</span>
+                <span style="color:#f85149">{{ m1.c.toFixed(2) }}</span>
+              </div>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:4px;align-items:center">
+              <span style="font-family:var(--mono);font-size:.7rem;color:#3fb950">ĵ ↦</span>
+              <div class="vz-vec-bracket">
+                <span style="color:#3fb950">{{ m1.b.toFixed(2) }}</span>
+                <span style="color:#3fb950">{{ m1.d.toFixed(2) }}</span>
+              </div>
+            </div>
+          </div>
+          <div class="vz-row">
+            <span class="vz-slbl">a</span>
+            <input type="range" class="vz-slider" min="-2" max="2" step="0.05" :value="m1.a" @input="e=>setMat(m1,'a',e.target.value)">
+            <span class="vz-val">{{ m1.a.toFixed(2) }}</span>
+          </div>
+          <div class="vz-row">
+            <span class="vz-slbl">b</span>
+            <input type="range" class="vz-slider" min="-2" max="2" step="0.05" :value="m1.b" @input="e=>setMat(m1,'b',e.target.value)">
+            <span class="vz-val">{{ m1.b.toFixed(2) }}</span>
+          </div>
+          <div class="vz-row">
+            <span class="vz-slbl">c</span>
+            <input type="range" class="vz-slider" min="-2" max="2" step="0.05" :value="m1.c" @input="e=>setMat(m1,'c',e.target.value)">
+            <span class="vz-val">{{ m1.c.toFixed(2) }}</span>
+          </div>
+          <div class="vz-row">
+            <span class="vz-slbl">d</span>
+            <input type="range" class="vz-slider" min="-2" max="2" step="0.05" :value="m1.d" @input="e=>setMat(m1,'d',e.target.value)">
+            <span class="vz-val">{{ m1.d.toFixed(2) }}</span>
+          </div>
+          <div class="vz-row">
+            <span class="vz-pill">{{ ctx.t('vz.t1.det') }} = {{ det1 }}</span>
+            <span v-if="det1 < 0" class="vz-pill" style="color:var(--red);border-color:#f8514944">⇆ {{ ctx.t('vz.t1.flip') }}</span>
+          </div>
+          <div class="vz-row">
+            <span class="vz-slbl">{{ ctx.t('vz.t1.preset') }}</span>
+            <div class="vz-btns">
+              <button class="vz-btn" @click="t1_preset('identity')">{{ ctx.t('vz.t1.identity') }}</button>
+              <button class="vz-btn" @click="t1_preset('rot')">{{ ctx.t('vz.t1.rot') }}</button>
+              <button class="vz-btn" @click="t1_preset('scale')">{{ ctx.t('vz.t1.scale') }}</button>
+              <button class="vz-btn" @click="t1_preset('shear')">{{ ctx.t('vz.t1.shear') }}</button>
+              <button class="vz-btn" @click="t1_preset('reflect')">{{ ctx.t('vz.t1.reflect') }}</button>
+            </div>
+          </div>
+        </div>
+        <div class="vz-desc">{{ ctx.t('vz.t1.desc') }}</div>
+        <div class="vz-theory-toggle" :class="{open:theoryOpen[1]}" @click="toggleTheory(1)">
+          <span class="caret">▸</span>
+          <span>{{ theoryOpen[1] ? ctx.t('vz.hideTheory') : ctx.t('vz.showTheory') }}</span>
+        </div>
+        <div class="vz-theory" v-if="theoryOpen[1]">
+          <div style="font-size:.74rem;color:var(--t3);text-transform:uppercase;letter-spacing:.06em;font-weight:700;margin-bottom:-4px">{{ ctx.t('vz.t1.theory') }}</div>
+
+          <!-- Rotation -->
+          <div class="vz-th-block">
+            <div class="vz-th-name">{{ ctx.t('vz.t1.thRot') }} <span class="badge">det = 1</span></div>
+            <div class="vz-th-eqn">
+              <span>R(θ) =</span>
+              <div class="vz-mini-mat">
+                <span>cos θ</span><span>−sin θ</span>
+                <span>sin θ</span><span>cos θ</span>
+              </div>
+              <span>→ θ = <em>{{ t1_th.rotDeg.toFixed(0) }}°</em></span>
+              <div class="vz-mini-mat">
+                <span>{{ Math.cos(t1_th.rotDeg*Math.PI/180).toFixed(2) }}</span><span>{{ (-Math.sin(t1_th.rotDeg*Math.PI/180)).toFixed(2) }}</span>
+                <span>{{ Math.sin(t1_th.rotDeg*Math.PI/180).toFixed(2) }}</span><span>{{ Math.cos(t1_th.rotDeg*Math.PI/180).toFixed(2) }}</span>
+              </div>
+            </div>
+            <div class="vz-th-ctrl">
+              <span class="lbl">θ ({{ ctx.t('vz.deg') }})</span>
+              <input type="range" min="0" max="360" step="1" :value="t1_th.rotDeg" @input="e=>t1_th.rotDeg = +e.target.value">
+              <input type="number" min="-360" max="360" step="1" :value="t1_th.rotDeg" @input="e=>t1_th.rotDeg = +e.target.value">
+              <span class="lbl" style="font-size:.66rem;color:var(--t3)">= {{ (t1_th.rotDeg*Math.PI/180).toFixed(3) }} {{ ctx.t('vz.rad') }}</span>
+              <button class="vz-th-apply" @click="t1_applyRot">{{ ctx.t('vz.apply') }}</button>
+            </div>
+            <div class="vz-th-note">{{ ctx.t('vz.t1.thRotNote') }}</div>
+          </div>
+
+          <!-- Scale -->
+          <div class="vz-th-block">
+            <div class="vz-th-name">{{ ctx.t('vz.t1.thScale') }} <span class="badge">det = sₓ·sᵧ</span></div>
+            <div class="vz-th-eqn">
+              <span>S =</span>
+              <div class="vz-mini-mat">
+                <span>sₓ</span><span>0</span>
+                <span>0</span><span>sᵧ</span>
+              </div>
+              <span>=</span>
+              <div class="vz-mini-mat">
+                <span>{{ t1_th.scaleX.toFixed(2) }}</span><span>0</span>
+                <span>0</span><span>{{ t1_th.scaleY.toFixed(2) }}</span>
+              </div>
+            </div>
+            <div class="vz-th-ctrl">
+              <span class="lbl">sₓ</span>
+              <input type="range" min="-3" max="3" step="0.1" :value="t1_th.scaleX" @input="e=>t1_th.scaleX = +e.target.value">
+              <input type="number" step="0.1" :value="t1_th.scaleX" @input="e=>t1_th.scaleX = +e.target.value">
+              <span class="lbl">sᵧ</span>
+              <input type="range" min="-3" max="3" step="0.1" :value="t1_th.scaleY" @input="e=>t1_th.scaleY = +e.target.value">
+              <input type="number" step="0.1" :value="t1_th.scaleY" @input="e=>t1_th.scaleY = +e.target.value">
+              <button class="vz-th-apply" @click="t1_applyScale">{{ ctx.t('vz.apply') }}</button>
+            </div>
+            <div class="vz-th-note">{{ ctx.t('vz.t1.thScaleNote') }}</div>
+          </div>
+
+          <!-- Shear -->
+          <div class="vz-th-block">
+            <div class="vz-th-name">{{ ctx.t('vz.t1.thShear') }} <span class="badge">det = 1</span></div>
+            <div class="vz-th-eqn">
+              <span>H{{ t1_th.shearDir==='h' ? 'ₓ' : 'ᵧ' }}(k) =</span>
+              <div class="vz-mini-mat" v-if="t1_th.shearDir==='h'">
+                <span>1</span><span>k</span>
+                <span>0</span><span>1</span>
+              </div>
+              <div class="vz-mini-mat" v-else>
+                <span>1</span><span>0</span>
+                <span>k</span><span>1</span>
+              </div>
+              <span>→ k = <em>{{ t1_th.shearK.toFixed(2) }}</em></span>
+            </div>
+            <div class="vz-th-ctrl">
+              <span class="lbl">k</span>
+              <input type="range" min="-2" max="2" step="0.05" :value="t1_th.shearK" @input="e=>t1_th.shearK = +e.target.value">
+              <input type="number" step="0.05" :value="t1_th.shearK" @input="e=>t1_th.shearK = +e.target.value">
+              <button class="vz-pickbtn" :class="{on:t1_th.shearDir==='h'}" @click="t1_th.shearDir='h'">{{ ctx.t('vz.t1.shearH') }}</button>
+              <button class="vz-pickbtn" :class="{on:t1_th.shearDir==='v'}" @click="t1_th.shearDir='v'">{{ ctx.t('vz.t1.shearV') }}</button>
+              <button class="vz-th-apply" @click="t1_applyShear">{{ ctx.t('vz.apply') }}</button>
+            </div>
+            <div class="vz-th-note">{{ ctx.t('vz.t1.thShearNote') }}</div>
+          </div>
+
+          <!-- Reflect -->
+          <div class="vz-th-block">
+            <div class="vz-th-name">{{ ctx.t('vz.t1.thRefl') }} <span class="badge">det = −1</span></div>
+            <div class="vz-th-eqn">
+              <span>x-axis:</span>
+              <div class="vz-mini-mat"><span>1</span><span>0</span><span>0</span><span>−1</span></div>
+              <span>y-axis:</span>
+              <div class="vz-mini-mat"><span>−1</span><span>0</span><span>0</span><span>1</span></div>
+              <span>y=x:</span>
+              <div class="vz-mini-mat"><span>0</span><span>1</span><span>1</span><span>0</span></div>
+            </div>
+            <div class="vz-th-ctrl">
+              <button class="vz-th-apply" @click="t1_applyReflect('x')">{{ ctx.t('vz.t1.thReflX') }}</button>
+              <button class="vz-th-apply" @click="t1_applyReflect('y')">{{ ctx.t('vz.t1.thReflY') }}</button>
+              <button class="vz-th-apply" @click="t1_applyReflect('yx')">{{ ctx.t('vz.t1.thReflYX') }}</button>
+            </div>
+            <div class="vz-th-note">{{ ctx.t('vz.t1.thReflNote') }}</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- DEMO 2: Eigenvectors -->
+      <div class="vz-card">
+        <div class="vz-hd">
+          <div class="vz-hd-row">
+            <div>
+              <div class="vz-ttl">{{ ctx.t('vz.t2.title') }}</div>
+              <div class="vz-sub">{{ ctx.t('vz.t2.sub') }}</div>
+            </div>
+            <div class="vz-hd-r">
+              <span class="vz-refchip">{{ ctx.t('vz.t2.ref') }}</span>
+              <span class="vz-gotochip" @click="ctx.gotoWeek(2)">{{ ctx.t('vz.gotoWeek',{n:2}) }}</span>
+            </div>
+          </div>
+        </div>
+        <div class="vz-stage">
+          <svg :viewBox="'0 0 '+t2_W+' '+t2_H" :width="t2_W" :height="t2_H">
+            <g stroke="#21262d" stroke-width="1">
+              <line v-for="i in 11" :key="'eg'+i" :x1="(i-1)*(t2_W/10)" :y1="0" :x2="(i-1)*(t2_W/10)" :y2="t2_H"/>
+              <line v-for="i in 9" :key="'eh'+i" :x1="0" :y1="(i-1)*(t2_H/8)" :x2="t2_W" :y2="(i-1)*(t2_H/8)"/>
+            </g>
+            <line :x1="0" :y1="t2_cy" :x2="t2_W" :y2="t2_cy" stroke="#4d535c" stroke-width="1.4"/>
+            <line :x1="t2_cx" :y1="0" :x2="t2_cx" :y2="t2_H" stroke="#4d535c" stroke-width="1.4"/>
+            <!-- probe vectors: faint originals -->
+            <g v-for="(p,i) in t2_probes" :key="'pv'+i">
+              <line :x1="t2_cx" :y1="t2_cy" :x2="p.orig[0]" :y2="p.orig[1]" stroke="#58a6ff44" stroke-width="1"/>
+              <line :x1="t2_cx" :y1="t2_cy" :x2="p.tx[0]" :y2="p.tx[1]" stroke="#bc8cffaa" stroke-width="1.2"/>
+            </g>
+            <!-- eigenvectors -->
+            <template v-if="eig2.real">
+              <line :x1="t2_cx" :y1="t2_cy" :x2="t2_cx + eig2.v1[0]*eig2.l1*t2_unit" :y2="t2_cy - eig2.v1[1]*eig2.l1*t2_unit" stroke="#3fb950" stroke-width="3" marker-end="url(#vzArrowEv1)"/>
+              <line :x1="t2_cx" :y1="t2_cy" :x2="t2_cx + eig2.v2[0]*eig2.l2*t2_unit" :y2="t2_cy - eig2.v2[1]*eig2.l2*t2_unit" stroke="#d29922" stroke-width="3" marker-end="url(#vzArrowEv2)"/>
+              <line :x1="t2_cx - eig2.v1[0]*eig2.l1*t2_unit" :y1="t2_cy + eig2.v1[1]*eig2.l1*t2_unit" :x2="t2_cx" :y2="t2_cy" stroke="#3fb95066" stroke-width="2" stroke-dasharray="3 3"/>
+              <line :x1="t2_cx - eig2.v2[0]*eig2.l2*t2_unit" :y1="t2_cy + eig2.v2[1]*eig2.l2*t2_unit" :x2="t2_cx" :y2="t2_cy" stroke="#d2992266" stroke-width="2" stroke-dasharray="3 3"/>
+            </template>
+            <defs>
+              <marker id="vzArrowEv1" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="#3fb950"/></marker>
+              <marker id="vzArrowEv2" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="#d29922"/></marker>
+            </defs>
+          </svg>
+        </div>
+        <div class="vz-ctrls">
+          <div class="vz-row">
+            <div class="vz-bracketmat">
+              <span class="vz-bm-lbl">A =</span>
+              <div class="vz-bm-bracket">
+                <input type="number" step="0.1" :value="m2.a" @input="e=>setMat(m2,'a',e.target.value)">
+                <input type="number" step="0.1" :value="m2.b" @input="e=>setMat(m2,'b',e.target.value)">
+                <input type="number" step="0.1" :value="m2.c" @input="e=>setMat(m2,'c',e.target.value)">
+                <input type="number" step="0.1" :value="m2.d" @input="e=>setMat(m2,'d',e.target.value)">
+              </div>
+            </div>
+            <span class="vz-formula">tr(A) = <em>{{ (m2.a+m2.d).toFixed(2) }}</em> · det(A) = <em>{{ (m2.a*m2.d - m2.b*m2.c).toFixed(2) }}</em></span>
+          </div>
+          <div class="vz-row">
+            <span class="vz-slbl">{{ ctx.t('vz.t2.preset') }}</span>
+            <div class="vz-btns">
+              <button class="vz-btn" @click="t2_preset('symm')">{{ ctx.t('vz.t2.symm') }} [2,1;1,2]</button>
+              <button class="vz-btn" @click="t2_preset('shear')">{{ ctx.t('vz.t2.shear') }} [1,1;0,1]</button>
+              <button class="vz-btn" @click="t2_preset('rot')">{{ ctx.t('vz.t2.rot') }} [0,−1;1,0]</button>
+            </div>
+          </div>
+          <div class="vz-row" v-if="eig2.real">
+            <span class="vz-slbl">{{ ctx.t('vz.t2.eig') }}</span>
+            <span class="vz-pill" style="color:#3fb950">λ₁ = {{ eig2.l1 }}</span>
+            <span class="vz-pill" style="color:#d29922">λ₂ = {{ eig2.l2 }}</span>
+          </div>
+          <div class="vz-row" v-if="eig2.real">
+            <span class="vz-slbl">{{ ctx.t('vz.t2.evec') }}</span>
+            <div style="display:flex;align-items:center;gap:4px">
+              <span style="font-family:var(--mono);font-size:.74rem;color:#3fb950">v₁ =</span>
+              <div class="vz-vec-bracket">
+                <span style="color:#3fb950">{{ eig2.v1[0].toFixed(2) }}</span>
+                <span style="color:#3fb950">{{ eig2.v1[1].toFixed(2) }}</span>
+              </div>
+            </div>
+            <div style="display:flex;align-items:center;gap:4px">
+              <span style="font-family:var(--mono);font-size:.74rem;color:#d29922">v₂ =</span>
+              <div class="vz-vec-bracket">
+                <span style="color:#d29922">{{ eig2.v2[0].toFixed(2) }}</span>
+                <span style="color:#d29922">{{ eig2.v2[1].toFixed(2) }}</span>
+              </div>
+            </div>
+          </div>
+          <!-- VERIFY: A·v₁ = λ₁·v₁ -->
+          <div class="vz-flow" v-if="eig2.real">
+            <div class="vz-flow-step input">
+              <div class="vz-flow-lbl">① {{ ctx.t('vz.input') }}</div>
+              <div class="vz-flow-body">
+                <div style="color:#3fb950">v₁ = [{{ eig2.v1[0].toFixed(2) }}, {{ eig2.v1[1].toFixed(2) }}]ᵀ</div>
+                <div class="sub">A unchanged</div>
+              </div>
+            </div>
+            <div class="vz-flow-arrow">→</div>
+            <div class="vz-flow-step process">
+              <div class="vz-flow-lbl">② A · v₁ = λ₁ · v₁</div>
+              <div class="vz-flow-body">
+                <div>A·v₁ = [{{ (m2.a*eig2.v1[0] + m2.b*eig2.v1[1]).toFixed(2) }}, {{ (m2.c*eig2.v1[0] + m2.d*eig2.v1[1]).toFixed(2) }}]ᵀ</div>
+                <div class="sub">λ₁·v₁ = [{{ (eig2.l1*eig2.v1[0]).toFixed(2) }}, {{ (eig2.l1*eig2.v1[1]).toFixed(2) }}]ᵀ</div>
+              </div>
+            </div>
+            <div class="vz-flow-arrow">✓</div>
+            <div class="vz-flow-step output">
+              <div class="vz-flow-lbl">③ {{ ctx.t('vz.output') }}</div>
+              <div class="vz-flow-body">
+                <div style="color:var(--green);font-weight:700">Same vector!</div>
+                <div class="sub">scaled by λ₁ = {{ eig2.l1 }}</div>
+              </div>
+            </div>
+          </div>
+          <div class="vz-row" v-else>
+            <span class="vz-hint">{{ ctx.t('vz.t2.complex') }}</span>
+          </div>
+        </div>
+        <div class="vz-desc">{{ ctx.t('vz.t2.desc') }}</div>
+        <div class="vz-theory-toggle" :class="{open:theoryOpen[2]}" @click="toggleTheory(2)">
+          <span class="caret">▸</span>
+          <span>{{ theoryOpen[2] ? ctx.t('vz.hideTheory') : ctx.t('vz.showTheory') }}</span>
+        </div>
+        <div class="vz-theory" v-if="theoryOpen[2]">
+          <div style="font-size:.74rem;color:var(--t3);text-transform:uppercase;letter-spacing:.06em;font-weight:700;margin-bottom:-4px">{{ ctx.t('vz.t2.theory') }}</div>
+
+          <div class="vz-th-block">
+            <div class="vz-th-name">{{ ctx.t('vz.t2.thPoly') }}</div>
+            <div class="vz-th-eqn">det(A − λI) = 0  ⇔  λ² − tr(A)·λ + det(A) = 0</div>
+            <div class="vz-th-eqn">→ λ² − <em>{{ (m2.a+m2.d).toFixed(2) }}</em>·λ + <em>{{ (m2.a*m2.d - m2.b*m2.c).toFixed(2) }}</em> = 0</div>
+            <div class="vz-th-note">{{ ctx.t('vz.t2.thPolyNote') }}</div>
+          </div>
+
+          <div class="vz-th-block" :class="{active:eig2.real}">
+            <div class="vz-th-name">{{ ctx.t('vz.t2.thQuad') }} <span class="badge">Δ = tr² − 4·det</span></div>
+            <div class="vz-th-eqn">λ = (tr ± √Δ) / 2</div>
+            <div class="vz-th-eqn">Δ = {{ (m2.a+m2.d).toFixed(2) }}² − 4·{{ (m2.a*m2.d - m2.b*m2.c).toFixed(2) }} = <em :style="{color: eig2_disc < 0 ? 'var(--red)' : 'var(--green)'}">{{ eig2_disc }}</em></div>
+            <div class="vz-th-eqn" v-if="eig2.real">→ λ₁ = <em style="color:#3fb950">{{ eig2.l1 }}</em>, λ₂ = <em style="color:#d29922">{{ eig2.l2 }}</em></div>
+            <div class="vz-th-eqn" v-else style="color:var(--red)">→ Δ &lt; 0 ⇒ complex roots</div>
+            <div class="vz-th-note">{{ ctx.t('vz.t2.thQuadNote') }}</div>
+          </div>
+
+          <div class="vz-th-block" v-if="eig2.real">
+            <div class="vz-th-name">{{ ctx.t('vz.t2.thEvec') }}</div>
+            <div class="vz-th-eqn">(A − λI)v = 0  →  v = (b, λ − a)  (when b ≠ 0)</div>
+            <div class="vz-th-eqn">v₁ = ({{ m2.b.toFixed(2) }}, {{ (eig2.l1 - m2.a).toFixed(2) }}) <span style="color:var(--t3)">normalized →</span> [<em style="color:#3fb950">{{ eig2.v1[0].toFixed(2) }}, {{ eig2.v1[1].toFixed(2) }}</em>]</div>
+            <div class="vz-th-eqn">v₂ = ({{ m2.b.toFixed(2) }}, {{ (eig2.l2 - m2.a).toFixed(2) }}) <span style="color:var(--t3)">→</span> [<em style="color:#d29922">{{ eig2.v2[0].toFixed(2) }}, {{ eig2.v2[1].toFixed(2) }}</em>]</div>
+            <div class="vz-th-note">{{ ctx.t('vz.t2.thEvecNote') }}</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- DEMO 3: Gradient Descent -->
+      <div class="vz-card">
+        <div class="vz-hd">
+          <div class="vz-hd-row">
+            <div>
+              <div class="vz-ttl">{{ ctx.t('vz.t3.title') }}</div>
+              <div class="vz-sub">{{ ctx.t('vz.t3.sub') }}</div>
+            </div>
+            <div class="vz-hd-r">
+              <span class="vz-refchip">{{ ctx.t('vz.t3.ref') }}</span>
+              <span class="vz-gotochip" @click="ctx.gotoWeek(3)">{{ ctx.t('vz.gotoWeek',{n:3}) }}</span>
+            </div>
+          </div>
+        </div>
+        <div class="vz-stage">
+          <svg :viewBox="'0 0 '+t3_W+' '+t3_H" :width="t3_W" :height="t3_H">
+            <g stroke="#21262d" stroke-width="1">
+              <line v-for="i in 11" :key="'gdx'+i" :x1="(i-1)*(t3_W/10)" :y1="0" :x2="(i-1)*(t3_W/10)" :y2="t3_H"/>
+              <line v-for="i in 9" :key="'gdy'+i" :x1="0" :y1="(i-1)*(t3_H/8)" :x2="t3_W" :y2="(i-1)*(t3_H/8)"/>
+            </g>
+            <!-- contour ellipses -->
+            <ellipse v-for="(c,i) in t3_contours" :key="'co'+i" :cx="t3_cx" :cy="t3_cy" :rx="c.rx" :ry="c.ry" fill="none" :stroke="'rgba(88,166,255,'+(0.18+i*0.08)+')'" stroke-width="1.2"/>
+            <line :x1="0" :y1="t3_cy" :x2="t3_W" :y2="t3_cy" stroke="#4d535c" stroke-width="1.2"/>
+            <line :x1="t3_cx" :y1="0" :x2="t3_cx" :y2="t3_H" stroke="#4d535c" stroke-width="1.2"/>
+            <!-- path -->
+            <path :d="t3_pathStr" stroke="#ff7eb6" stroke-width="2.4" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+            <circle v-for="(p,i) in g3_path" :key="'pt'+i" :cx="t3_xy(p[0],p[1])[0]" :cy="t3_xy(p[0],p[1])[1]" :r="i===g3_path.length-1 ? 5 : 2.5" :fill="i===g3_path.length-1 ? '#ff7eb6' : '#bc8cff'"/>
+            <circle :cx="t3_cx" :cy="t3_cy" r="3.4" fill="#3fb950"/>
+          </svg>
+        </div>
+        <div class="vz-ctrls">
+          <!-- INPUT → PROCESS → OUTPUT for one descent step -->
+          <div class="vz-flow">
+            <div class="vz-flow-step input">
+              <div class="vz-flow-lbl">① {{ ctx.t('vz.input') }} · current point</div>
+              <div class="vz-flow-body">
+                <div>(x, y) = (<span style="color:#ff7eb6">{{ t3_curPoint.x }}</span>, <span style="color:#ff7eb6">{{ t3_curPoint.y }}</span>)</div>
+                <div class="sub">α = {{ m3.lr.toFixed(2) }} · f = {{ t3_curLoss }}</div>
+              </div>
+            </div>
+            <div class="vz-flow-arrow">→</div>
+            <div class="vz-flow-step process">
+              <div class="vz-flow-lbl">② gradient + update</div>
+              <div class="vz-flow-body">
+                <div>∇f = (2·{{ m3.a }}x, 2·{{ m3.b.toFixed(1) }}y) = (<em>{{ t3_curGrad.gx }}</em>, <em>{{ t3_curGrad.gy }}</em>)</div>
+                <div class="sub">x' = x − α·∂f/∂x · y' = y − α·∂f/∂y</div>
+              </div>
+            </div>
+            <div class="vz-flow-arrow">→</div>
+            <div class="vz-flow-step output">
+              <div class="vz-flow-lbl">③ {{ ctx.t('vz.output') }} · next point</div>
+              <div class="vz-flow-body">
+                <div style="color:var(--green);font-weight:700">({{ t3_nextPoint.x }}, {{ t3_nextPoint.y }})</div>
+                <div class="sub">closer to (0,0) — the minimum</div>
+              </div>
+            </div>
+          </div>
+          <div class="vz-row">
+            <span class="vz-formula">f(x,y) = <em>{{ m3.a }}</em>x² + <em>{{ m3.b.toFixed(1) }}</em>y²</span>
+          </div>
+          <div class="vz-row">
+            <span class="vz-slbl">{{ ctx.t('vz.t3.lr') }}</span>
+            <input type="range" class="vz-slider" min="0.01" max="0.5" step="0.01" :value="m3.lr" @input="e=>setMat(m3,'lr',e.target.value)">
+            <span class="vz-val">{{ m3.lr.toFixed(2) }}</span>
+          </div>
+          <div class="vz-row">
+            <span class="vz-slbl">{{ ctx.t('vz.t3.shape') }}</span>
+            <input type="range" class="vz-slider" min="0.5" max="6" step="0.1" :value="m3.b" @input="e=>setMat(m3,'b',e.target.value)">
+            <span class="vz-val">b={{ m3.b.toFixed(1) }}</span>
+          </div>
+          <div class="vz-row">
+            <button class="vz-btn prim" @click="g3_toggle">{{ g3_running ? ctx.t('vz.pause') : ctx.t('vz.play') }}</button>
+            <button class="vz-btn" @click="g3_step">→ {{ ctx.t('vz.step') }}</button>
+            <button class="vz-btn" @click="g3_reset">{{ ctx.t('vz.reset') }}</button>
+            <span class="vz-pill">{{ ctx.t('vz.t3.steps') }}: {{ g3_path.length-1 }}</span>
+            <span class="vz-pill" style="color:var(--green)">{{ ctx.t('vz.t3.loss') }}: {{ t3_curLoss }}</span>
+          </div>
+        </div>
+        <div class="vz-desc">{{ ctx.t('vz.t3.desc') }}</div>
+        <div class="vz-theory-toggle" :class="{open:theoryOpen[3]}" @click="toggleTheory(3)">
+          <span class="caret">▸</span>
+          <span>{{ theoryOpen[3] ? ctx.t('vz.hideTheory') : ctx.t('vz.showTheory') }}</span>
+        </div>
+        <div class="vz-theory" v-if="theoryOpen[3]">
+          <div style="font-size:.74rem;color:var(--t3);text-transform:uppercase;letter-spacing:.06em;font-weight:700;margin-bottom:-4px">{{ ctx.t('vz.t3.theory') }}</div>
+
+          <div class="vz-th-block">
+            <div class="vz-th-name">{{ ctx.t('vz.t3.thRule') }}</div>
+            <div class="vz-th-eqn">θ_{t+1} = θ_t − α · ∇L(θ_t)</div>
+            <div class="vz-th-note">{{ ctx.t('vz.t3.thRuleNote') }}</div>
+          </div>
+
+          <div class="vz-th-block">
+            <div class="vz-th-name">{{ ctx.t('vz.t3.thGrad') }}</div>
+            <div class="vz-th-eqn">f(x, y) = <em>{{ m3.a }}</em>x² + <em>{{ m3.b.toFixed(1) }}</em>y²</div>
+            <div class="vz-th-eqn">∂f/∂x = 2·<em>{{ m3.a }}</em>·x = <em>{{ t3_curGrad.gx }}</em></div>
+            <div class="vz-th-eqn">∂f/∂y = 2·<em>{{ m3.b.toFixed(1) }}</em>·y = <em>{{ t3_curGrad.gy }}</em></div>
+            <div class="vz-th-note">{{ ctx.t('vz.t3.thGradNote') }}</div>
+          </div>
+
+          <div class="vz-th-block" :class="{active: m3.lr < 1/Math.max(m3.a, m3.b)}">
+            <div class="vz-th-name">{{ ctx.t('vz.t3.thConv') }}</div>
+            <div class="vz-th-eqn">x_{t+1} = x_t · (1 − 2·a·α) ⇒ |1 − 2·a·α| &lt; 1 ⇒ α &lt; 1/a</div>
+            <div class="vz-th-eqn">Current α = <em>{{ m3.lr.toFixed(2) }}</em>, critical α_max = <em>{{ (1/Math.max(m3.a, m3.b)).toFixed(2) }}</em></div>
+            <div class="vz-th-eqn" :style="{color: m3.lr < 1/Math.max(m3.a, m3.b) ? 'var(--green)' : 'var(--red)'}">
+              {{ m3.lr < 1/Math.max(m3.a, m3.b) ? '✓ converges' : '✗ diverges or oscillates' }}
+            </div>
+            <div class="vz-th-note">{{ ctx.t('vz.t3.thConvNote') }}</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- DEMO 4: Gaussian -->
+      <div class="vz-card">
+        <div class="vz-hd">
+          <div class="vz-hd-row">
+            <div>
+              <div class="vz-ttl">{{ ctx.t('vz.t4.title') }}</div>
+              <div class="vz-sub">{{ ctx.t('vz.t4.sub') }}</div>
+            </div>
+            <div class="vz-hd-r">
+              <span class="vz-refchip">{{ ctx.t('vz.t4.ref') }}</span>
+              <span class="vz-gotochip" @click="ctx.gotoWeek(4)">{{ ctx.t('vz.gotoWeek',{n:4}) }}</span>
+            </div>
+          </div>
+        </div>
+        <div class="vz-stage">
+          <svg :viewBox="'0 0 '+t4_W+' '+t4_H" :width="t4_W" :height="t4_H">
+            <line :x1="15" :y1="t4_H-30" :x2="t4_W-15" :y2="t4_H-30" stroke="#4d535c" stroke-width="1.3"/>
+            <line v-for="i in 11" :key="'gax'+i" :x1="15 + (i-1)*((t4_W-30)/10)" :y1="t4_H-26" :x2="15 + (i-1)*((t4_W-30)/10)" :y2="t4_H-30" stroke="#4d535c" stroke-width="1"/>
+            <!-- ±σ shaded -->
+            <rect :x="t4_xMap(m4.mu - m4.sigma)" :y="20" :width="t4_xMap(m4.mu + m4.sigma) - t4_xMap(m4.mu - m4.sigma)" :height="t4_H-50" fill="#3fb95018"/>
+            <line :x1="t4_xMap(m4.mu)" :y1="20" :x2="t4_xMap(m4.mu)" :y2="t4_H-30" stroke="#bc8cff" stroke-width="1.5" stroke-dasharray="4 3"/>
+            <path :d="t4_path" stroke="#58a6ff" stroke-width="2.4" fill="#58a6ff22"/>
+            <!-- eval marker -->
+            <line :x1="t4_xMap(t4_evalX)" :y1="20" :x2="t4_xMap(t4_evalX)" :y2="t4_H-30" stroke="#d29922" stroke-width="1.5"/>
+            <circle :cx="t4_xMap(t4_evalX)" :cy="t4_H-30" r="5" fill="#d29922"/>
+            <circle v-for="(d,i) in t4_sampleDots" :key="'sd'+i" :cx="d.x" :cy="d.y" r="2.4" :fill="d.in ? '#3fb950' : '#d29922'"/>
+            <text :x="t4_xMap(m4.mu)+4" :y="32" fill="#bc8cff" font-size="11" font-family="JetBrains Mono">μ</text>
+            <text :x="t4_xMap(t4_evalX)+4" :y="48" fill="#d29922" font-size="11" font-family="JetBrains Mono">x</text>
+          </svg>
+        </div>
+        <div class="vz-ctrls">
+          <div class="vz-row">
+            <span class="vz-slbl">{{ ctx.t('vz.t4.mean') }}</span>
+            <input type="range" class="vz-slider" min="-3" max="3" step="0.1" :value="m4.mu" @input="e=>setMat(m4,'mu',e.target.value)">
+            <span class="vz-val">{{ m4.mu.toFixed(1) }}</span>
+          </div>
+          <div class="vz-row">
+            <span class="vz-slbl">{{ ctx.t('vz.t4.std') }}</span>
+            <input type="range" class="vz-slider" min="0.3" max="2.5" step="0.1" :value="m4.sigma" @input="e=>setMat(m4,'sigma',e.target.value)">
+            <span class="vz-val">{{ m4.sigma.toFixed(1) }}</span>
+          </div>
+          <div class="vz-row">
+            <button class="vz-btn prim" @click="t4_resample">↻ {{ ctx.t('vz.t4.resample') }}</button>
+            <span class="vz-pill">N(μ,σ²)</span>
+          </div>
+          <!-- PDF evaluation: input x → output P(x) -->
+          <div class="vz-flow">
+            <div class="vz-flow-step input">
+              <div class="vz-flow-lbl">① {{ ctx.t('vz.input') }} · x</div>
+              <div class="vz-flow-body">
+                <input type="range" min="-4" max="4" step="0.1" :value="t4_evalX" @input="e=>t4_evalX = +e.target.value" style="width:100%;margin-top:2px">
+                <div style="color:#d29922">x = {{ t4_evalX.toFixed(2) }} · z = {{ t4_evalZ }}</div>
+              </div>
+            </div>
+            <div class="vz-flow-arrow">→</div>
+            <div class="vz-flow-step process">
+              <div class="vz-flow-lbl">② PDF formula</div>
+              <div class="vz-flow-body">
+                <div>P(x) = (1/(σ√2π))·e^(−½z²)</div>
+                <div class="sub">z = (x−μ)/σ = ({{ t4_evalX.toFixed(2) }}−{{ m4.mu.toFixed(1) }})/{{ m4.sigma.toFixed(1) }}</div>
+              </div>
+            </div>
+            <div class="vz-flow-arrow">=</div>
+            <div class="vz-flow-step output">
+              <div class="vz-flow-lbl">③ {{ ctx.t('vz.output') }} · P(x)</div>
+              <div class="vz-flow-body">
+                <div style="color:var(--green);font-weight:700">{{ t4_evalPDF }}</div>
+                <div class="sub">density at x</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="vz-desc">{{ ctx.t('vz.t4.desc') }}</div>
+        <div class="vz-theory-toggle" :class="{open:theoryOpen[4]}" @click="toggleTheory(4)">
+          <span class="caret">▸</span>
+          <span>{{ theoryOpen[4] ? ctx.t('vz.hideTheory') : ctx.t('vz.showTheory') }}</span>
+        </div>
+        <div class="vz-theory" v-if="theoryOpen[4]">
+          <div style="font-size:.74rem;color:var(--t3);text-transform:uppercase;letter-spacing:.06em;font-weight:700;margin-bottom:-4px">{{ ctx.t('vz.t4.theory') }}</div>
+
+          <div class="vz-th-block">
+            <div class="vz-th-name">{{ ctx.t('vz.t4.thPDF') }}</div>
+            <div class="vz-th-eqn">P(x) = (1 / (σ·√(2π))) · exp(−(x−μ)² / (2σ²))</div>
+            <div class="vz-th-eqn">→ P({{ t4_evalX.toFixed(2) }}) = (1/({{ m4.sigma.toFixed(2) }}·√(2π))) · exp(−({{ t4_evalX.toFixed(2) }} − {{ m4.mu.toFixed(2) }})² / (2·{{ (m4.sigma**2).toFixed(2) }})) = <em>{{ t4_evalPDF }}</em></div>
+            <div class="vz-th-note">{{ ctx.t('vz.t4.thPDFNote') }}</div>
+          </div>
+
+          <div class="vz-th-block">
+            <div class="vz-th-name">{{ ctx.t('vz.t4.thZ') }}</div>
+            <div class="vz-th-eqn">z = (x − μ) / σ = ({{ t4_evalX.toFixed(2) }} − {{ m4.mu.toFixed(2) }}) / {{ m4.sigma.toFixed(2) }} = <em>{{ t4_evalZ }}</em></div>
+            <div class="vz-th-note">{{ ctx.t('vz.t4.thZNote') }}</div>
+          </div>
+
+          <div class="vz-th-block">
+            <div class="vz-th-name">{{ ctx.t('vz.t4.thRule') }}</div>
+            <div class="vz-th-eqn">P(|x − μ| ≤ 1σ) ≈ <em>68.2%</em></div>
+            <div class="vz-th-eqn">P(|x − μ| ≤ 2σ) ≈ <em>95.4%</em></div>
+            <div class="vz-th-eqn">P(|x − μ| ≤ 3σ) ≈ <em>99.7%</em></div>
+            <div class="vz-th-note">{{ ctx.t('vz.t4.thRuleNote') }}</div>
+          </div>
+
+          <div class="vz-th-block">
+            <div class="vz-th-name">{{ ctx.t('vz.t4.thBM') }}</div>
+            <div class="vz-th-eqn">u₁, u₂ ~ Uniform(0, 1)</div>
+            <div class="vz-th-eqn">z = √(−2 · ln(u₁)) · cos(2π · u₂)</div>
+            <div class="vz-th-eqn">sample = μ + σ · z</div>
+            <div class="vz-th-note">{{ ctx.t('vz.t4.thBMNote') }}</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- DEMO 5: Linear Regression -->
+      <div class="vz-card">
+        <div class="vz-hd">
+          <div class="vz-hd-row">
+            <div>
+              <div class="vz-ttl">{{ ctx.t('vz.t5.title') }}</div>
+              <div class="vz-sub">{{ ctx.t('vz.t5.sub') }}</div>
+            </div>
+            <div class="vz-hd-r">
+              <span class="vz-refchip">{{ ctx.t('vz.t5.ref') }}</span>
+              <span class="vz-gotochip" @click="ctx.gotoWeek(5)">{{ ctx.t('vz.gotoWeek',{n:5}) }}</span>
+            </div>
+          </div>
+        </div>
+        <div class="vz-stage draggy">
+          <svg id="vz-reg-svg" :viewBox="'0 0 '+t5_W+' '+t5_H" :width="t5_W" :height="t5_H" @click="t5_onCanvasClick">
+            <g stroke="#21262d" stroke-width="1">
+              <line v-for="i in 11" :key="'rgx'+i" :x1="t5_X(i-1)" :y1="t5_Y(0)" :x2="t5_X(i-1)" :y2="t5_Y(10)"/>
+              <line v-for="i in 11" :key="'rgy'+i" :x1="t5_X(0)" :y1="t5_Y(i-1)" :x2="t5_X(10)" :y2="t5_Y(i-1)"/>
+            </g>
+            <line :x1="t5_X(0)" :y1="t5_Y(0)" :x2="t5_X(10)" :y2="t5_Y(0)" stroke="#4d535c" stroke-width="1.3"/>
+            <line :x1="t5_X(0)" :y1="t5_Y(0)" :x2="t5_X(0)" :y2="t5_Y(10)" stroke="#4d535c" stroke-width="1.3"/>
+            <!-- residuals -->
+            <line v-for="(r,i) in t5_residuals" :key="'rs'+i" :x1="r.x1" :y1="r.y1" :x2="r.x2" :y2="r.y2" stroke="#f85149" stroke-width="1" stroke-dasharray="3 3" opacity="0.7"/>
+            <!-- regression line -->
+            <line :x1="t5_line.x1" :y1="t5_line.y1" :x2="t5_line.x2" :y2="t5_line.y2" stroke="#58a6ff" stroke-width="2.5"/>
+            <!-- points -->
+            <circle v-for="(p,i) in pts5" :key="'pp'+i" :cx="t5_X(p.x)" :cy="t5_Y(p.y)" r="5.5" fill="#bc8cff" stroke="#0a0d12" stroke-width="2" style="cursor:grab" @pointerdown="e=>t5_onPointerDown(e,i)"/>
+          </svg>
+        </div>
+        <div class="vz-ctrls">
+          <!-- INPUT → PROCESS → OUTPUT for least squares -->
+          <div class="vz-flow">
+            <div class="vz-flow-step input">
+              <div class="vz-flow-lbl">① {{ ctx.t('vz.input') }}</div>
+              <div class="vz-flow-body">
+                <div>n = {{ pts5.length }} points (xᵢ, yᵢ)</div>
+                <div class="sub">drag or click to edit</div>
+              </div>
+            </div>
+            <div class="vz-flow-arrow">→</div>
+            <div class="vz-flow-step process">
+              <div class="vz-flow-lbl">② normal equations</div>
+              <div class="vz-flow-body">
+                <div>m = Σ(xᵢ−x̄)(yᵢ−ȳ) / Σ(xᵢ−x̄)²</div>
+                <div class="sub">b = ȳ − m·x̄</div>
+              </div>
+            </div>
+            <div class="vz-flow-arrow">=</div>
+            <div class="vz-flow-step output">
+              <div class="vz-flow-lbl">③ {{ ctx.t('vz.output') }}</div>
+              <div class="vz-flow-body">
+                <div style="color:var(--green);font-weight:700">y = {{ reg5.m }}·x + {{ reg5.b }}</div>
+                <div class="sub">SSE = {{ reg5.sse }}</div>
+              </div>
+            </div>
+          </div>
+          <div class="vz-row">
+            <button class="vz-btn prim" @click="t5_random">↻ {{ ctx.t('vz.random') }}</button>
+            <button class="vz-btn" @click="t5_clear">{{ ctx.t('vz.clear') }}</button>
+            <span class="vz-hint">{{ ctx.t('vz.t5.tip') }}</span>
+          </div>
+        </div>
+        <div class="vz-desc">{{ ctx.t('vz.t5.desc') }}</div>
+        <div class="vz-theory-toggle" :class="{open:theoryOpen[5]}" @click="toggleTheory(5)">
+          <span class="caret">▸</span>
+          <span>{{ theoryOpen[5] ? ctx.t('vz.hideTheory') : ctx.t('vz.showTheory') }}</span>
+        </div>
+        <div class="vz-theory" v-if="theoryOpen[5]">
+          <div style="font-size:.74rem;color:var(--t3);text-transform:uppercase;letter-spacing:.06em;font-weight:700;margin-bottom:-4px">{{ ctx.t('vz.t5.theory') }}</div>
+
+          <div class="vz-th-block">
+            <div class="vz-th-name">{{ ctx.t('vz.t5.thObj') }}</div>
+            <div class="vz-th-eqn">J(m, b) = Σᵢ (yᵢ − (m·xᵢ + b))²</div>
+            <div class="vz-th-eqn">→ SSE = <em>{{ reg5.sse }}</em> (over n = <em>{{ pts5.length }}</em> points)</div>
+            <div class="vz-th-note">{{ ctx.t('vz.t5.thObjNote') }}</div>
+          </div>
+
+          <div class="vz-th-block">
+            <div class="vz-th-name">{{ ctx.t('vz.t5.thNorm') }}</div>
+            <div class="vz-th-eqn">∂J/∂m = 0 and ∂J/∂b = 0 give:</div>
+            <div class="vz-th-eqn">m = Σ(xᵢ − x̄)(yᵢ − ȳ) / Σ(xᵢ − x̄)² = <em>{{ reg5.m }}</em></div>
+            <div class="vz-th-eqn">b = ȳ − m · x̄ = <em>{{ reg5.b }}</em></div>
+            <div class="vz-th-note">{{ ctx.t('vz.t5.thNormNote') }}</div>
+          </div>
+
+          <div class="vz-th-block">
+            <div class="vz-th-name">{{ ctx.t('vz.t5.thMat') }}</div>
+            <div class="vz-th-eqn">Stack data: X = [1 x₁; 1 x₂; … 1 xₙ],  y = (y₁ … yₙ)ᵀ</div>
+            <div class="vz-th-eqn">Closed form: β = (Xᵀ X)⁻¹ Xᵀ y,  where β = (b, m)ᵀ</div>
+            <div class="vz-th-note">{{ ctx.t('vz.t5.thMatNote') }}</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- DEMO 6: Activation Functions -->
+      <div class="vz-card">
+        <div class="vz-hd">
+          <div class="vz-hd-row">
+            <div>
+              <div class="vz-ttl">{{ ctx.t('vz.t6.title') }}</div>
+              <div class="vz-sub">{{ ctx.t('vz.t6.sub') }}</div>
+            </div>
+            <div class="vz-hd-r">
+              <span class="vz-refchip">{{ ctx.t('vz.t6.ref') }}</span>
+              <span class="vz-gotochip" @click="ctx.gotoWeek(9)">{{ ctx.t('vz.gotoWeek',{n:9}) }}</span>
+            </div>
+          </div>
+        </div>
+        <div class="vz-stage">
+          <svg :viewBox="'0 0 '+t6_W+' '+t6_H" :width="t6_W" :height="t6_H">
+            <g stroke="#21262d" stroke-width="1">
+              <line v-for="i in 13" :key="'ax'+i" :x1="t6_X(t6_xR[0]+(t6_xR[1]-t6_xR[0])*(i-1)/12)" :y1="0" :x2="t6_X(t6_xR[0]+(t6_xR[1]-t6_xR[0])*(i-1)/12)" :y2="t6_H"/>
+            </g>
+            <line :x1="0" :y1="t6_H/2" :x2="t6_W" :y2="t6_H/2" stroke="#4d535c" stroke-width="1.4"/>
+            <line :x1="t6_W/2" :y1="0" :x2="t6_W/2" :y2="t6_H" stroke="#4d535c" stroke-width="1.4"/>
+            <!-- y = 1, y = 0.5, y = -1 dashed reference lines -->
+            <line :x1="0" :y1="t6_Y(1)" :x2="t6_W" :y2="t6_Y(1)" stroke="#30363d" stroke-width="1" stroke-dasharray="4 4"/>
+            <line :x1="0" :y1="t6_Y(0.5)" :x2="t6_W" :y2="t6_Y(0.5)" stroke="#30363d" stroke-width="1" stroke-dasharray="2 4" opacity="0.6"/>
+            <line :x1="0" :y1="t6_Y(-1)" :x2="t6_W" :y2="t6_Y(-1)" stroke="#30363d" stroke-width="1" stroke-dasharray="4 4"/>
+            <!-- y-axis tick labels -->
+            <text :x="t6_W/2 + 4" :y="t6_Y(1) + 3" fill="#6e7681" font-size="9" font-family="JetBrains Mono">1.0</text>
+            <text :x="t6_W/2 + 4" :y="t6_Y(0.5) + 3" fill="#6e7681" font-size="9" font-family="JetBrains Mono">0.5</text>
+            <text :x="t6_W/2 + 4" :y="t6_Y(0) + 12" fill="#6e7681" font-size="9" font-family="JetBrains Mono">0</text>
+            <text :x="t6_W/2 + 4" :y="t6_Y(-1) + 3" fill="#6e7681" font-size="9" font-family="JetBrains Mono">−1.0</text>
+            <path :d="path_sigmoid" stroke="#58a6ff" stroke-width="2.4" fill="none"/>
+            <path :d="path_tanh" stroke="#3fb950" stroke-width="2.4" fill="none"/>
+            <path :d="path_relu" stroke="#d29922" stroke-width="2.4" fill="none"/>
+            <g v-if="t6_showDeriv">
+              <path :d="path_sigmoid_d" stroke="#58a6ff" stroke-width="1.5" stroke-dasharray="4 3" fill="none" opacity="0.7"/>
+              <path :d="path_tanh_d" stroke="#3fb950" stroke-width="1.5" stroke-dasharray="4 3" fill="none" opacity="0.7"/>
+              <path :d="path_relu_d" stroke="#d29922" stroke-width="1.5" stroke-dasharray="4 3" fill="none" opacity="0.7"/>
+            </g>
+            <!-- evaluation marker -->
+            <line :x1="t6_X(t6_evalX)" :y1="0" :x2="t6_X(t6_evalX)" :y2="t6_H" stroke="#bc8cff" stroke-width="1.5" stroke-dasharray="3 3"/>
+            <circle :cx="t6_X(t6_evalX)" :cy="t6_Y(t6_eval.sig)" r="4.5" fill="#58a6ff" stroke="#0a0d12" stroke-width="2"/>
+            <circle :cx="t6_X(t6_evalX)" :cy="t6_Y(t6_eval.tanh)" r="4.5" fill="#3fb950" stroke="#0a0d12" stroke-width="2"/>
+            <circle :cx="t6_X(t6_evalX)" :cy="t6_Y(Math.min(t6_eval.relu, 1.2))" r="4.5" fill="#d29922" stroke="#0a0d12" stroke-width="2"/>
+            <text :x="t6_W-90" :y="18" fill="#58a6ff" font-size="11" font-family="JetBrains Mono">sigmoid</text>
+            <text :x="t6_W-90" :y="32" fill="#3fb950" font-size="11" font-family="JetBrains Mono">tanh</text>
+            <text :x="t6_W-90" :y="46" fill="#d29922" font-size="11" font-family="JetBrains Mono">ReLU</text>
+            <text :x="t6_X(t6_evalX)+4" :y="t6_H-6" fill="#bc8cff" font-size="11" font-family="JetBrains Mono">x = {{ t6_evalX.toFixed(2) }}</text>
+          </svg>
+        </div>
+        <div class="vz-ctrls">
+          <!-- INPUT → PROCESS → OUTPUT evaluation -->
+          <div class="vz-flow">
+            <div class="vz-flow-step input">
+              <div class="vz-flow-lbl">① {{ ctx.t('vz.input') }} · x</div>
+              <div class="vz-flow-body">
+                <input type="range" min="-6" max="6" step="0.1" :value="t6_evalX" @input="e=>t6_evalX = +e.target.value" style="width:100%;margin-top:2px">
+                <div style="color:#bc8cff">x = {{ t6_evalX.toFixed(2) }}</div>
+              </div>
+            </div>
+            <div class="vz-flow-arrow">→</div>
+            <div class="vz-flow-step process">
+              <div class="vz-flow-lbl">② {{ ctx.t('vz.formula') }}</div>
+              <div class="vz-flow-body">
+                <div style="color:#58a6ff">σ(x) = 1/(1+e⁻ˣ)</div>
+                <div style="color:#3fb950">tanh(x) = (eˣ−e⁻ˣ)/(eˣ+e⁻ˣ)</div>
+                <div style="color:#d29922">ReLU(x) = max(0, x)</div>
+              </div>
+            </div>
+            <div class="vz-flow-arrow">=</div>
+            <div class="vz-flow-step output">
+              <div class="vz-flow-lbl">③ {{ ctx.t('vz.output') }}</div>
+              <div class="vz-flow-body">
+                <div style="color:#58a6ff;font-weight:700">σ({{ t6_evalX.toFixed(2) }}) = {{ t6_eval.sig }}</div>
+                <div style="color:#3fb950;font-weight:700">tanh({{ t6_evalX.toFixed(2) }}) = {{ t6_eval.tanh }}</div>
+                <div style="color:#d29922;font-weight:700">ReLU({{ t6_evalX.toFixed(2) }}) = {{ t6_eval.relu }}</div>
+              </div>
+            </div>
+          </div>
+          <div class="vz-row">
+            <button class="vz-btn" :class="{on:t6_showDeriv}" @click="t6_showDeriv = !t6_showDeriv">
+              {{ t6_showDeriv ? '✓' : '○' }} {{ ctx.t('vz.t6.deriv') }}
+            </button>
+          </div>
+        </div>
+        <div class="vz-desc">{{ ctx.t('vz.t6.desc') }}</div>
+        <div class="vz-theory-toggle" :class="{open:theoryOpen[6]}" @click="toggleTheory(6)">
+          <span class="caret">▸</span>
+          <span>{{ theoryOpen[6] ? ctx.t('vz.hideTheory') : ctx.t('vz.showTheory') }}</span>
+        </div>
+        <div class="vz-theory" v-if="theoryOpen[6]">
+          <div style="font-size:.74rem;color:var(--t3);text-transform:uppercase;letter-spacing:.06em;font-weight:700;margin-bottom:-4px">{{ ctx.t('vz.t6.theory') }}</div>
+
+          <div class="vz-th-block">
+            <div class="vz-th-name" style="color:#58a6ff">{{ ctx.t('vz.t6.thSig') }} <span class="badge">(0, 1)</span></div>
+            <div class="vz-th-eqn">σ(x) = 1 / (1 + e⁻ˣ)</div>
+            <div class="vz-th-eqn">σ'(x) = σ(x) · (1 − σ(x))</div>
+            <div class="vz-th-eqn">At x = <em>{{ t6_evalX.toFixed(2) }}</em>:  σ = <em>{{ t6_eval.sig }}</em>,  σ' = <em>{{ (t6_eval.sig * (1 - t6_eval.sig)).toFixed(4) }}</em></div>
+            <div class="vz-th-note">{{ ctx.t('vz.t6.thSigNote') }}</div>
+          </div>
+
+          <div class="vz-th-block">
+            <div class="vz-th-name" style="color:#3fb950">{{ ctx.t('vz.t6.thTanh') }} <span class="badge">(−1, 1)</span></div>
+            <div class="vz-th-eqn">tanh(x) = (eˣ − e⁻ˣ) / (eˣ + e⁻ˣ) = 2σ(2x) − 1</div>
+            <div class="vz-th-eqn">tanh'(x) = 1 − tanh²(x)</div>
+            <div class="vz-th-eqn">At x = <em>{{ t6_evalX.toFixed(2) }}</em>:  tanh = <em>{{ t6_eval.tanh }}</em>,  tanh' = <em>{{ (1 - t6_eval.tanh*t6_eval.tanh).toFixed(4) }}</em></div>
+            <div class="vz-th-note">{{ ctx.t('vz.t6.thTanhNote') }}</div>
+          </div>
+
+          <div class="vz-th-block">
+            <div class="vz-th-name" style="color:#d29922">{{ ctx.t('vz.t6.thRelu') }} <span class="badge">[0, ∞)</span></div>
+            <div class="vz-th-eqn">ReLU(x) = max(0, x)</div>
+            <div class="vz-th-eqn">ReLU'(x) = 1 if x > 0,  0 if x ≤ 0</div>
+            <div class="vz-th-eqn">At x = <em>{{ t6_evalX.toFixed(2) }}</em>:  ReLU = <em>{{ t6_eval.relu }}</em>,  ReLU' = <em>{{ t6_evalX > 0 ? 1 : 0 }}</em></div>
+            <div class="vz-th-note">{{ ctx.t('vz.t6.thReluNote') }}</div>
+          </div>
+        </div>
+      </div>
+
+    </div>
   </div>
 </div>
 `
